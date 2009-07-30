@@ -1,0 +1,10 @@
+bin/*
+docs/generated-doc/*
+docs/test-reports/*
+src/WebContent/js/dojo/*
+src/WebContent/js/domderrien/nls/*
+temp/*
+cobertura.ser
+*.class
+*.log
+nop

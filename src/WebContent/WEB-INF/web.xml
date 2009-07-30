@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app
+	id="domderrien"
+	version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+>
+
+	<!-- General settings -->
+	<display-name>domderrien 2tiers utils</display-name>
+	<description></description>
+
+	<!-- List of fallback files -->
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- Session timeout -->
+	<session-config>
+		<session-timeout>@dd2tu.sessionTimeout@</session-timeout>
+	</session-config>
+
+	<!-- Definition of the TeamMember dispatcher -->
+    <servlet>
+        <servlet-name>RESTServer</servlet-name>
+        <servlet-class>domderrien.j2ee.RESTServlet</servlet-class>
+        <load-on-startup>-1</load-on-startup>
+        <security-role-ref>
+        	<description></description>
+        	<role-name>domderrien 2tiers utils users</role-name>
+        	<role-link>domderrien 2tiers utils users</role-link>
+        </security-role-ref>
+    </servlet>
+    
+	<servlet-mapping>
+		<servlet-name>RESTServer</servlet-name>
+        <!-- servlet-name>TMDispatcher</servlet-name -->
+		<url-pattern>/API/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- Definition of the security role protecting the application -->
+    <security-role>
+		<description>domderrien 2tiers utils users</description>
+		<role-name>domderrien 2tiers utils users</role-name>
+    </security-role>
+
+	<!-- Definition of the JAAS artifacts -->
+	<security-constraint>
+		<display-name>Servlet Access</display-name>
+		<web-resource-collection>
+			<web-resource-name>domderrien 2tiers utils operations</web-resource-name>
+			<url-pattern>/API/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>All files</description>
+			<role-name>domderrien 2tiers utils users</role-name>
+		</auth-constraint>
+        <user-data-constraint>
+        	<description>No guarantee</description>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>Protected Web Ressources Access</display-name>
+		<web-resource-collection>
+			<web-resource-name>domderrien 2tiers utils files</web-resource-name>
+			<url-pattern>/@dd2tu.stageId@/protected/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>All files</description>
+			<role-name>domderrien 2tiers utils users</role-name>
+		</auth-constraint>
+        <user-data-constraint>
+        	<description>No guarantee</description>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+	</security-constraint>
+
+	<!-- Definition of the login mechanism and the related pages -->
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/@dd2tu.stageId@/freeAccess/loginForm.jsp</form-login-page>
+			<form-error-page>/@dd2tu.stageId@/freeAccess/errorMsg.jsp</form-error-page>
+		</form-login-config>
+	</login-config>
+
+<!--
+	<error-page>
+		<error-code>401</error-code>
+		<location>/@dd2tu.stageId@/freeAccess/loginErrorMsg.jsp</location>
+	</error-page>
+-->
+
+	<!-- Listeners - ->
+	<listener>
+		<listener-class>
+			domderrien.j2ee.SessionListener
+		</listener-class>
+	</listener>
+	-->
+
+</web-app>

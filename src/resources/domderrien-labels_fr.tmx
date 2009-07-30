@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">
+<tmx version="1.4">
+	<header creationtool="developers" creationtoolversion="1.0" datatype="PlainText" segtype="paragraph" adminlang="en" srclang="English" o-tmf="domderrien">
+	</header>
+	<body>
+		<tu tuid="bundle_language" datatype="Text">
+			<prop type="x-tier">dojotk</prop>
+			<prop type="x-tier">javarb</prop>
+			<tuv xml:lang="fr">
+				<seg>Français</seg>
+			</tuv>
+		</tu>
+		<tu tuid="unit_test_sample" datatype="Text">
+			<prop type="x-tier">dojotk</prop>
+			<prop type="x-tier">javarb</prop>
+			<tuv xml:lang="fr">
+				<seg>N/A</seg>
+			</tuv>
+		</tu>
+	</body>
+</tmx>

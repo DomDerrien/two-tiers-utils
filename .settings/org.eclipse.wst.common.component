@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+<wb-module deploy-name="two-tiers-utils">
+<wb-resource deploy-path="/" source-path="/src/WebContent"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/src/Java"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/test/Java"/>
+<property name="context-root" value="two-tiers-utils"/>
+<property name="java-output-path"/>
+</wb-module>
+</project-modules>

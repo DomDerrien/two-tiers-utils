@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">
+<tmx version="1.4">
+	<header creationtool="developers" creationtoolversion="1.0"
+		datatype="PlainText" segtype="paragraph" adminlang="en" srclang="English"
+		o-tmf="domderrien">
+		<note>
+			This TMX file is the master repository for the English labels used in the Olympia application.
+			The content is edited by the developers who generate the unique identifiers, the notes for the
+			translators, the label/message to be displayed, and custom tags used by the build system.
+
+			This is the unique repository containing:
+			  - Information used by the browser-part of the application (dojo tech stack),
+			  - Information used by the webtier-part of the application (Java tech stack),
+			  - Information used by the layout system (Java tech stack in 7.1-can be pushed dojo-side later).
+
+			This TMX is submitted to the translation department and this entity returns many others TMX files,
+			as many as languages required for the product.
+
+			Labels and messages defined in this TMX files and its localized versions are published at build time:
+			  - As properties files to be handled by the PropertiesResourceBundle class,
+			  - As JavaScript files defining simple maps.
+			The target type is chosen thanks to the custom property: <prop type="x-tier"/>
+
+			Note to developers:
+			  1) When the usage of one label occurs many time, don't hesitate to define many entries if you think
+				 that the context is different.
+			  2) If the usage of the custom tags <prop/> is important for the build process, giving information
+				 to the translators via the tag <note/> is also very important for the overall quality of the
+				 product. Don't hesitate to link entries if the labels/messages are related. Don't hesitate to
+				 give samples to illustrate your comments.
+			  3) Be sure to generate unique identifiers. Be consistent the unique identifier format.
+			  4) All text inserted in the <seg/> tag is rendered as is. Take care of the return-to-line and spacing.
+
+			IMPORTANT NOTES:
+			  1) Everything rendered between the tags <seg> and </seg> are rendered. So be careful to NOT insert
+				 return-to-line or extra spaces.
+			  2) Forbidden characters are : ampersand, quotes, double-quotes, less-than. and greater-than signs
+			     Their unicode value MUST be used in place:
+			         - ampersand: \u0026
+			         - double quotes: \u0022
+			         - less than: \u003c
+			         - greater than: \u003e
+			         - non break space: \u00a0
+			     Note that using th single quote is safe.
+			  3) All messages being displayed in a Web browser, it's possible to use HTML sequences, but they MUST
+				 be escaped correctly: "<b></b>" should become: "\u003cb\u003e\u003c/b\u003e". Other HTML codes
+				 (like &mdash;) are safe as the corresponding UTF-8 sequence.
+		</note>
+	</header>
+	<body>
+
+		<tu tuid="bundle_language" datatype="Text">
+			<prop type="x-tier">dojotk</prop>
+			<prop type="x-tier">javarb</prop>
+			<note>
+				IMPORTANT: Native transcription of the language (e.g. Dansk, Deutsch, English).
+				IMPORTANT: "English" should not be just translated!
+				IMPORTANT: If the rest of the xml:lang attribute is left with the value "en", it's crucial
+				           to update the one of this entry with the correct value (e.g. fr, it, zh_CN, etc.).
+			</note>
+			<tuv xml:lang="en">
+				<seg>English</seg>
+			</tuv>
+		</tu>
+
+		<tu tuid="unit_test_sample" datatype="Text">
+			<prop type="x-tier">dojotk</prop>
+			<prop type="x-tier">javarb</prop>
+			<note>test</note>
+			<tuv xml:lang="en">
+				<seg>N/A</seg>
+			</tuv>
+		</tu>
+	</body>
+</tmx>
