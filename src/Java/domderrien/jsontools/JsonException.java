@@ -1,5 +1,8 @@
 package domderrien.jsontools;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -19,7 +22,7 @@ public class JsonException extends Exception implements JsonObject {
     private JsonObject internalStorage = new GenericJsonObject();
 
     private static long EXCEPTION_ID_COUNTER = 0;
-    private long id = getNextId();
+    private final long id = getNextId();
 
     /**
      * Generate the exception identifier
@@ -68,34 +71,30 @@ public class JsonException extends Exception implements JsonObject {
      */
     public JsonException(String type, String message, Exception exception) {
         super(message == null ? type : message, exception);
-        internalStorage.put("isException", true);
-        internalStorage.put("exceptionId", id);
-        internalStorage.put("exceptionType", type);
-        internalStorage.put("exceptionMessage", super.getMessage());
+        put("exceptionId", id);
+        put("exceptionType", type);
+        put("exceptionMessage", super.getMessage());
     }
 
     @Override
     public String toString() {
-        return internalStorage.toString();
-    }
-
-    @Override
-    public String getMessage() {
-        String bundleId = internalStorage.getString("exceptionType");
-        String superMessage = super.getMessage();
-        if (superMessage == null || "".equals(superMessage) || bundleId.equals(superMessage) ) {
-            return "BundleId: " + bundleId;
+        try {
+            OutputStream fakeOutput = new ByteArrayOutputStream();
+            toStream(fakeOutput, true);
+            return fakeOutput.toString();
         }
-        return "BundleId: " + bundleId + " -- " + superMessage;
+        catch (IOException e) {
+            return internalStorage.toString();
+        }
     }
 
     /** accessor */
     protected long getExceptionId() {
-        return getLong("exceptionId");
+        return id;
     }
 
     /** accessor */
-    protected String getJsonExceptionType() {
+    protected String getExceptionType() {
         return getString("exceptionType");
     }
 
@@ -142,51 +141,48 @@ public class JsonException extends Exception implements JsonObject {
         return internalStorage.getJsonException(key);
     }
 
-    protected boolean blockJsonExceptionAttributeOverriding(String key) {
-        return "isException".equals(key) ||
-            "exceptionId".equals(key) ||
-            "exceptionType".equals(key) ||
-            "exceptionMessage".equals(key);
+    public void put(String key, boolean value) {
+        internalStorage.put(key, value);
     }
 
-    public void put(String key, boolean value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+    public void put(String key, Boolean value) {
+        internalStorage.put(key, value);
     }
 
     public void put(String key, long value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
+    }
+
+    public void put(String key, Long value) {
+        internalStorage.put(key, value);
     }
 
     public void put(String key, double value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
+    }
+
+    public void put(String key, Double value) {
+        internalStorage.put(key, value);
     }
 
     public void put(String key, String value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
     }
 
     public void put(String key, JsonObject value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
     }
 
     public void put(String key, JsonArray value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
     }
 
     public void put(String key, JsonException value) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.put(key, value);
+        internalStorage.put(key, value);
     }
 
     public void remove(String key) {
-        if (!blockJsonExceptionAttributeOverriding(key))
-            internalStorage.remove(key);
+        internalStorage.remove(key);
     }
 
     public void removeAll() {
@@ -196,4 +192,21 @@ public class JsonException extends Exception implements JsonObject {
     public void append(JsonObject additionalValues) {
         throw new UnsupportedOperationException("Some JsonException attributes should not be preserved");
     }
+
+	public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+        JsonSerializer.startObject("success", false, out, true);
+        JsonSerializer.toStream("isException", true, out, true);
+		JsonSerializer.toStream("exceptionId", id, out, true);
+		// JsonSerializer.toStream("exceptionType", getExceptionType(), out, true);
+		JsonSerializer.toStream("exceptionMessage", getMessage(), out, true);
+		/** / // This call to printStackTrace() causes a StackOverflowException because of Corbetura instrumentation
+        StringWriter sw = new StringWriter();
+        printStackTrace(new PrintWriter(sw));
+        JsonSerializer.toStream("exceptionStackTrace", sw.getBuffer().substring(0, 100), out, true);
+        /**/
+		// JsonSerializer.introduceComplexValue("originalException", out);
+		// (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
+		String originalMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage();
+		JsonSerializer.endObject("orginalException", originalMessage, out, isFollowed);
+	}
 }

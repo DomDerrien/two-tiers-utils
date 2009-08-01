@@ -7,14 +7,12 @@ import java.util.ResourceBundle;
 
 public class LabelExtractor
 {
-	public final static String ERROR_MESSAGE_PREFIX_ID = "errMsg_";
+	static public final String ERROR_MESSAGE_PREFIX = "errMsg_";
 	
     /**
      * Return the message associated to the given error code.
      * 
-     * @param errorCode Number from the database range (negative numbers),
-     *                  from the WebService range (in [1; 400,000], or from
-     *                  the WebUI range (in [400,001; 500,000]. 
+     * @param errorCode Error code
      * @param locale    Optional locale instance, use to determine in which
      *                  resource files the label should be found. If the
      *                  reference is <code>null</code>, the root resource
@@ -29,9 +27,7 @@ public class LabelExtractor
     /**
      * Return the message associated to the given error code.
      * 
-     * @param errorCode Number from the database range (negative numbers),
-     *                  from the WebService range (in [1; 400,000], or from
-     *                  the WebUI range (in [400,001; 500,000]. 
+     * @param errorCode Error code
      * @param parameters Array of parameters, each one used to replace a
      *                   pattern made of a number between curly braces.
      * @param locale    Optional locale instance, use to determine in which
@@ -42,7 +38,7 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(int errorCode, Object[] parameters,  Locale locale) {
-        String prefix = ERROR_MESSAGE_PREFIX_ID;
+        String prefix = ERROR_MESSAGE_PREFIX;
         String label = get(prefix + errorCode, parameters, locale);
         if (label.startsWith(prefix)) {
             return String.valueOf(errorCode);
@@ -121,6 +117,13 @@ public class LabelExtractor
     protected static HashMap<String, ResourceBundle> resourceBundles = new HashMap<String, ResourceBundle>();
     
     /**
+     * Provides a reset mechanism for the unit test suite
+     */
+    protected static void resetResourceBundleList() {
+    	resourceBundles.clear();
+    }
+    
+    /**
      * Gives the string representing the locale or fall-back on the default one.
      * Made protected to be available for unit testing.
      * 
@@ -155,24 +158,11 @@ public class LabelExtractor
         String rbId = getResourceBundleId(locale);
         ResourceBundle rb = (ResourceBundle) resourceBundles.get(rbId);
         if (rb == null) {
-            rb = getSystemResourceBundle(locale);
+        	// Get the resource bundle filename from the application settings and return the identified file
+            ResourceBundle applicationSettings = ResourceBundle.getBundle("domderrien-i18n", locale); //$NON-NLS-1$
+        	rb = ResourceBundle.getBundle(applicationSettings.getString("localizedLabelFilename"), locale);
             resourceBundles.put(rbId, rb);
         }
         return rb;
-    }
-    
-    private static ResourceBundle systemResourceBundle = null;
-    
-    protected static void setSystemResourceBundle(ResourceBundle forTests) {
-    	systemResourceBundle = forTests;
-    }
-    
-    protected static ResourceBundle getSystemResourceBundle(Locale locale) throws MissingResourceException {
-    	if (systemResourceBundle != null) {
-    		return systemResourceBundle;
-    	}
-    	// Get the resource bundle filename from the application settings and return the identified file
-        ResourceBundle applicationSettings = ResourceBundle.getBundle("label-extractor", locale); //$NON-NLS-1$
-    	return ResourceBundle.getBundle(applicationSettings.getString("localizedLabelBaseFilename"), locale);
     }
 }

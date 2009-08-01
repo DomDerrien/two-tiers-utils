@@ -20,19 +20,16 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
+
 public class TestTMXConverter extends TestCase {
 
-
-	class MockOutputStream extends OutputStream
-	{
+	class MockOutputStream extends OutputStream {
 		StringBuffer stream = new StringBuffer();
 		public String getStream() {
 			return stream.toString();
@@ -46,16 +43,6 @@ public class TestTMXConverter extends TestCase {
 		}
 	}
 	
-    @Before
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-    @After
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
     @Test
 	public void testMain() {
 		// Cannot be unit tested because it will

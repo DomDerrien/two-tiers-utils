@@ -39,16 +39,22 @@
     	description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
 		value="${chrome.browser.executable}"
 	/>
+
 	<property name="jsunit.server.port"
     	description="JSUnit webserver port"
     	value="9898"
     />
+
 	<property name="jsunit.timeout.seconds"
     	description="Delay before considering a test being too long. In seconds"
     	value="60"
     />
 
-	<!-- .............. -->
+	<property name="jscoverage.browser.filenames"
+    	description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
+		value="${chrome.browser.executable}"
+	/>
+ 	<!-- .............. -->
 	<!-- Public targets -->
 	<!-- .............. -->
 
@@ -125,7 +131,6 @@
 		<echo>Target: test</echo>
 		<antcall target="step-java-test" />
 		<antcall target="step-javascript-test" />
-		<antcall target="browser-stop" />
 	</target>
 
 	<!-- ················· -->
@@ -386,7 +391,6 @@
 		</copy>
 		<jar destfile="dist/domderrien-${dd2tu.release}.jar">
 			<fileset dir="bin/classes">
-				<exclude name="**/build/**" />
 				<exclude name="**/Test*.class" />
 				<exclude name="**/Mock*.class" />
 			</fileset>
@@ -637,7 +641,6 @@
 			<arg value="temp" />
 		</exec>
 		<!-- Move the instrumented files -->
-		<mkdir dir="docs/test-reports/jscoverage-html/js" />
 		<move todir="docs/test-reports/jscoverage-html/js" overwrite="yes">
 			<fileset dir="docs/test-reports/jscoverage-html/temp" includes="**/*" />
 		</move>
@@ -655,22 +658,22 @@
 			<fileset dir="src/WebContent/js/domderrien/i18n/nls" />
 		</copy>
 		<!-- Copy the test files -->
-		<copy todir="docs/test-reports/jscoverage-html/js" includeemptydirs="no" overwrite="yes">
-			<fileset dir="test/WebContent/">
+		<copy todir="docs/test-reports/jscoverage-html/" includeemptydirs="no" overwrite="yes">
+			<fileset dir="test/WebContent">
 				<include name="**/Test*.js" />
 			</fileset>
 		</copy>
 		<!-- Copy the test suite files  that will exercise all instrumented unit tests -->
 		<copy todir="docs/test-reports/jscoverage-html/js" overwrite="no">
-			<fileset dir="test/WebContent">
+			<fileset dir="test/WebContent/js">
 				<include name="JSCoverageSuite.*" />
 			</fileset>
 		</copy>
 		<!-- Launch firefox to produce the coverage numbers -->
-		<exec executable="${test.browser.executable}" dir="${temp.dir}/ff">
+		<exec executable="${jscoverage.browser.filenames}">
 			<arg value="file:///${basedir}/docs/test-reports/jscoverage-html/js/jscoverage.html?url=JSCoverageSuite.html" />
 		</exec>
-		<!--exec executable="${test.browser.executable}" dir="${temp.dir}/ff">
+		<!--exec executable="${test.browser.executable}">
     		<arg value="file:///${basedir}/docs/test-reports/jscoverage-html/JSCoverageSuite.html" />
     	</exec-->
 	</target>

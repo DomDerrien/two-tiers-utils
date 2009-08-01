@@ -11,7 +11,7 @@ public class LocaleController
     /**
      * Default locale
      */
-    public static final Locale DEFAULT_LOCALE = Locale.US;
+    public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
     
     /**
      * Identifier of the default language
@@ -50,7 +50,7 @@ public class LocaleController
         	return languageListRB;
         }
     	// Get the resource bundle filename from the application settings and return the identified file
-        ResourceBundle applicationSettings = ResourceBundle.getBundle("label-extractor", DEFAULT_LOCALE); //$NON-NLS-1$
+        ResourceBundle applicationSettings = ResourceBundle.getBundle("domderrien-i18n", DEFAULT_LOCALE); //$NON-NLS-1$
     	return ResourceBundle.getBundle(applicationSettings.getString("languageListFilename"), DEFAULT_LOCALE); //$NON-NLS-1$
 
     }
@@ -67,32 +67,12 @@ public class LocaleController
      * @return One of the supported locale as documented in the file name with {applicationSettings[languageListFilename]}
      */
     public static Locale detectLocale(HttpServletRequest request) {
-        // Locale pieces retrieval
+        // Locale retrieval
     	String localeId = getLocaleId(request, true);
-	    String[] localeIdParts = localeId.split("_");
-	    String languageId = localeIdParts[0];
-	    String countryId = 1 < localeIdParts.length ? localeIdParts[1] : null;
+    	Locale locale = getLocale(localeId);
         
-        // Verification that the locale is supported
-    	Locale locale = null;
-        ResourceBundle languageList = getLanguageListRB();
-        try {
-        	localeId = languageId + "_" + countryId;
-            languageList.getString(localeId); // Will throw an exception if the identified language/country is not in the language list file
-        }
-        catch (java.util.MissingResourceException ex0) {
-    	    try {
-    	    	localeId = languageId;
-    	        languageList.getString(localeId); // Will throw an exception if the identified language is not in the language list file
-    	    }
-    	    catch (java.util.MissingResourceException ex1) {
-    			localeId = DEFAULT_LANGUAGE_ID;
-    		}
-    	}
-        locale = getLocale(localeId);
-        
-        // Saving of the accepted locale for the rest of the application
-        HttpSession session = request.getSession(false);
+        // Saving of the verified locale for the rest of the application
+        HttpSession session = request == null ? null : request.getSession(false);
         if (session != null) {
             session.setAttribute(SESSION_LOCALE_ID_KEY, localeId);
         }
@@ -126,11 +106,14 @@ public class LocaleController
     protected static String getLocaleId(HttpServletRequest request, boolean skipSession) {
     	String localeId = null;
 
+    	// Get the localeId from the request
         if (request != null) {
-            HttpSession session = request.getSession(false);
-            if (!skipSession && session != null) {
-                // Get the registered information
-                localeId = (String) session.getAttribute(SESSION_LOCALE_ID_KEY);
+            if (!skipSession) {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                	// Get the registered information
+                	localeId = (String) session.getAttribute(SESSION_LOCALE_ID_KEY);
+                }
             }
             if (localeId == null || localeId.length() == 0) {
             	// Get the specified information
@@ -140,20 +123,34 @@ public class LocaleController
                 // Fall back on the preferred locale, as specified in the request headers
                 Locale locale = request.getLocale();
                 if (locale != null) {
-                    localeId = request.getLocale().getLanguage();
-                    String countryId = request.getLocale().getCountry();
-                    if (countryId != null && 0 < countryId.length()) {
+                    localeId = locale.getLanguage();
+                    String countryId = locale.getCountry();
+                    if (0 < countryId.length()) {
                     	localeId += "_" + countryId;
                     }
                 }
             }
         }
         
-        if (localeId == null || localeId.length() == 0) {
-            // Fall back on the default language
-            localeId = DEFAULT_LANGUAGE_ID;
+        // Verification that the locale is supported
+	    String[] localeIdParts = localeId == null ? new String[] {DEFAULT_LANGUAGE_ID} : localeId.split("_");
+	    String languageId = localeIdParts[0];
+	    String countryId = 1 < localeIdParts.length ? localeIdParts[1] : null;
+        ResourceBundle languageList = getLanguageListRB();
+        try {
+        	localeId = languageId + "_" + countryId;
+            languageList.getString(localeId); // Will throw an exception if the identified language/country is not in the language list file
         }
-        
+        catch (java.util.MissingResourceException ex0) {
+    	    try {
+    	    	localeId = languageId;
+    	        languageList.getString(localeId); // Will throw an exception if the identified language is not in the language list file
+    	    }
+    	    catch (java.util.MissingResourceException ex1) {
+    			localeId = DEFAULT_LANGUAGE_ID;
+    		}
+    	}
+
         return localeId;
     }
 
@@ -189,7 +186,7 @@ public class LocaleController
     public static Locale getLocale(String localeId) {
         Locale locale = DEFAULT_LOCALE;
 
-        if (localeId != null) {
+        if (localeId != null && 0 < localeId.length()) {
             if (2 < localeId.length()) {
                 locale = new Locale(localeId.substring(0, 2), localeId.substring(3));
             }

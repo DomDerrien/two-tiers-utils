@@ -1,5 +1,7 @@
 package domderrien.jsontools;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -94,6 +96,14 @@ public interface JsonArray {
     void add(boolean value);
 
     /**
+     * Store the identified <code>boolean</code>
+     *
+     * @param value <code>boolean</code> value to store
+     * @see java.util.List#add
+     */
+    void add(Boolean value);
+
+    /**
      * Store the identified <code>long</code>
      *
      * @param value <code>long</code> value to store
@@ -102,12 +112,28 @@ public interface JsonArray {
     void add(long value);
 
     /**
+     * Store the identified <code>long</code>
+     *
+     * @param value <code>long</code> value to store
+     * @see java.util.List#add
+     */
+    void add(Long value);
+
+    /**
      * Store the identified <code>double</code>
      *
      * @param value <code>double</code> value to store
      * @see java.util.List#add
      */
     void add(double value);
+
+    /**
+     * Store the identified <code>double</code>
+     *
+     * @param value <code>double</code> value to store
+     * @see java.util.List#add
+     */
+    void add(Double value);
 
     /**
      * Store the identified String instance.
@@ -151,6 +177,15 @@ public interface JsonArray {
     void set(int index, boolean value);
 
     /**
+     * Store the identified <code>boolean</code>
+     *
+     * @param index Index where the object should be stored
+     * @param value <code>boolean</code> value to store
+     * @see java.util.List#set
+     */
+    void set(int index, Boolean value);
+
+    /**
      * Store the identified <code>long</code>
      *
      * @param index Index where the object should be stored
@@ -160,6 +195,15 @@ public interface JsonArray {
     void set(int index, long value);
 
     /**
+     * Store the identified <code>long</code>
+     *
+     * @param index Index where the object should be stored
+     * @param value <code>long</code> value to store
+     * @see java.util.List#set
+     */
+    void set(int index, Long value);
+
+    /**
      * Store the identified <code>double</code>
      *
      * @param index Index where the object should be stored
@@ -167,6 +211,15 @@ public interface JsonArray {
      * @see java.util.List#set
      */
     void set(int index, double value);
+
+    /**
+     * Store the identified <code>double</code>
+     *
+     * @param index Index where the object should be stored
+     * @param value <code>double</code> value to store
+     * @see java.util.List#set
+     */
+    void set(int index, Double value);
 
     /**
      * Store the identified String instance.
@@ -232,4 +285,14 @@ public interface JsonArray {
      * @param additionalValues values to add to the current array
      */
     void append(JsonArray additionalValues);
+	
+	/**
+	 * Serialize the object on the output stream
+	 * 
+	 * @param out Output stream
+	 * @param isFollowed <code>true</code> if the object is not the last of its set
+	 * 
+	 * @throws IOException If there is a problem during the serialization
+	 */
+	void toStream(OutputStream out, boolean isFollowed) throws IOException;
 }

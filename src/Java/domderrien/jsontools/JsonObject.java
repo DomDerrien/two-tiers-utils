@@ -1,5 +1,7 @@
 package domderrien.jsontools;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -11,6 +13,7 @@ import java.util.Map;
  * set of typed getters and setters.
  */
 public interface JsonObject {
+	
     /**
      * Returns the number of key-value mappings in this map.
      *
@@ -113,6 +116,24 @@ public interface JsonObject {
     void put(String key, boolean value);
 
     /**
+     * Store the <code>boolean</code> value
+     *
+     * @param key   Data identifier
+     * @param value <code>boolean</code> value to store
+     * @see java.util.Map#put
+     */
+    void put(String key, Boolean value);
+
+    /**
+     * Store the <code>long</code> value
+     *
+     * @param key   Data identifier
+     * @param value <code>long</code> value to store
+     * @see java.util.Map#put
+     */
+    void put(String key, Long value);
+    
+    /**
      * Store the <code>long</code> value
      *
      * @param key   Data identifier
@@ -120,6 +141,15 @@ public interface JsonObject {
      * @see java.util.Map#put
      */
     void put(String key, long value);
+    
+    /**
+     * Store the <code>double</code> value
+     *
+     * @param key   Data identifier
+     * @param value <code>double</code> value to store
+     * @see java.util.Map#put
+     */
+    void put(String key, Double value);
 
     /**
      * Store the <code>double</code> value
@@ -189,4 +219,14 @@ public interface JsonObject {
      * @see java.util.Map#putAll
      */
     void append(JsonObject additionalValues);
+	
+	/**
+	 * Serialize the object on the output stream
+	 * 
+	 * @param out Output stream
+	 * @param isFollowed <code>true</code> if the object is not the last of its set
+	 * 
+	 * @throws IOException If there is a problem during the serialization
+	 */
+	void toStream(OutputStream out, boolean isFollowed) throws IOException;
 }

@@ -1,11 +1,11 @@
 package domderrien.jsontools;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * TODO: Provide documentation
- */
 public class GenericJsonArray implements JsonArray {
     protected List<Object> arrayList = null;
 
@@ -14,6 +14,24 @@ public class GenericJsonArray implements JsonArray {
      */
     public GenericJsonArray() {
         arrayList = new ArrayList<Object>();
+    }
+
+    /**
+     * Constructor made of an existing list
+     */
+    public GenericJsonArray(List<Object> list) {
+        arrayList = list;
+    }
+
+    /**
+     * Constructor made of an existing array
+     */
+    public GenericJsonArray(Object[] list) {
+        int limit = list.length;
+        arrayList = new ArrayList<Object>(limit);
+        for (int i = 0; i < limit; ++i) {
+            arrayList.add(list[i]);
+        }
     }
 
     @Override
@@ -76,7 +94,11 @@ public class GenericJsonArray implements JsonArray {
     }
 
     public long getLong(int index) {
-        return ((Double) getObject(index)).longValue();
+        Object value = getObject(index);
+        if (value instanceof Double) {
+            return ((Double) getObject(index)).longValue();
+        }
+        return ((Long) getObject(index)).longValue();
     }
 
     public double getDouble(int index) {
@@ -100,7 +122,7 @@ public class GenericJsonArray implements JsonArray {
     }
 
     /** @see java.util.List#add  */
-    protected void add(Object object) {
+    protected void addObject(Object object) {
         arrayList.add(object);
     }
 
@@ -108,32 +130,44 @@ public class GenericJsonArray implements JsonArray {
         add(value ? Boolean.TRUE : Boolean.FALSE);
     }
 
+    public void add(Boolean value) {
+        addObject(value);
+    }
+
     public void add(long value) {
-        add(new Double(value));
+        add(Long.valueOf(value));
+    }
+
+    public void add(Long value) {
+        addObject(value);
     }
 
     public void add(double value) {
-        add(new Double(value));
+        add(Double.valueOf(value));
+    }
+
+    public void add(Double value) {
+        addObject(value);
     }
 
     public void add(String value) {
-        add((Object) value);
+        addObject(value);
     }
 
     public void add(JsonObject value) {
-        add((Object) value);
+        addObject(value);
     }
 
     public void add(JsonArray value) {
-        add((Object) value);
+        addObject(value);
     }
 
     public void add(JsonException value) {
-        add((Object) value);
+        addObject(value);
     }
 
     /** @see java.util.List#set */
-    protected void set(int index, Object object) {
+    protected void setObject(int index, Object object) {
         if (index == arrayList.size()) {
             arrayList.add(object);
             return;
@@ -145,28 +179,40 @@ public class GenericJsonArray implements JsonArray {
         set(index, value ? Boolean.TRUE : Boolean.FALSE);
     }
 
+    public void set(int index, Boolean value) {
+        setObject(index, value);
+    }
+
     public void set(int index, long value) {
-        set(index, new Double(value));
+        set(index, Long.valueOf(value));
+    }
+
+    public void set(int index, Long value) {
+        setObject(index, value);
     }
 
     public void set(int index, double value) {
-        set(index, new Double(value));
+        set(index, Double.valueOf(value));
+    }
+
+    public void set(int index, Double value) {
+        setObject(index, value);
     }
 
     public void set(int index, String value) {
-        set(index, (Object) value);
+        setObject(index, value);
     }
 
     public void set(int index, JsonObject value) {
-        set(index, (Object) value);
+        setObject(index, value);
     }
 
     public void set(int index, JsonArray value) {
-        set(index, (Object) value);
+        setObject(index, value);
     }
 
     public void set(int index, JsonException value) {
-        set(index, (Object) value);
+        setObject(index, value);
     }
 
     public void remove(int index) {
@@ -184,4 +230,31 @@ public class GenericJsonArray implements JsonArray {
     public void append(JsonArray additionalValues) {
         arrayList.addAll(additionalValues.getList());
     }
+
+	public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+		Iterator<Object> it = arrayList.iterator();
+        JsonSerializer.startArray(out);
+		while (it.hasNext()) {
+			Object value = it.next();
+			if (value instanceof Boolean) {
+				JsonSerializer.toStream(((Boolean) value).booleanValue(), out, it.hasNext());
+			}
+			else if (value instanceof Long) {
+				JsonSerializer.toStream(((Long) value).longValue(), out, it.hasNext());
+			}
+			else if (value instanceof Double) {
+				JsonSerializer.toStream(((Double) value).doubleValue(), out, it.hasNext());
+			}
+			else if (value instanceof String) {
+				JsonSerializer.toStream((String) value, out, it.hasNext());
+			}
+			else if (value instanceof JsonObject) {
+				((JsonObject) value).toStream(out, it.hasNext());
+			}
+			else if (value instanceof JsonArray) {
+				((JsonArray) value).toStream(out, it.hasNext());
+			}
+		}
+        JsonSerializer.endArray(out, isFollowed);
+	}
 }
