@@ -12,8 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 
-import domderrien.MockHttpServletRequest;
-import domderrien.MockHttpSession;
+import domderrien.mocks.MockHttpServletRequest;
+import domderrien.mocks.MockHttpSession;
 
 public class TTestLocaleController {
 

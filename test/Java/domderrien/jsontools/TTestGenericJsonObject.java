@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import domderrien.MockLogger;
-import domderrien.MockOutputStream;
+import domderrien.mocks.MockLogger;
+import domderrien.mocks.MockOutputStream;
 
 public class TTestGenericJsonObject {
 

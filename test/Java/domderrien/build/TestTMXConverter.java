@@ -26,7 +26,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
-
 public class TestTMXConverter extends TestCase {
 
 	class MockOutputStream extends OutputStream {

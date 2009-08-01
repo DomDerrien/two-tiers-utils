@@ -1,4 +1,4 @@
-package domderrien;
+package domderrien.mocks;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;

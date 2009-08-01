@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import domderrien.MockOutputStream;
+import domderrien.mocks.MockOutputStream;
 
 public class TTestJsonException {
 

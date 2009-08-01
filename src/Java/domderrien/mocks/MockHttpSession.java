@@ -1,4 +1,4 @@
-package domderrien;
+package domderrien.mocks;
 
 import java.util.Enumeration;
 

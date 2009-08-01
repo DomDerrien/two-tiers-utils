@@ -8,8 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import domderrien.MockInputStream;
-import domderrien.MockLogger;
+import domderrien.mocks.MockInputStream;
+import domderrien.mocks.MockLogger;
 
 public class TTestJsonParser {
 

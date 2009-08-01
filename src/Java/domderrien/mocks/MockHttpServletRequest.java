@@ -1,4 +1,4 @@
-package domderrien;
+package domderrien.mocks;
 
 import java.io.BufferedReader;
 import java.io.IOException;
