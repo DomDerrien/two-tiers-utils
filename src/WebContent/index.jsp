@@ -6,8 +6,7 @@
     import="java.util.Locale"
     import="domderrien.i18n.LabelExtractor"
     import="domderrien.i18n.LocaleController"
-%>
-<%
+%><%
     // Visual theme selection
     String visualTheme = request.getParameter("visualTheme");
     if (visualTheme == null || visualTheme.length() == 0 || (!"soria".equals(visualTheme) && !"nihilo".equals(visualTheme))) {
@@ -15,7 +14,7 @@
     }
 
     response.sendRedirect("/domderrien/@dd2tu.stageId@/protected/");
-%>
+%><html>
 <head>
     <title><%= LabelExtractor.get("dd2tu_applicationName", LocaleController.DEFAULT_LOCALE) %></title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF8" />

@@ -63,14 +63,18 @@
 		<delete includeemptydirs="yes" failonerror="no">
 			<fileset dir="${basedir}">
 				<exclude name="bin" />
+				<include name="bin/instrumented/**" />
+				<include name="bin/classes/**" />
+				<include name="bin/jsunit/**" />
 				<exclude name="build" />
 				<exclude name="deps" />
+				<exclude name="dist" />
 				<exclude name="docs" />
 				<include name="docs/generated-doc/**/*" />
 				<include name="docs/test-reports/**/*" />
 				<exclude name="src" />
 				<include name="src/WebContent/js/dojo/**/*" />
-				<include name="src/WebContent/js/domderrien/i18n/nls/**/*" />
+				<!--include name="src/WebContent/js/domderrien/i18n/nls/**/*" /--> <!-- Need to stay  because exported -->
 				<exclude name="test" />
 			</fileset>
 			<fileset dir="${temp.dir}/stage" includes="**/*" />

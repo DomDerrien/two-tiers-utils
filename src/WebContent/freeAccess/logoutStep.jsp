@@ -7,8 +7,7 @@
     import="java.util.Locale"
     import="domderrien.i18n.LabelExtractor"
     import="domderrien.i18n.LocaleController"
-%>
-<%
+%><%
     // Locale detection
     Locale locale = LocaleController.getLocale(request);
 
@@ -21,8 +20,7 @@
     // Session termination
     session.invalidate();
     response.sendRedirect("/domderrien/@dd2tu.stageId@/protected/");
-%>
-<html>
+%><html>
 <head>
     <title><%= LabelExtractor.get("dd2tu_applicationName", LocaleController.DEFAULT_LOCALE) %></title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF8" />
