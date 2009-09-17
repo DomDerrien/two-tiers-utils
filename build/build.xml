@@ -16,7 +16,7 @@
 		description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
 		value="${basedir}${file.separator}bin${file.separator}temp" />
 
-	<property name="dd2tu.release" description="Planned release of this build" value="0.8" />
+	<property name="dd2tu.release" description="Planned release of this build" value="0.8.1" />
 
 	<property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -94,7 +94,7 @@
 		<antcall target="step-jsdoc-unzip" />
 	</target>
 
-	<target name="compile" description="compile the application" depends="step-info-get">
+	<target name="compile" description="compile the application" depends="step-info-get, step-file-format">
 		<echo>Target: compile</echo>
 		<!-- Verify JavaScript code -->
 		<!-- TODO: use JSLint -->
@@ -245,6 +245,44 @@
 		</echo>
 	</target>
 
+	<target name="step-file-format">
+		<fixcrlf
+			eof="remove"
+			eol="crlf"
+			excludes="**/dojo/**/*.*"
+			includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+			srcdir="src"
+			tab="remove"
+			tablength="4"
+		/>
+		<fixcrlf
+			eof="remove"
+			eol="crlf"
+			excludes="**/dojo/**/*.*"
+			includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+			srcdir="test"
+			tab="remove"
+			tablength="4"
+		/>
+		<replaceregexp byline="true" flags="gm">
+			<regexp pattern="\s+$" />
+			<substitution expression=""/>
+			<fileset
+				dir="src"
+				excludes="**/dojo/**/*.*"
+				includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+			/>
+		</replaceregexp>
+		<replaceregexp byline="true" flags="gm">
+			<regexp pattern="\s+$" />
+			<substitution expression=""/>
+			<fileset
+				dir="test"
+				excludes="**/dojo/**/*.*"
+				includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+			/>
+		</replaceregexp>
+	</target>
 
 	<target name="step-dojo-unzip" unless="dojo.already.expanded">
 		<delete dir="src/WebContent/js/dojo" includeemptydirs="true" />
@@ -392,7 +430,7 @@
 		<jar destfile="dist/domderrien-${dd2tu.release}.jar">
 			<fileset dir="bin/classes">
 				<exclude name="**/Test*.class" />
-				<exclude name="**/Mock*.class" />
+				<!--exclude name="**/Mock*.class" /-->
 			</fileset>
 			<fileset dir="${temp.dir}/resources" />
 			<fileset dir="src/resources">

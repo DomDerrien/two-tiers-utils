@@ -4,9 +4,9 @@ import org.junit.Test;
 
 public class TTestJsonDelimiters {
 
-	@Test
-	public void testJsonDelimiters() {
-		new JsonDelimiters();
-	}
+    @Test
+    public void testJsonDelimiters() {
+        new JsonDelimiters();
+    }
 
 }

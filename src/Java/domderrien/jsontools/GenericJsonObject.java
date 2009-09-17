@@ -58,29 +58,29 @@ public class GenericJsonObject implements JsonObject {
                 output.append(((GenericJsonArray) value).toString(index + 1));
             }
             else if (value instanceof String) {
-            	output.append("String: ");
+                output.append("String: ");
                 output.append("\"").append(value).append("\"");
             }
             else if (value instanceof String[]) {
-            	output.append("String[]: ");
-            	String[] arrayOfStrings = (String[]) value;
-            	int limit = arrayOfStrings.length;
-            	if (limit == 0) {
-            		output.append("null");
-            	}
-            	else if (limit == 1) {
-            		output.append("\"").append(arrayOfStrings[0]).append("\"");
-            	}
-            	else {
-    				output.append("[");
-            		for (int i=0; i<limit; i++) {
-            			output.append("\"").append(arrayOfStrings[i]).append("\"");
-            			if (i != limit - 1) {
-            				output.append(",");
-            			}
-            		}
-    				output.append("]");
-            	}
+                output.append("String[]: ");
+                String[] arrayOfStrings = (String[]) value;
+                int limit = arrayOfStrings.length;
+                if (limit == 0) {
+                    output.append("null");
+                }
+                else if (limit == 1) {
+                    output.append("\"").append(arrayOfStrings[0]).append("\"");
+                }
+                else {
+                    output.append("[");
+                    for (int i=0; i<limit; i++) {
+                        output.append("\"").append(arrayOfStrings[i]).append("\"");
+                        if (i != limit - 1) {
+                            output.append(",");
+                        }
+                    }
+                    output.append("]");
+                }
             }
             else {
                 output.append(value);
@@ -115,13 +115,13 @@ public class GenericJsonObject implements JsonObject {
         Object value = getObject(key);
         Boolean typedValue = Boolean.FALSE;
         if (value instanceof String[]) {
-        	String[] arrayOfStrings = (String[]) value;
-        	if (0 < arrayOfStrings.length) {
-        		typedValue = Boolean.parseBoolean(arrayOfStrings[0]);
-        	}
+            String[] arrayOfStrings = (String[]) value;
+            if (0 < arrayOfStrings.length) {
+                typedValue = Boolean.parseBoolean(arrayOfStrings[0]);
+            }
         }
         else {
-        	typedValue = (Boolean) value; 
+            typedValue = (Boolean) value;
         }
         return Boolean.TRUE.equals(typedValue);
     }
@@ -130,22 +130,22 @@ public class GenericJsonObject implements JsonObject {
         Object value = getObject(key);
         Long typedValue = 0L;
         if (value instanceof String[]) {
-        	String[] arrayOfStrings = (String[]) value;
-        	if (0 < arrayOfStrings.length) {
-        		typedValue = Long.parseLong(arrayOfStrings[0]);
-        	}
+            String[] arrayOfStrings = (String[]) value;
+            if (0 < arrayOfStrings.length) {
+                typedValue = Long.parseLong(arrayOfStrings[0]);
+            }
         }
         else {
-        	if (value == null) {
-        		typedValue = 0L;
-        	}
-        	else if (value instanceof Long) {
-        		typedValue = (Long) value;
-        	}
-        	else { // if (value instanceof Double) {
-        		// Because the JsonParser generates Double instances
-        		typedValue = ((Double) value).longValue();
-        	}
+            if (value == null) {
+                typedValue = 0L;
+            }
+            else if (value instanceof Long) {
+                typedValue = (Long) value;
+            }
+            else { // if (value instanceof Double) {
+                // Because the JsonParser generates Double instances
+                typedValue = ((Double) value).longValue();
+            }
         }
         return typedValue.longValue();
     }
@@ -154,13 +154,13 @@ public class GenericJsonObject implements JsonObject {
         Object value = getObject(key);
         Double typedValue = 0.0D;
         if (value instanceof String[]) {
-        	String[] arrayOfStrings = (String[]) value;
-        	if (0 < arrayOfStrings.length) {
-        		typedValue = Double.parseDouble(arrayOfStrings[0]);
-        	}
+            String[] arrayOfStrings = (String[]) value;
+            if (0 < arrayOfStrings.length) {
+                typedValue = Double.parseDouble(arrayOfStrings[0]);
+            }
         }
         else {
-        	typedValue = value == null ? 0.0D : (Double) value; 
+            typedValue = value == null ? 0.0D : (Double) value;
         }
         return typedValue.doubleValue();
     }
@@ -169,11 +169,11 @@ public class GenericJsonObject implements JsonObject {
         Object value = getObject(key);
         String typedValue = null;
         if (value instanceof String[]) {
-        	String[] arrayOfStrings = (String[]) value;
-        	typedValue = arrayOfStrings.length == 0 ? null : arrayOfStrings[0];
+            String[] arrayOfStrings = (String[]) value;
+            typedValue = arrayOfStrings.length == 0 ? null : arrayOfStrings[0];
         }
         else {
-        	typedValue = (String) value;
+            typedValue = (String) value;
         }
         return typedValue;
     }
@@ -181,7 +181,7 @@ public class GenericJsonObject implements JsonObject {
     public JsonObject getJsonObject(String key) throws ClassCastException {
         Object value = getObject(key);
         if (value instanceof String[]) {
-        	throw new ClassCastException("Cannot extract a JsonObject from an array of String instance");
+            throw new ClassCastException("Cannot extract a JsonObject from an array of String instance");
         }
         return (JsonObject) value;
     }
@@ -190,14 +190,14 @@ public class GenericJsonObject implements JsonObject {
         Object value = getObject(key);
         JsonArray typedValue = null;
         if (value instanceof String[]) {
-        	String[] arrayOfStrings = (String[]) value;
-        	typedValue = new GenericJsonArray();
-        	for (int i=0; i<arrayOfStrings.length; i++) {
-        		typedValue.add(arrayOfStrings[i]);
-        	}
+            String[] arrayOfStrings = (String[]) value;
+            typedValue = new GenericJsonArray();
+            for (int i=0; i<arrayOfStrings.length; i++) {
+                typedValue.add(arrayOfStrings[i]);
+            }
         }
         else {
-        	typedValue = (JsonArray) value; 
+            typedValue = (JsonArray) value;
         }
         return typedValue;
     }
@@ -263,33 +263,33 @@ public class GenericJsonObject implements JsonObject {
         hashMap.putAll(additionalValues.getMap());
     }
 
-	public void toStream(OutputStream out, boolean isFollowed) throws IOException {
-		Iterator<String> it = hashMap.keySet().iterator();
+    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+        Iterator<String> it = hashMap.keySet().iterator();
         JsonSerializer.startObject(out);
-		while (it.hasNext()) {
-			String key = it.next();
-			Object value = hashMap.get(key);
-			if (value instanceof Boolean) {
-				JsonSerializer.toStream(key, ((Boolean) value).booleanValue(), out, it.hasNext());
-			}
-			else if (value instanceof Long) {
-				JsonSerializer.toStream(key, ((Long) value).longValue(), out, it.hasNext());
-			}
-			else if (value instanceof Double) {
-				JsonSerializer.toStream(key, ((Double) value).doubleValue(), out, it.hasNext());
-			}
-			else if (value instanceof String) {
-				JsonSerializer.toStream(key, (String) value, out, it.hasNext());
-			}
-			else if (value instanceof JsonObject) {
-				JsonSerializer.introduceComplexValue(key, out);
-				((JsonObject) value).toStream(out, it.hasNext());
-			}
-			else if (value instanceof JsonArray) {
-				JsonSerializer.introduceComplexValue(key, out);
-				((JsonArray) value).toStream(out, it.hasNext());
-			}
-		}
+        while (it.hasNext()) {
+            String key = it.next();
+            Object value = hashMap.get(key);
+            if (value instanceof Boolean) {
+                JsonSerializer.toStream(key, ((Boolean) value).booleanValue(), out, it.hasNext());
+            }
+            else if (value instanceof Long) {
+                JsonSerializer.toStream(key, ((Long) value).longValue(), out, it.hasNext());
+            }
+            else if (value instanceof Double) {
+                JsonSerializer.toStream(key, ((Double) value).doubleValue(), out, it.hasNext());
+            }
+            else if (value instanceof String) {
+                JsonSerializer.toStream(key, (String) value, out, it.hasNext());
+            }
+            else if (value instanceof JsonObject) {
+                JsonSerializer.introduceComplexValue(key, out);
+                ((JsonObject) value).toStream(out, it.hasNext());
+            }
+            else if (value instanceof JsonArray) {
+                JsonSerializer.introduceComplexValue(key, out);
+                ((JsonArray) value).toStream(out, it.hasNext());
+            }
+        }
         JsonSerializer.endObject(out, isFollowed);
-	}
+    }
 }

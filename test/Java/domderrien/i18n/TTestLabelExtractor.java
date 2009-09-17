@@ -29,9 +29,9 @@ public class TTestLabelExtractor {
         };
         protected Object[][] getContents() {
             return contents;
-        }        
+        }
     }
-   
+
     MockResourceBundle mock = new MockResourceBundle();
 
     @Before
@@ -94,7 +94,7 @@ public class TTestLabelExtractor {
         assertEquals(mock.getString(mock.LABEL_10), LabelExtractor.get(mock.LABEL_0, Locale.US));
         assertEquals(mock.getString(mock.LABEL_11), LabelExtractor.get(mock.LABEL_1, Locale.US));
     }
-   
+
     @Test
     public void testGetII() {
         LabelExtractor.setResourceBundle(mock, Locale.US);
@@ -136,7 +136,7 @@ public class TTestLabelExtractor {
     public void testGetVI() {
         assertEquals("", LabelExtractor.get("", Locale.US));
     }
-   
+
     @Test
     public void testInsertParametersI() {
         assertEquals("test", LabelExtractor.insertParameters("{0}", new Object[] { "test" } ));

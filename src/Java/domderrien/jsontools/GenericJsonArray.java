@@ -231,30 +231,30 @@ public class GenericJsonArray implements JsonArray {
         arrayList.addAll(additionalValues.getList());
     }
 
-	public void toStream(OutputStream out, boolean isFollowed) throws IOException {
-		Iterator<Object> it = arrayList.iterator();
+    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+        Iterator<Object> it = arrayList.iterator();
         JsonSerializer.startArray(out);
-		while (it.hasNext()) {
-			Object value = it.next();
-			if (value instanceof Boolean) {
-				JsonSerializer.toStream(((Boolean) value).booleanValue(), out, it.hasNext());
-			}
-			else if (value instanceof Long) {
-				JsonSerializer.toStream(((Long) value).longValue(), out, it.hasNext());
-			}
-			else if (value instanceof Double) {
-				JsonSerializer.toStream(((Double) value).doubleValue(), out, it.hasNext());
-			}
-			else if (value instanceof String) {
-				JsonSerializer.toStream((String) value, out, it.hasNext());
-			}
-			else if (value instanceof JsonObject) {
-				((JsonObject) value).toStream(out, it.hasNext());
-			}
-			else if (value instanceof JsonArray) {
-				((JsonArray) value).toStream(out, it.hasNext());
-			}
-		}
+        while (it.hasNext()) {
+            Object value = it.next();
+            if (value instanceof Boolean) {
+                JsonSerializer.toStream(((Boolean) value).booleanValue(), out, it.hasNext());
+            }
+            else if (value instanceof Long) {
+                JsonSerializer.toStream(((Long) value).longValue(), out, it.hasNext());
+            }
+            else if (value instanceof Double) {
+                JsonSerializer.toStream(((Double) value).doubleValue(), out, it.hasNext());
+            }
+            else if (value instanceof String) {
+                JsonSerializer.toStream((String) value, out, it.hasNext());
+            }
+            else if (value instanceof JsonObject) {
+                ((JsonObject) value).toStream(out, it.hasNext());
+            }
+            else if (value instanceof JsonArray) {
+                ((JsonArray) value).toStream(out, it.hasNext());
+            }
+        }
         JsonSerializer.endArray(out, isFollowed);
-	}
+    }
 }

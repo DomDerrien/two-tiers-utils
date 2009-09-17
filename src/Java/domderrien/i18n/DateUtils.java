@@ -9,25 +9,28 @@ import java.util.GregorianCalendar;
 
 public class DateUtils {
 
-	/**
-	 * Get the current date for the local time zone
-	 * @return Current date/time
-	 */
-	public static Calendar getNowCalendar() {
-		return new GregorianCalendar();
-	}
+    /**
+     * Get the current date for the local time zone
+     * @return Current date/time
+     */
+    public static Calendar getNowCalendar() {
+        return new GregorianCalendar();
+    }
 
-	/**
-	 * Get the current date for the local time zone
-	 * @return Current date/time
-	 */
-	public static Date getNowDate() {
-		return getNowCalendar().getTime();
-	}
-	
+    /**
+     * Get the current date for the local time zone
+     * @return Current date/time
+     */
+    public static Date getNowDate() {
+        return getNowCalendar().getTime();
+    }
+
     // This is the ISO format for Dojo application
     private static final DateFormat isoFormatter = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss");
-    
+
+    // This is the ISO format for Dojo application
+    private static final DateFormat ymdFormatter = new SimpleDateFormat ("yyyy-MM-dd");
+
     /**
      * Transform the given date in an ISO formatted string
      * @param timeInMilliseconds date to transform
@@ -36,7 +39,7 @@ public class DateUtils {
     public static String millisecondsToISO(long timeInMilliseconds) {
         return dateToISO(new Date(timeInMilliseconds));
     }
-    
+
     /**
      * Transform the given date in an ISO formatted string
      * @param date date to transform
@@ -45,7 +48,16 @@ public class DateUtils {
     public static String dateToISO(Date date) {
         return isoFormatter.format(date);
     }
-    
+
+    /**
+     * Transform the given date in an YYYY-MM-DD formatted string
+     * @param date date to transform
+     * @return YYYY-MM-DD representation of the given date
+     */
+    public static String dateToYMD(Date date) {
+        return ymdFormatter.format(date);
+    }
+
     /**
      * Extract the date represented by the given ISO string
      * @param iso ISO representation of a date
@@ -55,7 +67,7 @@ public class DateUtils {
     public static long isoToMilliseconds(String iso) throws ParseException {
         return isoToDate(iso).getTime();
     }
-    
+
     /**
      * Extract the date represented by the given ISO string
      * @param iso ISO representation of a date
@@ -69,5 +81,5 @@ public class DateUtils {
         isoFormatter.setCalendar(new GregorianCalendar());
         return isoFormatter.parse(iso);
     }
-    
+
 }

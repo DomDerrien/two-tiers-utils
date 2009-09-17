@@ -5,7 +5,7 @@
 //   to update accordingly the exposeTestFunctionNames() function!
 //
 function exposeTestFunctionNames() {
-	return [
+    return [
         "testIsDigitI",
         "testIsDigitII",
         "testIsDigitIII"
@@ -13,46 +13,46 @@ function exposeTestFunctionNames() {
 }
 
 function jscoverageRunner() {
-	var testTitle = "TestStringUtils.js";
-	var libDeps = ["domderrien.utils.StringUtils"];
-	var testFunctions = exposeTestFunctionNames();
-	
-	jscoverageProcessor(testTitle, libDeps, testFunctions);
+    var testTitle = "TestStringUtils.js";
+    var libDeps = ["domderrien.utils.StringUtils"];
+    var testFunctions = exposeTestFunctionNames();
+
+    jscoverageProcessor(testTitle, libDeps, testFunctions);
 }
 
 // JSUnit framework function
 function setUp() {
-	// NOP
+    // NOP
 }
 
 // JSUnit framework function
 function tearDown() {
-	// NOP
+    // NOP
 }
 ////////////// Required header - end////////////////////////////////
 function testIsDigitI() {
-	var samples = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-	var idx = samples.length;
-	while (0 < idx) {
-		-- idx;
-		assertTrue(domderrien.utils.StringUtils.isDigit(samples[idx]));
-	}
+    var samples = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var idx = samples.length;
+    while (0 < idx) {
+        -- idx;
+        assertTrue(domderrien.utils.StringUtils.isDigit(samples[idx]));
+    }
 }
 
 function testIsDigitII() {
-	var samples = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-	var idx = samples.length;
-	while (0 < idx) {
-		-- idx;
-		assertTrue(domderrien.utils.StringUtils.isDigit(samples[idx]));
-	}
+    var samples = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    var idx = samples.length;
+    while (0 < idx) {
+        -- idx;
+        assertTrue(domderrien.utils.StringUtils.isDigit(samples[idx]));
+    }
 }
 
 function testIsDigitIII() {
-	var samples = ["a", "Z", "�", "%", true, [0, 1, 2, 3], {1: 1, 2: 2}];
-	var idx = samples.length;
-	while (0 < idx) {
-		-- idx;
-		assertFalse(domderrien.utils.StringUtils.isDigit(samples[idx]));
-	}
+    var samples = ["a", "Z", "�", "%", true, [0, 1, 2, 3], {1: 1, 2: 2}];
+    var idx = samples.length;
+    while (0 < idx) {
+        -- idx;
+        assertFalse(domderrien.utils.StringUtils.isDigit(samples[idx]));
+    }
 }

@@ -15,37 +15,37 @@ import domderrien.mocks.MockOutputStream;
 
 public class TTestGenericJsonArray {
 
-	MockLogger logger = new MockLogger("test", null);
+    MockLogger logger = new MockLogger("test", null);
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
-	@SuppressWarnings("unchecked")
+    @Test
+    @SuppressWarnings("unchecked")
     public void testConstructorI() throws JsonException {
         new GenericJsonArray(new ArrayList());
     }
 
-	@Test
+    @Test
     public void testExtractFromEmptyObjectI() throws JsonException {
         JsonParser p = new JsonParser("[]", logger);
         JsonArray o1 = p.getJsonArray();
         assertEquals("Attribute #", 0, o1.size());
     }
 
-	@Test
+    @Test
     public void testExtractFromEmptyObjectII() throws JsonException {
         JsonParser p = new JsonParser(" []", logger);
         JsonArray o1 = p.getJsonArray();
         assertEquals("Attribute #", 0, o1.size());
     }
 
-	@Test
+    @Test
     public void testExtractFromEmptyObjectIII() throws JsonException {
         JsonParser p = new JsonParser("[] ", logger);
         JsonArray o1 = p.getJsonArray();
@@ -201,7 +201,7 @@ public class TTestGenericJsonArray {
         assertEquals(o.getJsonException(1), o1);
     }
 
-	@Test
+    @Test
     public void testGettersAndSetters() throws JsonException {
         JsonArray o = new GenericJsonArray();
         GenericJsonObject o1 = new GenericJsonObject();
@@ -336,25 +336,25 @@ public class TTestGenericJsonArray {
         assertEquals("Fourth element should be 2", 2, o1.getLong(3));
         assertEquals("Fifth element should be a JsonArrayInstance", o3, o1.getJsonArray(4));
     }
-    
-	@Test
+
+    @Test
     @SuppressWarnings("unchecked")
     public void testToStream() throws IOException {
-    	List list = new ArrayList();
-    	list.add(Boolean.TRUE);
-    	list.add("test");
-    	list.add(Long.valueOf(1l));
-    	list.add(Double.valueOf(1f));
-    	list.add(new GenericJsonObject());
-    	list.add(new GenericJsonArray());
-    	MockOutputStream stream = new MockOutputStream();
-    	new GenericJsonArray(list).toStream(stream, true);
-    	assertTrue(stream.getStream().contains("true"));
-    	assertTrue(stream.getStream().contains("'test'"));
-    	assertTrue(stream.getStream().contains("1"));
-    	assertTrue(stream.getStream().contains("1.0"));
-    	assertTrue(stream.getStream().contains("{}"));
-    	assertTrue(stream.getStream().contains("[]"));
+        List list = new ArrayList();
+        list.add(Boolean.TRUE);
+        list.add("test");
+        list.add(Long.valueOf(1l));
+        list.add(Double.valueOf(1f));
+        list.add(new GenericJsonObject());
+        list.add(new GenericJsonArray());
+        MockOutputStream stream = new MockOutputStream();
+        new GenericJsonArray(list).toStream(stream, true);
+        assertTrue(stream.getStream().contains("true"));
+        assertTrue(stream.getStream().contains("'test'"));
+        assertTrue(stream.getStream().contains("1"));
+        assertTrue(stream.getStream().contains("1.0"));
+        assertTrue(stream.getStream().contains("{}"));
+        assertTrue(stream.getStream().contains("[]"));
     }
 
     // See JsonObjectTranferTest.java for collection of {key; value} pairs tokenizing

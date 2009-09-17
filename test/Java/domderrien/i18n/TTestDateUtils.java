@@ -30,6 +30,7 @@ public class TTestDateUtils {
     public void testDateToISO() {
         Date date = new GregorianCalendar(2008, 0, 23, 1, 23, 45).getTime();
         String computedDate = DateUtils.dateToISO(date);
+        assertEquals(19, computedDate.length());
         String[] dateParts = computedDate.split("T")[0].split("-");
         String[] timeParts = computedDate.split("T")[1].split(":");
         assertEquals("2008", dateParts[0]);
@@ -38,6 +39,17 @@ public class TTestDateUtils {
         assertEquals("01", timeParts[0]);
         assertEquals("23", timeParts[1]);
         assertEquals("45", timeParts[2]);
+    }
+
+    @Test
+    public void testDateToYMD() {
+        Date date = new GregorianCalendar(2008, 0, 23, 1, 23, 45).getTime();
+        String computedDate = DateUtils.dateToISO(date);
+        assertEquals(10, computedDate.length());
+        String[] dateParts = computedDate.split("-");
+        assertEquals("2008", dateParts[0]);
+        assertEquals("01", dateParts[1]);
+        assertEquals("23", dateParts[2]);
     }
 
     @Test

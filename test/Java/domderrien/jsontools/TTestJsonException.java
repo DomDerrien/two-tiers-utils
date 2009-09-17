@@ -10,14 +10,14 @@ import domderrien.mocks.MockOutputStream;
 
 public class TTestJsonException {
 
-	@Test
-	public void testGetExceptionId() {
+    @Test
+    public void testGetExceptionId() {
         JsonException ex1 = new JsonException("Unexpected error");
         JsonException ex2 = new JsonException("Unexpected error");
         assertTrue("Following exception index should be greater", ex1.getExceptionId() < ex2.getExceptionId());
     }
 
-	@Test
+    @Test
     public void testJsonExceptionI() {
         String exceptionType = "Unexpected error";
         String message = "test message";
@@ -26,7 +26,7 @@ public class TTestJsonException {
         assertEquals("Message should be the given message", message, o.getMessage());
     }
 
-	@Test
+    @Test
     public void testJsonExceptionII() {
         String exceptionType = "Unexpected error";
         String message = null;
@@ -35,7 +35,7 @@ public class TTestJsonException {
         assertEquals("Message should be the given type", exceptionType, o.getMessage());
     }
 
-	@Test
+    @Test
     public void testJsonExceptionIII() {
         String exceptionType = "Unexpected error";
         String message = "test message";
@@ -44,23 +44,23 @@ public class TTestJsonException {
         assertTrue("Message should be the given message", o.getMessage().contains(message));
     }
 
-	@Test
+    @Test
     public void testToStringI() {
-		new JsonException("type", "message", new RuntimeException("exception")).toString();
+        new JsonException("type", "message", new RuntimeException("exception")).toString();
     }
 
-	@Test
+    @Test
     public void testGetMapI() {
-		new JsonException("type", "message", new RuntimeException("exception")).getMap();
+        new JsonException("type", "message", new RuntimeException("exception")).getMap();
     }
 
-	@Test
+    @Test
     public void testIsNonNullI() {
-		JsonException o = new JsonException("type", "message", new RuntimeException("exception"));
-		assertTrue(o.isNonNull("exceptionType"));
+        JsonException o = new JsonException("type", "message", new RuntimeException("exception"));
+        assertTrue(o.isNonNull("exceptionType"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersI() {
         JsonException o = new JsonException("Unexpected error");
         o.put("a", true);
@@ -69,7 +69,7 @@ public class TTestJsonException {
         assertEquals(false, o.getBoolean("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersII() {
         JsonException o = new JsonException("Unexpected error");
         o.put("a", 1235);
@@ -78,7 +78,7 @@ public class TTestJsonException {
         assertEquals(-785613212, o.getLong("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersIII() {
         JsonException o = new JsonException("Unexpected error");
         o.put("a", 12.35);
@@ -87,7 +87,7 @@ public class TTestJsonException {
         assertEquals(-1.454E248, o.getDouble("aa"), 0);
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersIV() {
         JsonObject o1 = new GenericJsonObject();
         JsonObject o2 = new GenericJsonObject();
@@ -98,7 +98,7 @@ public class TTestJsonException {
         assertEquals(o2, o.getJsonObject("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersV() {
         JsonArray o1 = new GenericJsonArray();
         JsonArray o2 = new GenericJsonArray();
@@ -109,7 +109,7 @@ public class TTestJsonException {
         assertEquals(o2, o.getJsonArray("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectGettersSettersVI() {
         JsonException o = new JsonException("Unexpected error");
         o.put("a", o);
@@ -118,7 +118,7 @@ public class TTestJsonException {
         assertEquals(o, o.getJsonException("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectRemoveI() {
         JsonException o = new JsonException("Unexpected error");
         int initialSize = o.size();
@@ -129,7 +129,7 @@ public class TTestJsonException {
         assertFalse(o.containsKey("a"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectRemoveII() {
         JsonException o = new JsonException("Unexpected error");
         int initialSize = o.size();
@@ -140,7 +140,7 @@ public class TTestJsonException {
         assertFalse(o.containsKey("aa"));
     }
 
-	@Test
+    @Test
     public void testJsonObjectRemoveIII() {
         JsonException o = new JsonException("Unexpected error");
         try {
@@ -154,7 +154,7 @@ public class TTestJsonException {
         }
     }
 
-	@Test
+    @Test
     public void testJsonObjectAppend() {
         JsonException o = new JsonException("Unexpected error");
         try {
@@ -167,19 +167,19 @@ public class TTestJsonException {
             fail("No other Exception expected");
         }
     }
-	
-	@Test
-	public void testToStreamI() {
-		MockOutputStream out = new MockOutputStream();
+
+    @Test
+    public void testToStreamI() {
+        MockOutputStream out = new MockOutputStream();
         String exceptionType = "Unexpected error";
         String message = "test message";
         JsonException o = new JsonException(exceptionType, message);
         try {
-			o.toStream(out, false);
-		}
+            o.toStream(out, false);
+        }
         catch (IOException e) {
-			fail("No expected exception");
-		}
+            fail("No expected exception");
+        }
         assertTrue(out.getStream().contains("isException"));
         assertTrue(out.getStream().contains("true"));
         assertTrue(out.getStream().contains("exceptionId"));
@@ -188,19 +188,19 @@ public class TTestJsonException {
         assertTrue(out.getStream().contains("orginalException"));
         assertTrue(out.getStream().contains("[no cause]"));
     }
-	
-	@Test
-	public void testToStreamII() {
-		MockOutputStream out = new MockOutputStream();
+
+    @Test
+    public void testToStreamII() {
+        MockOutputStream out = new MockOutputStream();
         String exceptionType = "Unexpected error";
         String message = "test message";
         JsonException o = new JsonException(exceptionType, new RuntimeException(message));
         try {
-			o.toStream(out, false);
-		}
+            o.toStream(out, false);
+        }
         catch (IOException e) {
-			fail("No expected exception");
-		}
+            fail("No expected exception");
+        }
         assertTrue(out.getStream().contains("isException"));
         assertTrue(out.getStream().contains("true"));
         assertTrue(out.getStream().contains("exceptionId"));
@@ -208,19 +208,19 @@ public class TTestJsonException {
         assertTrue(out.getStream().contains("orginalException"));
         assertTrue(out.getStream().contains(message));
     }
-	
-	@Test
-	public void testToStreamIII() {
-		MockOutputStream out = new MockOutputStream();
+
+    @Test
+    public void testToStreamIII() {
+        MockOutputStream out = new MockOutputStream();
         String exceptionType = "Unexpected error";
         String message = null;
         JsonException o = new JsonException(exceptionType, new RuntimeException(message));
         try {
-			o.toStream(out, false);
-		}
+            o.toStream(out, false);
+        }
         catch (IOException e) {
-			fail("No expected exception");
-		}
+            fail("No expected exception");
+        }
         assertTrue(out.getStream().contains("isException"));
         assertTrue(out.getStream().contains("true"));
         assertTrue(out.getStream().contains("exceptionId"));
@@ -228,5 +228,5 @@ public class TTestJsonException {
         assertTrue(out.getStream().contains("null"));
         assertTrue(out.getStream().contains("orginalException"));
         assertTrue(out.getStream().contains("[no cause message]"));
-	}
+    }
 }

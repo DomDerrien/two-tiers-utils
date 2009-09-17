@@ -5,50 +5,50 @@
 //   to update accordingly the exposeTestFunctionNames() function!
 //
 function exposeTestFunctionNames() {
-	return [
-	        "testExtractorGetI",
-	        "testExtractorGetII",
-	        "testExtractorGetIII",
-	        "testExtractorGetIV"
+    return [
+            "testExtractorGetI",
+            "testExtractorGetII",
+            "testExtractorGetIII",
+            "testExtractorGetIV"
     ];
 }
 
 function jscoverageRunner() {
-	var testTitle = "TestLabelExtractor.js";
-	var libDeps = ["domderrien.i18n.LabelExtractor"];
-	var testFunctions = exposeTestFunctionNames();
-	
-	jscoverageProcessor(testTitle, libDeps, testFunctions);
+    var testTitle = "TestLabelExtractor.js";
+    var libDeps = ["domderrien.i18n.LabelExtractor"];
+    var testFunctions = exposeTestFunctionNames();
+
+    jscoverageProcessor(testTitle, libDeps, testFunctions);
 }
 
 // JSUnit framework function
 function setUp() {
-	// NOP
+    // NOP
 }
 
 // JSUnit framework function
 function tearDown() {
-	// NOP
+    // NOP
 }
 ////////////// Required header - end////////////////////////////////
 
 function testExtractorGetI() {
-	var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "uu_UU"); // Unsupported locale
-	assertEquals("English", lblExtr.get("bundle_language"));
-	assertEquals("N/A", lblExtr.get("unit_test_sample"));
+    var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "uu_UU"); // Unsupported locale
+    assertEquals("English", lblExtr.get("bundle_language"));
+    assertEquals("N/A", lblExtr.get("unit_test_sample"));
 }
 function testExtractorGetII() {
-	var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr"); // Supported locale
-	assertEquals("Français", lblExtr.get("bundle_language"));
-	assertEquals("N/A", lblExtr.get("unit_test_sample"));
+    var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr"); // Supported locale
+    assertEquals("Français", lblExtr.get("bundle_language"));
+    assertEquals("N/A", lblExtr.get("unit_test_sample"));
 }
 function testExtractorGetIII() {
-	var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr_CA"); // Supported locale
-	assertEquals("Français Canadien", lblExtr.get("bundle_language"));
-	assertEquals("N/A", lblExtr.get("unit_test_sample"));
+    var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr_CA"); // Supported locale
+    assertEquals("Français Canadien", lblExtr.get("bundle_language"));
+    assertEquals("N/A", lblExtr.get("unit_test_sample"));
 }
 function testExtractorGetIV() {
-	var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr_BE"); // Unsupported locale
-	assertEquals("Français", lblExtr.get("bundle_language"));
-	assertEquals("N/A", lblExtr.get("unit_test_sample"));
+    var lblExtr = domderrien.i18n.LabelExtractor.init("domderrien.i18n", "domderrien-labels", "fr_BE"); // Unsupported locale
+    assertEquals("Français", lblExtr.get("bundle_language"));
+    assertEquals("N/A", lblExtr.get("unit_test_sample"));
 }

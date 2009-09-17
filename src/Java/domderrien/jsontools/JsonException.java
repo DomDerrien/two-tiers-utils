@@ -193,20 +193,20 @@ public class JsonException extends Exception implements JsonObject {
         throw new UnsupportedOperationException("Some JsonException attributes should not be preserved");
     }
 
-	public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
         JsonSerializer.startObject("success", false, out, true);
         JsonSerializer.toStream("isException", true, out, true);
-		JsonSerializer.toStream("exceptionId", id, out, true);
-		// JsonSerializer.toStream("exceptionType", getExceptionType(), out, true);
-		JsonSerializer.toStream("exceptionMessage", getMessage(), out, true);
-		/** / // This call to printStackTrace() causes a StackOverflowException because of Corbetura instrumentation
+        JsonSerializer.toStream("exceptionId", id, out, true);
+        // JsonSerializer.toStream("exceptionType", getExceptionType(), out, true);
+        JsonSerializer.toStream("exceptionMessage", getMessage(), out, true);
+        /** / // This call to printStackTrace() causes a StackOverflowException because of Corbetura instrumentation
         StringWriter sw = new StringWriter();
         printStackTrace(new PrintWriter(sw));
         JsonSerializer.toStream("exceptionStackTrace", sw.getBuffer().substring(0, 100), out, true);
         /**/
-		// JsonSerializer.introduceComplexValue("originalException", out);
-		// (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
-		String originalMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage();
-		JsonSerializer.endObject("orginalException", originalMessage, out, isFollowed);
-	}
+        // JsonSerializer.introduceComplexValue("originalException", out);
+        // (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
+        String originalMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage();
+        JsonSerializer.endObject("orginalException", originalMessage, out, isFollowed);
+    }
 }

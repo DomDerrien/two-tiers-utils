@@ -285,14 +285,14 @@ public interface JsonArray {
      * @param additionalValues values to add to the current array
      */
     void append(JsonArray additionalValues);
-	
-	/**
-	 * Serialize the object on the output stream
-	 * 
-	 * @param out Output stream
-	 * @param isFollowed <code>true</code> if the object is not the last of its set
-	 * 
-	 * @throws IOException If there is a problem during the serialization
-	 */
-	void toStream(OutputStream out, boolean isFollowed) throws IOException;
+
+    /**
+     * Serialize the object on the output stream
+     *
+     * @param out Output stream
+     * @param isFollowed <code>true</code> if the object is not the last of its set
+     *
+     * @throws IOException If there is a problem during the serialization
+     */
+    void toStream(OutputStream out, boolean isFollowed) throws IOException;
 }

@@ -124,7 +124,7 @@ public class JsonParser {
      * @return Serialized stream
      */
     public CharStream getStream() {
-    	return stream;
+        return stream;
     }
 
     /**
