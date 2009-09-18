@@ -85,17 +85,18 @@
                 <div
                     dojoType="dijit.layout.AccordionPane"
                     href="/@dd2tu.contextRoot@/freeAccess/help/introduction.html"
-                title="<%= LabelExtractor.get("dd2tu_helpIntroductionSectionTitle", locale) %>"
+                    title="<%= LabelExtractor.get("dd2tu_helpIntroductionSectionTitle", locale) %>"
                 ></div>
                 <div
                     dojoType="dijit.layout.AccordionPane"
                     href="/@dd2tu.contextRoot@/freeAccess/help/credits.html"
-                title="<%= LabelExtractor.get("dd2tu_helpCreditsSectionTitle", locale) %>"
+                    title="<%= LabelExtractor.get("dd2tu_helpCreditsSectionTitle", locale) %>"
                 ></div>
                 <div
                     dojoType="dijit.layout.AccordionPane"
                     href="/@dd2tu.contextRoot@/freeAccess/help/contactUs.html"
-                title="<%= LabelExtractor.get("dd2tu_helpContactSectionTitle", locale) %>"
+                    title="<%= LabelExtractor.get("dd2tu_helpContactSectionTitle", locale) %>"
+                ></div>
             </div>
 
         </div>
