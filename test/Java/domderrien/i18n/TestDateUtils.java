@@ -1,15 +1,25 @@
 package domderrien.i18n;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-public class TTestDateUtils {
+public class TestDateUtils {
 
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
 
     @Test
     public void testNewDateUtils() {
@@ -44,7 +54,7 @@ public class TTestDateUtils {
     @Test
     public void testDateToYMD() {
         Date date = new GregorianCalendar(2008, 0, 23, 1, 23, 45).getTime();
-        String computedDate = DateUtils.dateToISO(date);
+        String computedDate = DateUtils.dateToYMD(date);
         assertEquals(10, computedDate.length());
         String[] dateParts = computedDate.split("-");
         assertEquals("2008", dateParts[0]);

@@ -11,7 +11,7 @@ import org.junit.Test;
 import domderrien.mocks.MockLogger;
 import domderrien.mocks.MockOutputStream;
 
-public class TTestJsonSerializer {
+public class TestJsonSerializer {
 
     MockLogger logger = new MockLogger("test", null);
     MockOutputStream stream = new MockOutputStream();

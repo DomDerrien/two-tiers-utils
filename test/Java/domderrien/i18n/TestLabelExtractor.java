@@ -5,11 +5,14 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import domderrien.i18n.LabelExtractor.ResourceFileId;
 import static org.junit.Assert.*;
 
-public class TTestLabelExtractor {
+public class TestLabelExtractor {
 
     class MockResourceBundle extends ListResourceBundle {
         public final String LABEL_0 = "0";   //$NON-NLS-1$
@@ -36,7 +39,11 @@ public class TTestLabelExtractor {
 
     @Before
     public void setUp() throws Exception {
-        LabelExtractor.resetResourceBundleList();
+        LabelExtractor.resetResourceBundleList(ResourceFileId.master);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     @Test
@@ -46,48 +53,62 @@ public class TTestLabelExtractor {
     @Test
     public void testSetResourceBundleI() {
         // Set a resource bundle with a null locale reference
-        LabelExtractor.setResourceBundle(mock, null);
-        assertEquals(mock, LabelExtractor.getResourceBundle(null));
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, null);
+        assertEquals(mock, LabelExtractor.getResourceBundle(ResourceFileId.master, null));
     }
 
     @Test
     public void testSetResourceBundleII() {
         // Set a resource bundle with a non null locale reference
-        LabelExtractor.setResourceBundle(mock, Locale.US);
-        assertEquals(mock, LabelExtractor.getResourceBundle(Locale.US));
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
+        assertEquals(mock, LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.US));
     }
 
     @Test
     public void testSetResourceBundleIII() {
         // Set a resource bundle with a composite locale reference
-        LabelExtractor.setResourceBundle(mock, Locale.CANADA_FRENCH);
-        assertEquals(mock, LabelExtractor.getResourceBundle(Locale.CANADA_FRENCH));
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.CANADA_FRENCH);
+        assertEquals(mock, LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.CANADA_FRENCH));
     }
 
     @Test
     public void testGetResourceBundleI() {
         // Expected to read a English file for the locale en_US => fallback on en
-        ResourceBundle rb = LabelExtractor.getResourceBundle(Locale.US);
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.US);
         assertEquals("English", rb.getString("bundle_language"));
     }
 
     @Test
     public void testGetResourceBundleII() {
-        // Expected to read a English file for the locale fr_CA => fallback on fr
-        ResourceBundle rb = LabelExtractor.getResourceBundle(Locale.CANADA_FRENCH);
-        assertEquals("Fran\ufffdais", rb.getString("bundle_language"));
+        // Expected to read a English file for the locale fr => fr
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.FRENCH);
+        assertEquals("Fran\u00e7ais", rb.getString("bundle_language"));
     }
 
     @Test
     public void testGetResourceBundleIII() {
+        // Expected to read a English file for the locale fr_CA => fr_CA
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.CANADA_FRENCH);
+        assertEquals("Fran\u00e7ais Canadien", rb.getString("bundle_language"));
+    }
+
+    @Test
+    public void testGetResourceBundleIV() {
         // Expected to read a English file for the locale cn => fallback on root
-        ResourceBundle rb = LabelExtractor.getResourceBundle(Locale.TRADITIONAL_CHINESE);
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.master, Locale.TRADITIONAL_CHINESE);
         assertEquals("English", rb.getString("bundle_language"));
     }
 
     @Test
+    public void testGetResourceBundleV() {
+        // Expected to read a English file for the locale fr_BE => fallback on fr
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.master, new Locale("fr", "BE"));
+        assertEquals("Fran\u00e7ais", rb.getString("bundle_language"));
+    }
+
+    @Test
     public void testGetI() {
-        LabelExtractor.setResourceBundle(mock, Locale.US);
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label asked has an entry in the dictionary
         assertEquals(mock.getString(mock.LABEL_0), LabelExtractor.get(mock.LABEL_0, Locale.US));
         assertEquals(mock.getString(mock.LABEL_1), LabelExtractor.get(mock.LABEL_1, Locale.US));
@@ -97,7 +118,7 @@ public class TTestLabelExtractor {
 
     @Test
     public void testGetII() {
-        LabelExtractor.setResourceBundle(mock, Locale.US);
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label asked has NO entry in the dictionary, the key is returned
         try {
             mock.getString(mock.LABEL_12);
@@ -114,7 +135,7 @@ public class TTestLabelExtractor {
 
     @Test
     public void testGetIII() {
-        LabelExtractor.setResourceBundle(mock, Locale.US);
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label asked has an entry in the dictionary
         assertEquals(mock.getString(LabelExtractor.ERROR_MESSAGE_PREFIX + mock.LABEL_0), LabelExtractor.get(0, Locale.US));
         assertEquals(mock.getString(LabelExtractor.ERROR_MESSAGE_PREFIX + mock.LABEL_1), LabelExtractor.get(1, Locale.US));
@@ -122,18 +143,25 @@ public class TTestLabelExtractor {
 
     @Test
     public void testGetIV() {
-        LabelExtractor.setResourceBundle(mock, Locale.US);
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label returned is the given error code because the entry is not in the dictionary
         assertEquals("33", LabelExtractor.get(33, Locale.US));
     }
 
     @Test
     public void testGetV() {
-        assertNull(LabelExtractor.get(null, Locale.US));
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
+        // The label returned is the given error code because the entry is not in the dictionary
+        assertEquals("33", LabelExtractor.get(33, new Object[0], Locale.US));
     }
 
     @Test
     public void testGetVI() {
+        assertNull(LabelExtractor.get(null, Locale.US));
+    }
+
+    @Test
+    public void testGetVII() {
         assertEquals("", LabelExtractor.get("", Locale.US));
     }
 
@@ -152,5 +180,26 @@ public class TTestLabelExtractor {
     @Test
     public void testInsertParametersIII() {
         assertEquals("{1} - {0}", LabelExtractor.get("{1} - {0}", null, Locale.US));
+    }
+
+    @Test
+    public void testGetResourceBundleExtendedI() {
+        LabelExtractor.setResourceBundle(ResourceFileId.second, mock, Locale.US);
+        // The label returned is the given error code because the entry is not in the dictionary
+        assertNotNull(LabelExtractor.getResourceBundle(ResourceFileId.second, Locale.US));
+    }
+
+    @Test
+    public void testGetResourceBundleExtendedII() {
+        LabelExtractor.setResourceBundle(ResourceFileId.third, mock, Locale.US);
+        // The label returned is the given error code because the entry is not in the dictionary
+        assertNotNull(LabelExtractor.getResourceBundle(ResourceFileId.third, Locale.US));
+    }
+
+    @Test
+    public void testGetResourceBundleExtendedIII() {
+        LabelExtractor.setResourceBundle(ResourceFileId.fourth, mock, Locale.US);
+        // The label returned is the given error code because the entry is not in the dictionary
+        assertNotNull(LabelExtractor.getResourceBundle(ResourceFileId.fourth, Locale.US));
     }
 }

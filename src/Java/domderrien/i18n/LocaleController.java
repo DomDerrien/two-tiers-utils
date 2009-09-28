@@ -50,8 +50,8 @@ public class LocaleController
             return languageListRB;
         }
         // Get the resource bundle filename from the application settings and return the identified file
-        ResourceBundle applicationSettings = ResourceBundle.getBundle("domderrien-i18n", DEFAULT_LOCALE); //$NON-NLS-1$
-        return ResourceBundle.getBundle(applicationSettings.getString("languageListFilename"), DEFAULT_LOCALE); //$NON-NLS-1$
+        ResourceBundle applicationSettings = ResourceBundle.getBundle(ResourceNameDefinitions.CONFIG_PROPERTIES_FILENAME, DEFAULT_LOCALE);
+        return ResourceBundle.getBundle(applicationSettings.getString(ResourceNameDefinitions.LANGUAGE_LIST_FILENAME_KEY), DEFAULT_LOCALE);
 
     }
 

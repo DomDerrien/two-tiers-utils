@@ -9,13 +9,14 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import domderrien.mocks.MockHttpServletRequest;
 import domderrien.mocks.MockHttpSession;
 
-public class TTestLocaleController {
+public class TestLocaleController {
 
     class MockResourceBundle extends ListResourceBundle {
         public final String EN = "en"; //$NON-NLS-1$
@@ -42,6 +43,10 @@ public class TTestLocaleController {
     @Before
     public void setUp() throws Exception {
         LocaleController.setLanguageListRB(null);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     @Test

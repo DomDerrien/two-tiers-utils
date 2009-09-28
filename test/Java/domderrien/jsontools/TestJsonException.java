@@ -3,12 +3,13 @@ package domderrien.jsontools;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.Test;
 
 import domderrien.mocks.MockOutputStream;
 
-public class TTestJsonException {
+public class TestJsonException {
 
     @Test
     public void testGetExceptionId() {
@@ -67,24 +68,30 @@ public class TTestJsonException {
         assertEquals(true, o.getBoolean("a"));
         o.put("aa", false);
         assertEquals(false, o.getBoolean("aa"));
+        o.put("a", Boolean.TRUE);
+        assertEquals(true, o.getBoolean("a"));
     }
 
     @Test
     public void testJsonObjectGettersSettersII() {
         JsonException o = new JsonException("Unexpected error");
-        o.put("a", 1235);
-        assertEquals(1235, o.getLong("a"));
-        o.put("aa", -785613212);
-        assertEquals(-785613212, o.getLong("aa"));
+        o.put("a", 1235L);
+        assertEquals(1235L, o.getLong("a"));
+        o.put("aa", -785613212L);
+        assertEquals(-785613212L, o.getLong("aa"));
+        o.put("a", Long.valueOf(1235));
+        assertEquals(1235L, o.getLong("a"));
     }
 
     @Test
     public void testJsonObjectGettersSettersIII() {
         JsonException o = new JsonException("Unexpected error");
-        o.put("a", 12.35);
-        assertEquals(12.35, o.getDouble("a"), 0);
-        o.put("aa", -1.454E248);
-        assertEquals(-1.454E248, o.getDouble("aa"), 0);
+        o.put("a", 12.35D);
+        assertEquals(12.35D, o.getDouble("a"), 0);
+        o.put("aa", -1.454E248D);
+        assertEquals(-1.454E248D, o.getDouble("aa"), 0);
+        o.put("a", Double.valueOf(12.35));
+        assertEquals(12.35D, o.getDouble("a"), 0);
     }
 
     @Test
@@ -228,5 +235,22 @@ public class TTestJsonException {
         assertTrue(out.getStream().contains("null"));
         assertTrue(out.getStream().contains("orginalException"));
         assertTrue(out.getStream().contains("[no cause message]"));
+    }
+
+    @Test
+    @SuppressWarnings("serial")
+    public void testGetString() {
+        JsonException jsonException = new JsonException("test") {
+            @Override
+            protected OutputStream getOutputStream() throws IOException {
+                throw new IOException("Done in purpose");
+            }
+        };
+        jsonException.put("a", "b");
+        String out = jsonException.toString();
+        assertNotNull(out);
+        assertTrue(out.contains("a"));
+        assertTrue(out.contains("b"));
+        assertFalse(out.contains("success"));
     }
 }

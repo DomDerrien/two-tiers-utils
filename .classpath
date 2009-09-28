@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="deps/lib/xml/xalan-2.7.0.jar"/>
 	<classpathentry kind="lib" path="deps/lib/xml/xercesImpl-2.4.0.jar"/>
 	<classpathentry kind="lib" path="deps/lib/xml/xml-apis-1.3.02.jar"/>
-	<classpathentry kind="lib" path="deps/lib/junit/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="deps/lib/junit/junit-4.7.jar" sourcepath="deps/lib/junit/junit-4.7-src.jar"/>
 	<classpathentry kind="lib" path="deps/lib/j2ee/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

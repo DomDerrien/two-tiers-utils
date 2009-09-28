@@ -235,8 +235,11 @@ public class JsonParser {
     protected Object parseValue() throws JsonException {
         Object obj = null;
         switch(stream.peek(true)) {
-            case JsonDelimiters.QUOTE:
-            case JsonDelimiters.DOUBLE_QUOTES:
+            case JsonDelimiters.QUOTE: // Same as JsonDelimiters.DOUBLE_QUOTES:
+                obj = parseString();
+                s_logger.finest("String extracted: " + obj);
+                break;
+            case JsonDelimiters.DOUBLE_QUOTES: // same as JsonDelimiters.QUOTE:
                 obj = parseString();
                 s_logger.finest("String extracted: " + obj);
                 break;
@@ -248,8 +251,11 @@ public class JsonParser {
                 obj = parseJsonArray();
                 s_logger.finest("<GenericJsonArray> extracted");
                 break;
-            case JsonDelimiters.TRUE_LABEL_FIRST_CHAR:
-            case JsonDelimiters.FALSE_LABEL_FIRST_CHAR:
+            case JsonDelimiters.TRUE_LABEL_FIRST_CHAR: // Same as FALSE_LABEL_FIRST_CHAR
+                obj = parseBoolean();
+                s_logger.finest("Boolean extracted: " + obj);
+                break;
+            case JsonDelimiters.FALSE_LABEL_FIRST_CHAR: // Same as TRUE_LABEL_FIRST_CHAR
                 obj = parseBoolean();
                 s_logger.finest("Boolean extracted: " + obj);
                 break;
@@ -268,6 +274,7 @@ public class JsonParser {
             default: // assume it's a number
                 obj = parseNumber();
                 s_logger.finest("Number extracted: " + obj);
+                break;
         }
         return obj;
     }
@@ -280,7 +287,7 @@ public class JsonParser {
             char c = stream.get(false);
             if(c==JsonDelimiters.BACK_SLASH) {
                 char next = stream.get(false);
-                char unescaped;
+                char unescaped = JsonDelimiters.SPACE;
                 switch(next) {
                     case JsonDelimiters.QUOTE:              unescaped=JsonDelimiters.QUOTE; break;
                     case JsonDelimiters.DOUBLE_QUOTES:      unescaped=JsonDelimiters.DOUBLE_QUOTES; break;
@@ -293,9 +300,11 @@ public class JsonParser {
                     case JsonDelimiters.TABULATION_ID:      unescaped=JsonDelimiters.TABULATION; break;
                     case JsonDelimiters.UNICODE_ID:   //TODO
                         // (for now, fall through to an error)
+                        reportError("Unescaping unicode sequence not yet supported.");
+                        // break; Not needed because reportError() throws an exception
                     default:
-                        unescaped = JsonDelimiters.END_OF_STRING; //makes javac happy
                         reportError("After " + JsonDelimiters.BACK_SLASH + ", unexpected character " + next + "(" + ((int) next) + ")");
+                        // break; Not needed because reportError() throws an exception
                 }
                 str.append(unescaped);
             } else {

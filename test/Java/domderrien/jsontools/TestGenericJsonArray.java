@@ -13,7 +13,7 @@ import org.junit.Test;
 import domderrien.mocks.MockLogger;
 import domderrien.mocks.MockOutputStream;
 
-public class TTestGenericJsonArray {
+public class TestGenericJsonArray {
 
     MockLogger logger = new MockLogger("test", null);
 
@@ -347,6 +347,7 @@ public class TTestGenericJsonArray {
         list.add(Double.valueOf(1f));
         list.add(new GenericJsonObject());
         list.add(new GenericJsonArray());
+        list.add(new Object()); // will be ignored
         MockOutputStream stream = new MockOutputStream();
         new GenericJsonArray(list).toStream(stream, true);
         assertTrue(stream.getStream().contains("true"));
@@ -355,6 +356,22 @@ public class TTestGenericJsonArray {
         assertTrue(stream.getStream().contains("1.0"));
         assertTrue(stream.getStream().contains("{}"));
         assertTrue(stream.getStream().contains("[]"));
+    }
+
+    @Test
+    public void testFromArrayI() throws IOException {
+        Object[] parameter = new Object[0];
+        assertEquals(0, new GenericJsonArray(parameter).size());
+    }
+
+    @Test
+    public void testFromArrayII() throws IOException {
+        Object[] parameter = new Object[] { true, 1L, "test" };
+        JsonArray jsonArray = new GenericJsonArray(parameter);
+        assertEquals(3, jsonArray.size());
+        assertEquals(Boolean.TRUE, jsonArray.getBoolean(0));
+        assertEquals(1L, jsonArray.getLong(1));
+        assertEquals("test", jsonArray.getString(2));
     }
 
     // See JsonObjectTranferTest.java for collection of {key; value} pairs tokenizing

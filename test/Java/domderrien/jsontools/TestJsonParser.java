@@ -11,7 +11,7 @@ import org.junit.Test;
 import domderrien.mocks.MockInputStream;
 import domderrien.mocks.MockLogger;
 
-public class TTestJsonParser {
+public class TestJsonParser {
 
     MockLogger mockLogger = new MockLogger("test", null);
 
@@ -213,6 +213,12 @@ public class TTestJsonParser {
     }
 
     @Test(expected=JsonException.class)
+    public void testUnbalancedDelimitersIIa() throws JsonException {
+        JsonParser t1 = new JsonParser("[true,", mockLogger);
+        t1.getJsonArray();
+    }
+
+    @Test(expected=JsonException.class)
     public void testUnbalancedDelimitersIII() throws JsonException {
         JsonParser t1 = new JsonParser("{\"key\":true", mockLogger);
         t1.getJsonObject();
@@ -402,6 +408,18 @@ public class TTestJsonParser {
     public void testParseStringVI() throws JsonException {
         JsonParser t1 = new JsonParser("['\\.']", mockLogger);
         t1.getJsonArray();
+    }
+
+    @Test
+    public void testParseDoubleI() throws JsonException {
+        JsonParser t1 = new JsonParser("12345", mockLogger);
+        t1.getNumber();
+    }
+
+    @Test(expected=JsonException.class)
+    public void testParseDoubleII() throws JsonException {
+        JsonParser t1 = new JsonParser("aaaaa", mockLogger);
+        t1.getNumber();
     }
 
     @Test

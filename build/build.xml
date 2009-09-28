@@ -16,7 +16,7 @@
 		description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
 		value="${basedir}${file.separator}bin${file.separator}temp" />
 
-	<property name="dd2tu.release" description="Planned release of this build" value="0.8.2" />
+	<property name="dd2tu.release" description="Planned release of this build" value="0.8.5" />
 
 	<property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -146,7 +146,6 @@
 	-->
 
 	<path id="tmxconverter.classpath">
-		<pathelement path="bin/classes" />
 		<!-- For the TMXConverter code -->
 		<pathelement path="bin/classes" />
 		<!-- For the existing ${dd2tu.languageListFilename}.properties file -->
@@ -168,34 +167,29 @@
 
 	<path id="java.compile.classpath">
 		<fileset refid="runtime.deps" />
-		<filelist dir="deps/lib/xml">
-			<file name="xalan-2.7.0.jar" />
-			<file name="xercesImpl-2.4.0.jar" />
-			<file name="xml-apis-1.3.02.jar" />
-		</filelist>
-		<filelist dir="deps/lib/junit">
-			<file name="junit-4.5.jar" />
-		</filelist>
-		<filelist dir="deps/lib/j2ee">
-			<file name="servlet-api.jar" />
+		<filelist dir="deps/lib">
+			<file name="xml/xalan-2.7.0.jar" />
+			<file name="xml/xercesImpl-2.4.0.jar" />
+			<file name="xml/xml-apis-1.3.02.jar" />
+			<file name="junit/junit-4.7.jar" />
+			<file name="junit/junit-dep-4.7.jar" />
+			<file name="j2ee/servlet-api.jar" />
 		</filelist>
 	</path>
 
 	<path id="cobertura.classpath">
-		<filelist dir="deps/lib/junit">
-			<file name="junit-4.5.jar" />
-		</filelist>
-		<filelist dir="deps/lib/cobertura">
-			<file name="cobertura.jar" />
-			<file name="asm-3.0.jar" />
-			<file name="asm-tree-3.0.jar" />
-			<file name="jakarta-oro-2.0.8.jar" />
-			<file name="log4j-1.2.9.jar" />
-		</filelist>
-		<filelist dir="deps/lib/xml">
-			<file name="xalan-2.7.0.jar" />
-			<file name="xercesImpl-2.4.0.jar" />
-			<file name="xml-apis-1.3.02.jar" />
+		<filelist dir="deps/lib">
+			<file name="junit/junit-4.7.jar" />
+			<file name="junit/junit-dep-4.7.jar" />
+			<file name="xml/xalan-2.7.0.jar" />
+			<file name="xml/xercesImpl-2.4.0.jar" />
+			<file name="xml/xml-apis-1.3.02.jar" />
+			<file name="j2ee/servlet-api.jar" />
+			<file name="cobertura/cobertura.jar" />
+			<file name="cobertura/asm-3.0.jar" />
+			<file name="cobertura/asm-tree-3.0.jar" />
+			<file name="cobertura/jakarta-oro-2.0.8.jar" />
+			<file name="cobertura/log4j-1.2.9.jar" />
 		</filelist>
 	</path>
 
@@ -360,18 +354,39 @@
 	<target name="step-compile">
 		<delete dir="bin/classes" />
 		<mkdir dir="bin/classes" />
-		<javac destdir="bin/classes" deprecation="true" debug="true" optimize="false" excludes="" source="1.5" target="jsr14" srcdir="src/Java">
+		<!--
+		Use following arguments to compile Java 1.5 code for JVM 1.4
+			source="1.5"
+			target="jsr14"
+		-->
+		<javac
+			destdir="bin/classes"
+			deprecation="false"
+			debug="true"
+			optimize="false"
+			excludes=""
+			srcdir="src/java"
+		>
 			<classpath refid="java.compile.classpath" />
 		</javac>
-		<javac destdir="bin/classes" deprecation="false" debug="true" optimize="false" excludes="" source="1.5" target="jsr14" srcdir="test/Java">
+		<javac
+			destdir="bin/classes"
+			deprecation="false"
+			debug="true"
+			optimize="false"
+			excludes=""
+			srcdir="test/java"
+		>
 			<classpath refid="java.compile.classpath" />
 		</javac>
 	</target>
 
 	<target name="step-tmx-convert">
+		<mkdir dir="${temp.dir}/resources" />
 		<mkdir dir="src/WebContent/js/domderrien/i18n/nls" />
 		<java classname="domderrien.build.TMXConverter" fork="true">
 			<classpath refid="tmxconverter.classpath" />
+			<classpath location="${temp.dir}/resources" />
 			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<arg value="-tmxFilenameBase" />
 			<arg value="${dd2tu.localizedLabelBaseFilename}" />
@@ -380,14 +395,14 @@
 			<arg value="-jsDestPath" />
 			<arg value="${basedir}\src\WebContent\js\domderrien\i18n\nls" />
 			<arg value="-javaDestPath" />
-			<arg value="${temp.dir}" />
+			<arg value="${temp.dir}/resources" />
 			<arg value="-languageFilenameBase" />
 			<arg value="${dd2tu.languageListFilename}" />
 			<arg value="-buildStamp" />
 			<arg value="${dd2tu.stageId}" />
 		</java>
-		<native2ascii src="${temp.dir}" dest="bin/classes" encoding="UTF8" includes="*.properties-utf8" ext=".properties" />
-		<copy file="bin/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="bin/classes/${dd2tu.localizedLabelBaseFilename}_en.properties" />
+		<native2ascii src="${temp.dir}/resources" dest="${temp.dir}/resources" encoding="UTF8" includes="*.properties-utf8" ext=".properties" />
+		<!--copy file="bin/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="${temp.dir}/resources/${dd2tu.localizedLabelBaseFilename}_en.properties" /-->
 		<mkdir dir="src/WebContent/js/domderrien/i18n/nls/en" />
 		<copy file="src/WebContent/js/domderrien/i18n/nls/${dd2tu.localizedLabelBaseFilename}.js" todir="src/WebContent/js/domderrien/i18n/nls/en" />
 	</target>
@@ -551,7 +566,13 @@
 
 	<target name="step-cobertura-instrument">
 		<!-- Remove the coverage data file.-->
+		<delete file="cobertura.ser"/>
 		<delete dir="bin/instrumented" />
+		<delete verbose="true" failonerror="false">
+			<fileset dir="bin/classes">
+				<include name="*.properties" />
+			</fileset>
+		</delete>
 
 		<!--Instrument the application classes	-->
 		<cobertura-instrument todir="bin/instrumented">
@@ -571,12 +592,21 @@
 		<mkdir dir="docs/test-reports" />
 		<mkdir dir="docs/test-reports/junit-xml" />
 		<mkdir dir="docs/test-reports/junit-html" />
-		<junit dir="${basedir}" failureProperty="junit.test.failed" fork="yes" printSummary="yes" haltonerror="true" haltonfailure="true" timeout="10000" maxmemory="512M">
+		<junit
+			dir="${basedir}"
+			failureProperty="junit.test.failed"
+			fork="yes"
+			printSummary="yes"
+			haltonerror="true"
+			haltonfailure="true"
+			timeout="10000"
+			maxmemory="512M"
+		>
 			<classpath location="bin/instrumented" />
-			<!-- Important: instrumented classes are before the original (uninstrumented) classes. -->
 			<classpath location="bin/classes" />
+			<!-- Important: instrumented classes are before the original (uninstrumented) classes. -->
 			<classpath refid="cobertura.classpath" />
-			<classpath location="src/resources" />
+			<classpath location="${temp.dir}/resources" />
 
 			<formatter type="xml" />
 			<formatter usefile="false" type="plain" />

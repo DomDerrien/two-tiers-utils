@@ -7,7 +7,7 @@ public class MockOutputStream extends OutputStream {
     private StringBuilder stream = new StringBuilder();
 
     public MockOutputStream() {
-        this(0);
+        this(-1); // Default: no limit
     }
 
     private int limit;
@@ -38,7 +38,7 @@ public class MockOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        if (index < limit) {
+        if (limit == -1 || index < limit) {
             stream.append((char) b);
             ++ index;
         }

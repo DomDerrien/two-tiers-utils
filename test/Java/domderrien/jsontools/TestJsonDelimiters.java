@@ -2,7 +2,7 @@ package domderrien.jsontools;
 
 import org.junit.Test;
 
-public class TTestJsonDelimiters {
+public class TestJsonDelimiters {
 
     @Test
     public void testJsonDelimiters() {

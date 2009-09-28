@@ -1,5 +1,7 @@
 package domderrien.build;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,15 +20,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
-public class TestTMXConverter extends TestCase {
+public class TestTMXConverter {
 
     class MockOutputStream extends OutputStream {
         StringBuffer stream = new StringBuffer();
@@ -42,6 +44,14 @@ public class TestTMXConverter extends TestCase {
         }
     }
 
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
     @Test
     public void testMain() {
         // Cannot be unit tested because it will
@@ -52,7 +62,7 @@ public class TestTMXConverter extends TestCase {
     @Test
     public void testStopProcess() {
         // Just verify the correct call
-        // Note that the entire method paths can't be coverted
+        // Note that the entire method paths can't be converted
         // because of the call to "System.exit(1)"
         TMXConverter converter = new TMXConverter(false);
         converter.stopProcess();
@@ -78,16 +88,12 @@ public class TestTMXConverter extends TestCase {
         converter.displayUsage();
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testSetContextI() {
-        try
-        {
-            // Exception expected because the <code>null</code> value is not checked
-            TMXConverter converter = new TMXConverter(false);
-            converter.setContext(null);
-            fail("NullPointerException should have been thrown");
-        }
-        catch (NullPointerException ex) { } // Expected exception
+        // Exception expected because the <code>null</code> value is not checked
+        TMXConverter converter = new TMXConverter(false);
+        converter.setContext(null);
+        fail("NullPointerException should have been thrown");
     }
 
     @Test
@@ -358,19 +364,22 @@ public class TestTMXConverter extends TestCase {
         assertFalse(converter.getProcessStopped());
     }
 
-    @Test
-    public void testGetDocumentedLanguages()
+    @Test(expected = MissingResourceException.class)
+    public void testGetDocumentedLanguagesI()
     {
         TMXConverter converter = new TMXConverter(false);
         converter.setLanguageFilenameBase("nop");
-        try
-        {
-            converter.getDocumentedLanguages();
-            fail("Exception expected");
-        }
-        catch(MissingResourceException ex) {
-            // Expected exception
-        }
+        converter.getDocumentedLanguages();
+        fail("Exception expected");
+    }
+
+    @Test
+    public void testGetDocumentedLanguagesII()
+    {
+        TMXConverter converter = new TMXConverter(false);
+        converter.setLanguageFilenameBase("domderrien-languages");
+        ResourceBundle rb = converter.getDocumentedLanguages();
+        assertEquals(rb, converter.getDocumentedLanguages());
     }
 
     @Test
@@ -860,41 +869,27 @@ public class TestTMXConverter extends TestCase {
         assertTrue(converter.getProcessStopped());
     }
 
-    @Test
-    public void testGetInputStream()
+    @Test(expected = FileNotFoundException.class)
+    public void testGetInputStream() throws FileNotFoundException
     {
         TMXConverter converter = new TMXConverter(false);
-        try
-        {
-            // Delete the file to force the exception throwing
-            (new File(System.getProperty("user.dir") + File.separator + "nop")).delete();
-            converter.getInputStream(System.getProperty("user.dir") + File.separator + "nop");
-            fail("FileNotFoundException expected");
-        }
-        catch (FileNotFoundException e)
-        {
-            // Expected exception
-        }
+        // Delete the file to force the exception throwing
+        (new File(System.getProperty("user.dir") + File.separator + "nop")).delete();
+        converter.getInputStream(System.getProperty("user.dir") + File.separator + "nop");
+        fail("FileNotFoundException expected");
     }
 
     @Test
-    public void testGetOutputStream()
+    public void testGetOutputStream() throws FileNotFoundException
     {
         TMXConverter converter = new TMXConverter(false);
-        try
-        {
-            // Delete the file after creation
-            converter.getOutputStream(System.getProperty("user.dir") + File.separator + "nop");
-            (new File(System.getProperty("user.dir") + File.separator + "nop")).delete();
-        }
-        catch (FileNotFoundException e)
-        {
-            fail("FileNotFoundException expected");
-        }
+        // Delete the file after creation
+        converter.getOutputStream(System.getProperty("user.dir") + File.separator + "nop");
+        (new File(System.getProperty("user.dir") + File.separator + "nop")).delete();
     }
 
     @Test
-    public void testConvertI()
+    public void testConvertI() throws IOException
     {
         // Verify the process of the base file
         TMXConverter converter = new TMXConverter(false) {
@@ -933,19 +928,11 @@ public class TestTMXConverter extends TestCase {
         };
 
         converter.setTMXFilenameBase("nop");
-
-        try
-        {
-            converter.convert("nop");
-        }
-        catch(IOException ex)
-        {
-            fail("No exception expected in this test case");
-        }
+        converter.convert("nop");
     }
 
     @Test
-    public void testConvertII()
+    public void testConvertII() throws IOException
     {
         // Verify the process of a correctly localized file
         TMXConverter converter = new TMXConverter(false) {
@@ -999,19 +986,11 @@ public class TestTMXConverter extends TestCase {
         };
 
         converter.setTMXFilenameBase("nop");
-
-        try
-        {
-            converter.convert("nop_fr");
-        }
-        catch(IOException ex)
-        {
-            fail("No exception expected in this test case");
-        }
+        converter.convert("nop_fr");
     }
 
-    @Test
-    public void testConvertIII()
+    @Test(expected = IOException.class)
+    public void testConvertIII() throws IOException
     {
         // Verify the exception handling when a subfolder related to a new locale cannot be created
         TMXConverter converter = new TMXConverter(false) {
@@ -1065,20 +1044,11 @@ public class TestTMXConverter extends TestCase {
         };
 
         converter.setTMXFilenameBase("nop");
-
-        try
-        {
-            converter.convert("nop_fr");
-            fail("No exception expected in this test case");
-        }
-        catch(IOException ex)
-        {
-            // Expected exception because the nested folder cannot be created
-        }
+        converter.convert("nop_fr");
     }
 
     @Test
-    public void testConvertIV()
+    public void testConvertIV() throws IOException
     {
         // Verify the process of a correctly localized file
         TMXConverter converter = new TMXConverter(false) {
@@ -1128,19 +1098,11 @@ public class TestTMXConverter extends TestCase {
         };
 
         converter.setTMXFilenameBase("nop");
-
-        try
-        {
-            converter.convert("nop_fr");
-        }
-        catch(IOException ex)
-        {
-            fail("No exception expected in this test case");
-        }
+        converter.convert("nop_fr");
     }
 
     @Test
-    public void testConvertV()
+    public void testConvertV() throws IOException
     {
         // Verify the process of a incorrectly localized file
         TMXConverter converter = new TMXConverter(false) {
@@ -1194,36 +1156,16 @@ public class TestTMXConverter extends TestCase {
         };
 
         converter.setTMXFilenameBase("nop");
-
-        try
-        {
-            converter.convert("nopfr");
-        }
-        catch(IOException ex)
-        {
-            fail("No exception expected in this test case");
-        }
+        converter.convert("nopfr");
     }
 
     @Test
-    public void testGetEntityResolver()
+    public void testGetEntityResolver() throws SAXException, IOException
     {
         // Normal call
         TMXConverter converter = new TMXConverter(false);
         EntityResolver resolver = converter.getEntityResolver();
-        try
-        {
-            resolver.resolveEntity("nop", "nop");
-        }
-        catch (SAXException e)
-        {
-            fail("No expected exception");
-        }
-        catch (IOException e)
-        {
-            fail("No expected exception");
-        }
-
+        resolver.resolveEntity("nop", "nop");
         assertFalse(converter.getProcessStopped());
     }
 
@@ -1560,6 +1502,7 @@ public class TestTMXConverter extends TestCase {
             "</tu>" +
             "<tu tuid='2'>" +
                 "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
                 "<tuv>" +
                     "<seg>two</seg>" +
                 "</tuv>" +
@@ -1608,11 +1551,12 @@ public class TestTMXConverter extends TestCase {
             "</tu>" +
             "<tu tuid='2'>" +
                 "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
                 "<tuv>" +
                     "<seg>two</seg>" +
                 "</tuv>" +
             "</tu>" +
-        "</body></tmx>";
+            "</body></tmx>";
         InputStream tmxIS = new InputStream() {
             int idx = 0;
             @Override
@@ -1889,7 +1833,7 @@ public class TestTMXConverter extends TestCase {
     }
 
     @Test
-    public void testSaveSupportedLanguagesI()
+    public void testSaveSupportedLanguagesI() throws IOException
     {
         // Verify the process of the output stream
         TMXConverter converter = new TMXConverter(false) {
@@ -1913,14 +1857,7 @@ public class TestTMXConverter extends TestCase {
             }
         };
 
-        try
-        {
-            converter.saveSupportedLanguages();
-        }
-        catch(IOException ex)
-        {
-            fail("No exception expected in this test case");
-        }
+        converter.saveSupportedLanguages();
     }
 
     @Test
@@ -1998,13 +1935,25 @@ public class TestTMXConverter extends TestCase {
         assertTrue(stream.getStream().indexOf("en=English") != -1);
         assertTrue(stream.getStream().indexOf("pl=Polski") != -1);
     }
-    /*
-    public void testSaveSupportedLanguages() {
-        fail("Not yet implemented");
-    }
 
-    public void testSaveSupportedLanguagesOutputStream() {
-        fail("Not yet implemented");
+    @Test
+    public void testSaveSupportedLanguagesIV() throws IOException
+    {
+        // Verify the saving of the existing language definitions
+        Map<String, String> foundLanguages = new HashMap<String, String>();
+        foundLanguages.put("de", "Deutsch");
+
+        TMXConverter converter = new TMXConverter(false) {
+            @Override
+            protected ResourceBundle getDocumentedLanguages() {
+                throw new MissingResourceException("Done in purpose", null, null);
+            }
+        };
+        converter.setLanguageMap(foundLanguages);
+        MockOutputStream stream = new MockOutputStream();
+
+        converter.saveSupportedLanguages(stream);
+        System.out.println("stream: " + stream.getStream());
+        assertTrue(stream.getStream().indexOf("de=Deutsch") != -1);
     }
-    */
 }

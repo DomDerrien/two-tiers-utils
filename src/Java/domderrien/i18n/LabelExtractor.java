@@ -9,8 +9,15 @@ public class LabelExtractor
 {
     static public final String ERROR_MESSAGE_PREFIX = "errMsg_";
 
+    public enum ResourceFileId {
+        master,
+        second,
+        third,
+        fourth
+    }
+
     /**
-     * Return the message associated to the given error code.
+     * Return the message associated to the given error code, extracted from the master resource file.
      *
      * @param errorCode Error code
      * @param locale    Optional locale instance, use to determine in which
@@ -21,7 +28,23 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(int errorCode, Locale locale) {
-        return get(errorCode, null, locale);
+        return get(ResourceFileId.master, errorCode, locale);
+    }
+
+    /**
+     * Return the message associated to the given error code, extracted from the identifier resource file.
+     *
+     * @param errorCode Error code
+     * @param resId     Identifier of the resource file where the localized data should be extracted from
+     * @param locale    Optional locale instance, use to determine in which
+     *                  resource files the label should be found. If the
+     *                  reference is <code>null</code>, the root resource
+     *                  bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, int errorCode, Locale locale) {
+        return get(ResourceFileId.master, errorCode, null, locale);
     }
 
     /**
@@ -38,8 +61,26 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(int errorCode, Object[] parameters,  Locale locale) {
+        return get(ResourceFileId.master, errorCode, parameters, locale);
+    }
+
+    /**
+     * Return the message associated to the given error code.
+     *
+     * @param errorCode Error code
+     * @param resId     Identifier of the resource file where the localized data should be extracted from
+     * @param parameters Array of parameters, each one used to replace a
+     *                   pattern made of a number between curly braces.
+     * @param locale    Optional locale instance, use to determine in which
+     *                  resource files the label should be found. If the
+     *                  reference is <code>null</code>, the root resource
+     *                  bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, int errorCode, Object[] parameters,  Locale locale) {
         String prefix = ERROR_MESSAGE_PREFIX;
-        String label = get(prefix + errorCode, parameters, locale);
+        String label = get(resId, prefix + errorCode, parameters, locale);
         if (label.startsWith(prefix)) {
             return String.valueOf(errorCode);
         }
@@ -58,7 +99,23 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(String messageId, Locale locale) {
-        return get(messageId, null, locale);
+        return get(ResourceFileId.master, messageId, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier.
+     *
+     * @param messageId Identifier used to retrieve the localized label.
+     * @param resId     Identifier of the resource file where the localized data should be extracted from
+     * @param locale    Optional locale instance, use to determine in which
+     *                  resource files the label should be found. If the
+     *                  reference is <code>null</code>, the root resource
+     *                  bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, Locale locale) {
+        return get(resId, messageId, null, locale);
     }
 
     /**
@@ -75,10 +132,28 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(String messageId, Object[] parameters, Locale locale) {
+        return get(ResourceFileId.master, messageId, parameters, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param resId     Identifier of the resource file where the localized data should be extracted from
+     * @param parameters Array of parameters, each one used to replace a
+     *                   pattern made of a number between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, Object[] parameters, Locale locale) {
         String label = messageId;
         if (messageId != null && 0 < messageId.length()) {
             try {
-                ResourceBundle labels = getResourceBundle(locale);
+                ResourceBundle labels = getResourceBundle(resId, locale);
                 label = labels.getString(messageId);
             }
             catch (MissingResourceException ex) {
@@ -114,13 +189,17 @@ public class LabelExtractor
     /*------------------------------------------------------------------*/
     /*------------------------------------------------------------------*/
 
-    protected static HashMap<String, ResourceBundle> resourceBundles = new HashMap<String, ResourceBundle>();
+    protected static HashMap<String, ResourceBundle> masterResourceBundleSet = new HashMap<String, ResourceBundle>();
+    protected static HashMap<String, ResourceBundle> secondResourceBundleSet = new HashMap<String, ResourceBundle>();
+    protected static HashMap<String, ResourceBundle> thirdResourceBundleSet = new HashMap<String, ResourceBundle>();
+    protected static HashMap<String, ResourceBundle> fourthResourceBundleSet = new HashMap<String, ResourceBundle>();
 
     /**
      * Provides a reset mechanism for the unit test suite
+     * @param resId Identifier of the resource file set to manipulate
      */
-    protected static void resetResourceBundleList() {
-        resourceBundles.clear();
+    protected static void resetResourceBundleList(ResourceFileId resId) {
+        masterResourceBundleSet.clear();
     }
 
     /**
@@ -138,13 +217,15 @@ public class LabelExtractor
 
     /**
      * Protected setter made available for the unit testing
+     *
+     * @param resId Identifier of the resource file set to manipulate
      * @param rb Mock resource bundle
      * @param locale Locale associated to the mock resource bundle
      */
-    protected static ResourceBundle setResourceBundle(ResourceBundle rb, Locale locale) {
+    protected static ResourceBundle setResourceBundle(ResourceFileId resId, ResourceBundle rb, Locale locale) {
         String rbId = getResourceBundleId(locale);
-        ResourceBundle previousRB = resourceBundles.get(rbId);
-        resourceBundles.put(rbId, rb);
+        ResourceBundle previousRB = masterResourceBundleSet.get(rbId);
+        masterResourceBundleSet.put(rbId, rb);
         return previousRB;
     }
 
@@ -152,18 +233,27 @@ public class LabelExtractor
      * Retrieve the application resource bundle with the list of supported languages.
      * Specified protected only to ease the unit testing (IOP).
      *
+     * @param resId Identifier of the resource file where the localized data should be extracted from
      * @param locale locale to use when getting the resource bundle
+     *
      * @return The already resolved/set resource bundle or the one expected at runtime
      * @throws MissingResourceException
      */
-    protected static ResourceBundle getResourceBundle(Locale locale) throws MissingResourceException {
+    protected static ResourceBundle getResourceBundle(ResourceFileId resId, Locale locale) throws MissingResourceException {
         String rbId = getResourceBundleId(locale);
-        ResourceBundle rb = (ResourceBundle) resourceBundles.get(rbId);
+        ResourceBundle rb = (ResourceBundle) masterResourceBundleSet.get(rbId);
+        if (ResourceFileId.second.equals(resId)) { rb = (ResourceBundle) secondResourceBundleSet.get(rbId); }
+        else if (ResourceFileId.third.equals(resId)) { rb = (ResourceBundle) thirdResourceBundleSet.get(rbId); }
+        else if (ResourceFileId.fourth.equals(resId)) { rb = (ResourceBundle) fourthResourceBundleSet.get(rbId); }
         if (rb == null) {
             // Get the resource bundle filename from the application settings and return the identified file
-            ResourceBundle applicationSettings = ResourceBundle.getBundle("domderrien-i18n", locale); //$NON-NLS-1$
-            rb = ResourceBundle.getBundle(applicationSettings.getString("localizedLabelFilename"), locale);
-            resourceBundles.put(rbId, rb);
+            ResourceBundle applicationSettings = ResourceBundle.getBundle(ResourceNameDefinitions.CONFIG_PROPERTIES_FILENAME, locale);
+            String keyForLookup = ResourceNameDefinitions.MASTER_TMX_FILENAME_KEY;
+            if (ResourceFileId.second.equals(resId)) { keyForLookup = ResourceNameDefinitions.SECOND_TMX_FILENAME_KEY; }
+            else if (ResourceFileId.third.equals(resId)) { keyForLookup = ResourceNameDefinitions.THIRD_TMX_FILENAME_KEY; }
+            else if (ResourceFileId.fourth.equals(resId)) { keyForLookup = ResourceNameDefinitions.FOURTH_TMX_FILENAME_KEY; }
+            rb = ResourceBundle.getBundle(applicationSettings.getString(keyForLookup), locale);
+            masterResourceBundleSet.put(rbId, rb);
         }
         return rb;
     }

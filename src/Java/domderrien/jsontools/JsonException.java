@@ -76,10 +76,16 @@ public class JsonException extends Exception implements JsonObject {
         put("exceptionMessage", super.getMessage());
     }
 
+    /** Accessor to ease the behavior injection for the unit tests
+     * @throws IOException If the buffer creation fails*/
+    protected OutputStream getOutputStream() throws IOException {
+        return new ByteArrayOutputStream();
+    }
+
     @Override
     public String toString() {
         try {
-            OutputStream fakeOutput = new ByteArrayOutputStream();
+            OutputStream fakeOutput = getOutputStream();
             toStream(fakeOutput, true);
             return fakeOutput.toString();
         }

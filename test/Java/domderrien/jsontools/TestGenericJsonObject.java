@@ -11,7 +11,7 @@ import org.junit.Test;
 import domderrien.mocks.MockLogger;
 import domderrien.mocks.MockOutputStream;
 
-public class TTestGenericJsonObject {
+public class TestGenericJsonObject {
 
     MockLogger logger = new MockLogger("test", null);
 
@@ -558,6 +558,7 @@ public class TTestGenericJsonObject {
         map.put("k4", Double.valueOf(1f));
         map.put("k5", new GenericJsonObject());
         map.put("k6", new GenericJsonArray());
+        map.put("k7", new Object()); // will be ignored
         MockOutputStream stream = new MockOutputStream();
         new GenericJsonObject(map).toStream(stream, true);
         assertTrue(stream.getStream().contains("'k1':true"));
@@ -566,6 +567,7 @@ public class TTestGenericJsonObject {
         assertTrue(stream.getStream().contains("'k4':1.0"));
         assertTrue(stream.getStream().contains("'k5':{}"));
         assertTrue(stream.getStream().contains("'k6':[]"));
+        assertFalse(stream.getStream().contains("'k7'"));
     }
 
     // See GenericJsonArrayTest.java for ordered list of values tokenizing
