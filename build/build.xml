@@ -236,10 +236,33 @@
 			<format pattern="yyyy" property="dd2tu.stageYear" />
 		</tstamp>
 		<property name="dd2tu.stageId" value="${DSTAMP}.${TSTAMP}" />
+		<resourcecount property="java.source.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/Java" includes="**/*.java" /></tokens>
+		</resourcecount>
+		<resourcecount property="java.test.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/Java" includes="**/*.java" /></tokens>
+		</resourcecount>
+		<resourcecount property="html.source.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent" includes="**/*.html,**/*.jsp" excludes="**/dojo/**" /></tokens>
+		</resourcecount>
+		<resourcecount property="html.test.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.html" excludes="**/dojo/**" /></tokens>
+		</resourcecount>
+		<resourcecount property="javascript.source.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent/js" includes="**/*.js" excludes="**/dojo/**" /></tokens>
+		</resourcecount>
+		<resourcecount property="javascript.test.line.count">
+			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.js" excludes="**/dojo/**" /></tokens>
+		</resourcecount>
 		<echo>
-			${ant.project.name}
-			${TODAY} (${dd2tu.stageId})
-			JVM version detected by Ant: ${ant.java.version}
+            ${ant.project.name}
+            ${TODAY} (${dd2tu.stageId})
+            JVM version detected by Ant: ${ant.java.version}
+            --
+            Statistics:
+               Java source/test files: ${java.source.line.count} lines / ${java.test.line.count} lines
+               HTML source/test files: ${html.source.line.count} lines / ${html.test.line.count} lines
+               Javacript source/test files: ${javascript.source.line.count} lines / ${javascript.test.line.count} lines
 		</echo>
 	</target>
 
@@ -384,7 +407,7 @@
 	<target name="step-tmx-convert">
 		<mkdir dir="${temp.dir}/resources" />
 		<mkdir dir="src/WebContent/js/domderrien/i18n/nls" />
-		<java classname="domderrien.build.TMXConverter" fork="true">
+		<java classname="domderrien.build.TMXConverter" fork="true" failonerror="true">
 			<classpath refid="tmxconverter.classpath" />
 			<classpath location="${temp.dir}/resources" />
 			<jvmarg value="-Dfile.encoding=UTF-8" />
