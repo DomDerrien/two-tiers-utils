@@ -621,11 +621,11 @@ public class TMXConverter {
             }
 
             if (saveToJS) {
-                // js.append("'" + id + "':\"").append(text.replaceAll("(\\{[\\d]+\\})", "%$1")).append("\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                // js.append("'" + id + "':\"").append(text.replaceAll("(\\{[\\d]+\\})", "\\$$1")).append("\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                 String updatedText = text;
                 if (text.indexOf('{') != -1) {
                     // Use the replacement with regular expression only if needed
-                    updatedText = bracesPattern.matcher(text).replaceAll("%$1"); //$NON-NLS-1$
+                    updatedText = bracesPattern.matcher(text).replaceAll("\\$$1"); //$NON-NLS-1$
 
                 }
                 jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

@@ -72,5 +72,14 @@
 				<seg>N/A</seg>
 			</tuv>
 		</tu>
+
+		<tu tuid="unit_test_sample_with_parameters" datatype="Text">
+			<prop type="x-tier">dojotk</prop>
+			<prop type="x-tier">javarb</prop>
+			<note>test</note>
+			<tuv xml:lang="en">
+				<seg>whatever you want {0}, and even more {1}</seg>
+			</tuv>
+		</tu>
 	</body>
 </tmx>

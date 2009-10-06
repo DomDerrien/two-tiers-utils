@@ -16,7 +16,7 @@
 		description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
 		value="${basedir}${file.separator}bin${file.separator}temp" />
 
-	<property name="dd2tu.release" description="Planned release of this build" value="0.8.5" />
+	<property name="dd2tu.release" description="Planned release of this build" value="0.8.6" />
 
 	<property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -402,6 +402,13 @@
 		>
 			<classpath refid="java.compile.classpath" />
 		</javac>
+		<copy todir="${temp.dir}/resources" overwrite="yes">
+			<fileset dir="src/resources">
+				<include name="**/*.x*" />
+				<include name="**/*.properties" />
+			</fileset>
+			<filterchain refid="genericFilterChain" />
+		</copy>
 	</target>
 
 	<target name="step-tmx-convert">
@@ -462,22 +469,21 @@
 
 	<target name="step-package-jar">
 		<delete file="dist/domderrien-${dd2tu.release}.jar" />
-		<copy todir="${temp.dir}/resources" overwrite="yes">
-			<fileset dir="src/resources">
-				<include name="**/*.x*" />
-				<include name="**/*.properties" />
-			</fileset>
-			<filterchain refid="genericFilterChain" />
-		</copy>
 		<jar destfile="dist/domderrien-${dd2tu.release}.jar">
 			<fileset dir="bin/classes">
 				<exclude name="**/Test*.class" />
 				<!--exclude name="**/Mock*.class" /-->
 			</fileset>
-			<fileset dir="${temp.dir}/resources" />
+			<fileset dir="${temp.dir}/resources">
+				<include name="**/*.x*" />
+				<include name="**/*.properties" />
+				<!-- To avoid conflicts with host application own file !-->
+				<exclude name="**/domderrien-i18n.properties" />
+			</fileset>
 			<fileset dir="src/resources">
 				<exclude name="**/*.x*" />
 				<exclude name="**/*.properties" />
+				<!-- TMX file are included as examples -->
 			</fileset>
 			<manifest>
 				<attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
@@ -726,6 +732,7 @@
 		<mkdir dir="docs/test-reports/jscoverage-html/js" />
 		<delete dir="docs/test-reports/jscoverage-html/temp" failonerror="yes" />
 		<exec dir="docs/test-reports/jscoverage-html" executable="${temp.dir}/jscoverage.exe">
+			<!-- Check documentation on http://siliconforks.com/jscoverage/manual.html -->
 			<arg value="--verbose" />
 			<!-- do not use no-instrument switch from jscoverage because it will always copy the files -->
 			<!--arg value="- -exclude=dojo/util" /-->
