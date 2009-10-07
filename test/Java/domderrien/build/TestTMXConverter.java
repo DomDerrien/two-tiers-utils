@@ -1706,7 +1706,7 @@ public class TestTMXConverter {
         assertFalse(converter.isErrorReported());
         assertTrue(converter.getMinimumJavaSize() < javaOS.length());
         assertTrue(converter.getMinimumJSSize() < jsOS.length());
-        assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_START + "1" + TMXConverter.JS_LINE_MIDDLE + "%{0}%{1}" + TMXConverter.JS_LINE_END) != -1);
+        assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_START + "1" + TMXConverter.JS_LINE_MIDDLE + "${0}${1}" + TMXConverter.JS_LINE_END) != -1);
         assertTrue(javaOS.getStream().indexOf(TMXConverter.JAVA_LINE_START + "1" + TMXConverter.JAVA_LINE_MIDDLE + "{0}{1}" + TMXConverter.JAVA_LINE_END) != -1);
     }
 

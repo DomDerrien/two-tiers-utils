@@ -241,19 +241,26 @@ public class LabelExtractor
      */
     protected static ResourceBundle getResourceBundle(ResourceFileId resId, Locale locale) throws MissingResourceException {
         String rbId = getResourceBundleId(locale);
-        ResourceBundle rb = (ResourceBundle) masterResourceBundleSet.get(rbId);
+        ResourceBundle rb;
         if (ResourceFileId.second.equals(resId)) { rb = (ResourceBundle) secondResourceBundleSet.get(rbId); }
         else if (ResourceFileId.third.equals(resId)) { rb = (ResourceBundle) thirdResourceBundleSet.get(rbId); }
         else if (ResourceFileId.fourth.equals(resId)) { rb = (ResourceBundle) fourthResourceBundleSet.get(rbId); }
+        else { rb = (ResourceBundle) masterResourceBundleSet.get(rbId); }
         if (rb == null) {
             // Get the resource bundle filename from the application settings and return the identified file
             ResourceBundle applicationSettings = ResourceBundle.getBundle(ResourceNameDefinitions.CONFIG_PROPERTIES_FILENAME, locale);
-            String keyForLookup = ResourceNameDefinitions.MASTER_TMX_FILENAME_KEY;
+            String keyForLookup;
             if (ResourceFileId.second.equals(resId)) { keyForLookup = ResourceNameDefinitions.SECOND_TMX_FILENAME_KEY; }
             else if (ResourceFileId.third.equals(resId)) { keyForLookup = ResourceNameDefinitions.THIRD_TMX_FILENAME_KEY; }
             else if (ResourceFileId.fourth.equals(resId)) { keyForLookup = ResourceNameDefinitions.FOURTH_TMX_FILENAME_KEY; }
+            else { keyForLookup = ResourceNameDefinitions.MASTER_TMX_FILENAME_KEY; }
+            // Get the resource bundle
             rb = ResourceBundle.getBundle(applicationSettings.getString(keyForLookup), locale);
-            masterResourceBundleSet.put(rbId, rb);
+            // Save the resource bundle reference
+            if (ResourceFileId.second.equals(resId)) { secondResourceBundleSet.put(rbId, rb); }
+            else if (ResourceFileId.third.equals(resId)) { thirdResourceBundleSet.put(rbId, rb); }
+            else if (ResourceFileId.fourth.equals(resId)) { fourthResourceBundleSet.put(rbId, rb); }
+            else { masterResourceBundleSet.put(rbId, rb); }
         }
         return rb;
     }
