@@ -1809,6 +1809,57 @@ public class TestTMXConverter {
     }
 
     @Test
+    public void testConvertStreamsXII() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='1'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>\t one \n \t two \n\t</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new InputStream() {
+            int idx = 0;
+            @Override
+            public int read() throws IOException {
+                if (idx < testStream.length()) {
+                    return (int) testStream.charAt(idx++);
+                }
+                return -1;
+            }
+        };
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertTrue(converter.getMinimumJavaSize() < javaOS.length());
+        assertTrue(converter.getMinimumJSSize() < jsOS.length());
+        assertEquals(1, converter.getLanguageMap().keySet().size());
+        assertEquals("null", converter.getLanguageMap().get("en"));
+        assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_MIDDLE + "one two" + TMXConverter.JS_LINE_END) != -1);
+        assertTrue(javaOS.getStream().indexOf(TMXConverter.JAVA_LINE_MIDDLE + "one two" + TMXConverter.JAVA_LINE_END) != -1);
+    }
+
+    @Test
     public void testGetMinimumJSSize()
     {
         TMXConverter converter = new TMXConverter(false);
