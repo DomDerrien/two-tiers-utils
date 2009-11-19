@@ -5,9 +5,10 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javamocks.io.MockOutputStream;
+
 import org.junit.Test;
 
-import domderrien.mocks.MockOutputStream;
 
 public class TestJsonException {
 

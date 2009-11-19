@@ -4,12 +4,13 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import javamocks.io.MockOutputStream;
+import javamocks.util.logging.MockLogger;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import domderrien.mocks.MockLogger;
-import domderrien.mocks.MockOutputStream;
 
 public class TestJsonSerializer {
 

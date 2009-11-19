@@ -163,6 +163,8 @@ public class LabelExtractor
         return insertParameters(label, parameters);
     }
 
+    public final static String NULL_INDICATOR = "[null]";
+
     /**
      * Utility method inserting the parameters into the given string
      *
@@ -180,7 +182,8 @@ public class LabelExtractor
             int paramNb = parameters.length;
             for (int i=0; i<paramNb; ++i) {
                 String pattern = "\\{" + i + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
-                label = label.replaceAll(pattern, parameters[i].toString());
+                Object parameter = parameters[i];
+                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString());
             }
         }
         return label;

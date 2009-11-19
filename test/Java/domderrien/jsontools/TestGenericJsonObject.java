@@ -6,10 +6,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javamocks.io.MockOutputStream;
+import javamocks.util.logging.MockLogger;
+
 import org.junit.Test;
 
-import domderrien.mocks.MockLogger;
-import domderrien.mocks.MockOutputStream;
 
 public class TestGenericJsonObject {
 

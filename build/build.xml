@@ -1,809 +1,840 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="test" name="base_build_control" basedir="..">
 
-	<description>
-		Build system
-	</description>
+    <description>
+        Build system
+    </description>
 
-	<!-- ................ -->
-	<!-- Public variables -->
-	<!-- ................ -->
+    <!-- ================ -->
+    <!-- Public variables -->
+    <!-- ================ -->
 
-	<property file="${user.home}/local.build.properties"
-		description="All values defined in this file take precedence. Because this file is not in the SCM, each developer can setup his/her environment independently." />
+    <property file="${user.home}/local.build.properties"
+        description="All values defined in this file take precedence. Because this file is not in the SCM, each developer can setup his/her environment independently." />
 
-	<property name="temp.dir"
-		description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
-		value="${basedir}${file.separator}bin${file.separator}temp" />
+    <property name="temp.dir"
+        description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
+        value="${basedir}${file.separator}bin${file.separator}temp" />
 
-	<property name="dd2tu.release" description="Planned release of this build" value="0.8.6" />
+    <property name="dd2tu.release" description="Planned release of this build" value="0.8.7" />
 
-	<property name="dd2tu.languageListFilename" value="domderrien-languages" />
+    <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
-	<property name="dd2tu.localizedLabelBaseFilename" value="domderrien-labels" />
+    <property name="dd2tu.localizedLabelBaseFilename" value="domderrien-labels" />
 
-	<property name="firefox.browser.executable"
-    	description="Location of the executable. Use local.build.properties to set it."
-		value="C:\Program Files\Mozilla Firefox\firefox.exe"
-	/>
-	<property name="ie.browser.executable"
-    	description="Location of the executable. Use local.build.properties to set it."
-		value="C:\Program Files\Internet Explorer\iexplore.exe"
-	/>
-	<property name="chrome.browser.executable"
-    	description="Location of the executable. Use local.build.properties to set it."
-		value="${user.home}\Local Settings\Application Data\Google\Chrome\Application\chrome.exe"
-	/>
-	
-	<property name="jsunit.browser.filenames"
-    	description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
-		value="${chrome.browser.executable}"
-	/>
-
-	<property name="jsunit.server.port"
-    	description="JSUnit webserver port"
-    	value="9898"
+    <property name="firefox.browser.executable"
+        description="Location of the executable. Use local.build.properties to set it."
+        value="C:\Program Files\Mozilla Firefox\firefox.exe"
+    />
+    <property name="ie.browser.executable"
+        description="Location of the executable. Use local.build.properties to set it."
+        value="C:\Program Files\Internet Explorer\iexplore.exe"
+    />
+    <property name="chrome.browser.executable"
+        description="Location of the executable. Use local.build.properties to set it."
+        value="${user.home}\Local Settings\Application Data\Google\Chrome\Application\chrome.exe"
+    />
+    
+    <property name="jsunit.browser.filenames"
+        description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
+        value="${chrome.browser.executable}"
     />
 
-	<property name="jsunit.timeout.seconds"
-    	description="Delay before considering a test being too long. In seconds"
-    	value="60"
+    <property name="jsunit.server.port"
+        description="JSUnit webserver port"
+        value="9898"
     />
 
-	<property name="jscoverage.browser.filenames"
-    	description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
-		value="${chrome.browser.executable}"
-	/>
- 	<!-- .............. -->
-	<!-- Public targets -->
-	<!-- .............. -->
+    <property name="jsunit.timeout.seconds"
+        description="Delay before considering a test being too long. In seconds"
+        value="60"
+    />
 
-	<target name="clean" description="remove all created/copied files/directories at setup time" depends="step-info-get">
-		<echo>Target: clean</echo>
-		<delete includeemptydirs="yes" failonerror="no">
-			<fileset dir="${basedir}">
-				<exclude name="bin" />
-				<include name="bin/instrumented/**" />
-				<include name="bin/classes/**" />
-				<include name="bin/jsunit/**" />
-				<exclude name="build" />
-				<exclude name="deps" />
-				<exclude name="dist" />
-				<exclude name="docs" />
-				<include name="docs/generated-doc/**/*" />
-				<include name="docs/test-reports/**/*" />
-				<exclude name="src" />
-				<include name="src/WebContent/js/dojo/**/*" />
-				<!--include name="src/WebContent/js/domderrien/i18n/nls/**/*" /--> <!-- Need to stay  because exported -->
-				<exclude name="test" />
-			</fileset>
-			<fileset dir="${temp.dir}/stage" includes="**/*" />
-		</delete>
-	</target>
+    <property name="jscoverage.browser.filenames"
+        description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
+        value="${chrome.browser.executable}"
+    />
 
-	<target name="init" description="get external dependencies and prepare the build environment" depends="step-info-get">
-		<echo>Target: init</echo>
-		<mkdir dir="${temp.dir}" />
-		<!-- Setup JavaScript libraries -->
-		<available property="dojo.already.expanded" file="src/WebContent/js/dojo/dojo/dojo.js" />
-		<antcall target="step-dojo-unzip" />
-		<!-- Setup JavaScript test environment -->
-		<mkdir dir="${temp.dir}/jsunit" />
-		<available property="jsunit.already.expanded" type="dir" file="bin/jsunit/bin" />
-		<antcall target="step-jsunit-unzip" />
-		<available property="jscoverage.already.expanded" file="${temp.dir}/jscoverage.exe" />
-		<antcall target="step-jscoverage-unzip" />
-		<!-- Setup documentation environment -->
-		<available property="jsdoc.already.expanded" type="dir" file="${temp.dir}/jsdoc" />
-		<antcall target="step-jsdoc-unzip" />
-	</target>
+    <!-- ============== -->
+    <!-- Public targets -->
+    <!-- ============== -->
 
-	<target name="compile" description="compile the application" depends="step-info-get, step-file-format">
-		<echo>Target: compile</echo>
-		<!-- Verify JavaScript code -->
-		<!-- TODO: use JSLint -->
-		<!-- Compile Java code -->
-		<antcall target="step-compile" />
-		<!-- Process TMXs -->
-		<antcall target="step-tmx-convert" />
-		<!-- Verify Java coding rules -->
-		<!-- TODO: call verification tools -->
-	</target>
+    <target name="clean" description="remove all created/copied files/directories at setup time" depends="step-info-get">
+        <echo>Target: clean</echo>
+        <delete includeemptydirs="yes" failonerror="no">
+            <fileset dir="${basedir}">
+                <exclude name="bin" />
+                <include name="bin/instrumented/**" />
+                <include name="bin/classes/**" />
+                <include name="bin/jsunit/**" />
+                <exclude name="build" />
+                <exclude name="deps" />
+                <exclude name="dist" />
+                <exclude name="docs" />
+                <include name="docs/generated-doc/**/*" />
+                <include name="docs/test-reports/**/*" />
+                <exclude name="src" />
+                <include name="src/WebContent/js/dojo/**/*" />
+                <!--include name="src/WebContent/js/domderrien/i18n/nls/**/*" /--> <!-- Need to stay  because exported -->
+                <exclude name="test" />
+            </fileset>
+            <fileset dir="${temp.dir}/stage" includes="**/*" />
+        </delete>
+    </target>
 
-	<target name="package" description="compile and package the application" depends="compile">
-		<echo>Target: package</echo>
-		<!-- Produce documentations -->
-		<antcall target="step-javadoc-produce" />
-		<antcall target="step-jsdoc-produce" />
-		<!-- Produce the JARs -->
-		<antcall target="step-package-jar" />
-		<!-- Produce the WAR -->
-		<antcall target="step-dojo-build" />
-		<antcall target="step-package-war" />
-		<!-- Produce the EAR -->
-		<antcall target="step-package-ear" />
-	</target>
+    <target name="init" description="get external dependencies and prepare the build environment" depends="step-info-get">
+        <echo>Target: init</echo>
+        <mkdir dir="${temp.dir}" />
+        <!-- Setup JavaScript libraries -->
+        <available property="dojo.already.expanded" file="src/WebContent/js/dojo/dojo/dojo.js" />
+        <antcall target="step-dojo-unzip" />
+        <!-- Setup JavaScript test environment -->
+        <mkdir dir="${temp.dir}/jsunit" />
+        <available property="jsunit.already.expanded" type="dir" file="bin/jsunit/bin" />
+        <antcall target="step-jsunit-unzip" />
+        <available property="jscoverage.already.expanded" file="${temp.dir}/jscoverage.exe" />
+        <antcall target="step-jscoverage-unzip" />
+        <!-- Setup documentation environment -->
+        <available property="jsdoc.already.expanded" type="dir" file="${temp.dir}/jsdoc" />
+        <antcall target="step-jsdoc-unzip" />
+    </target>
 
-	<target name="distribute" description="compile, package, and prepare the application" depends="init, test, package">
-		<echo>Target: distribute</echo>
-		<!-- Copy the files to be distributed -->
-		<antcall target="step-package-src-jar" />
-		<antcall target="step-package-src-javadoc" />
-	</target>
+    <target name="compile" description="compile the application" depends="step-info-get, step-statistics-get, step-file-format">
+        <echo>Target: compile</echo>
+        <!-- Verify JavaScript code -->
+        <!-- TODO: use JSLint -->
+        <!-- Compile Java code -->
+        <antcall target="step-compile" />
+        <!-- Process TMXs -->
+        <antcall target="step-tmx-convert" />
+        <!-- Verify Java coding rules -->
+        <!-- TODO: call verification tools -->
+    </target>
 
-	<target name="test" description="compile, package, and test the application" depends="compile">
-		<echo>Target: test</echo>
-		<antcall target="step-java-test" />
-		<antcall target="step-javascript-test" />
-	</target>
+    <target name="package" description="compile and package the application" depends="compile">
+        <echo>Target: package</echo>
+        <!-- Produce documentations -->
+        <antcall target="step-javadoc-produce" />
+        <antcall target="step-jsdoc-produce" />
+        <antcall target="step-tmxdoc-produce" />
+        <!-- Produce the JARs -->
+        <antcall target="step-package-jar" />
+        <!-- Produce the WAR -->
+        <antcall target="step-dojo-build" />
+        <antcall target="step-package-war" />
+        <!-- Produce the EAR -->
+        <antcall target="step-package-ear" />
+    </target>
 
-	<!-- ················· -->
-	<!-- Private variables -->
-	<!-- ················· -->
+    <target name="distribute" description="compile, package, and prepare the application" depends="init, test, package">
+        <echo>Target: distribute</echo>
+        <!-- Copy the files to be distributed -->
+        <antcall target="step-package-src-jar" />
+        <antcall target="step-package-src-javadoc" />
+    </target>
 
-	<!-- Property set later by "step-info-get" because <property /> are immutable
-	<property name="dd2tu.taggedDir" value="tagged" />
-	-->
+    <target name="test" description="compile, package, and test the application" depends="compile">
+        <echo>Target: test</echo>
+        <antcall target="step-java-test" />
+        <antcall target="step-javascript-test" />
+    </target>
 
-	<path id="tmxconverter.classpath">
-		<!-- For the TMXConverter code -->
-		<pathelement path="bin/classes" />
-		<!-- For the existing ${dd2tu.languageListFilename}.properties file -->
-		<filelist dir="deps/lib/xml">
-			<file name="xalan-2.7.0.jar" />
-			<file name="xercesImpl-2.4.0.jar" />
-			<file name="xml-apis-1.3.02.jar" />
-		</filelist>
-	</path>
+    <!-- ================= -->
+    <!-- Private variables -->
+    <!-- ================= -->
 
-	<path id="dojo-build.classpath">
-	</path>
+    <!-- Property set later by "step-info-get" because <property /> are immutable
+    <property name="dd2tu.taggedDir" value="tagged" />
+    -->
 
-	<fileset id="runtime.deps" dir="${basedir}">
-		<include name="deps/lib/apache/commons-lang-2.2.jar" />
-		<include name="deps/lib/apache/commons-logging-1.0.4.jar" />
-		<include name="bin/classes/" />
-	</fileset>
+    <xmlcatalog id="tmx.dtd">
+        <dtd
+            location="deps/tools/i18n/tmx14.dtd"
+            publicId="-//LISA OSCAR:1998//DTD for Translation Memory eXchange//EN"
+        />
+    </xmlcatalog>
 
-	<path id="java.compile.classpath">
-		<fileset refid="runtime.deps" />
-		<filelist dir="deps/lib">
-			<file name="xml/xalan-2.7.0.jar" />
-			<file name="xml/xercesImpl-2.4.0.jar" />
-			<file name="xml/xml-apis-1.3.02.jar" />
-			<file name="junit/junit-4.7.jar" />
-			<file name="junit/junit-dep-4.7.jar" />
-			<file name="j2ee/servlet-api.jar" />
-		</filelist>
-	</path>
+    <path id="tmxconverter.classpath">
+        <!-- For the TMXConverter code -->
+        <pathelement path="bin/classes" />
+        <!-- For the existing ${dd2tu.languageListFilename}.properties file -->
+        <filelist dir="deps/lib/xml">
+            <file name="xalan-2.7.0.jar" />
+            <file name="xercesImpl-2.4.0.jar" />
+            <file name="xml-apis-1.3.02.jar" />
+        </filelist>
+    </path>
 
-	<path id="cobertura.classpath">
-		<filelist dir="deps/lib">
-			<file name="junit/junit-4.7.jar" />
-			<file name="junit/junit-dep-4.7.jar" />
-			<file name="xml/xalan-2.7.0.jar" />
-			<file name="xml/xercesImpl-2.4.0.jar" />
-			<file name="xml/xml-apis-1.3.02.jar" />
-			<file name="j2ee/servlet-api.jar" />
-			<file name="cobertura/cobertura.jar" />
-			<file name="cobertura/asm-3.0.jar" />
-			<file name="cobertura/asm-tree-3.0.jar" />
-			<file name="cobertura/jakarta-oro-2.0.8.jar" />
-			<file name="cobertura/log4j-1.2.9.jar" />
-		</filelist>
-	</path>
+    <path id="dojo-build.classpath">
+    </path>
 
-	<taskdef name="cobertura-instrument" classname="net.sourceforge.cobertura.ant.InstrumentTask">
-		<classpath refid="cobertura.classpath" />
-	</taskdef>
+    <fileset id="runtime.deps" dir="${basedir}">
+        <include name="deps/lib/apache/commons-lang-2.2.jar" />
+        <include name="deps/lib/apache/commons-logging-1.0.4.jar" />
+        <include name="bin/classes/" />
+    </fileset>
 
-	<taskdef name="cobertura-report" classname="net.sourceforge.cobertura.ant.ReportTask">
-		<classpath refid="cobertura.classpath" />
-	</taskdef>
+    <path id="java.compile.classpath">
+        <fileset refid="runtime.deps" />
+        <filelist dir="deps/lib">
+            <file name="xml/xalan-2.7.0.jar" />
+            <file name="xml/xercesImpl-2.4.0.jar" />
+            <file name="xml/xml-apis-1.3.02.jar" />
+            <file name="junit/junit-4.7.jar" />
+            <file name="junit/junit-dep-4.7.jar" />
+            <file name="geronimo/geronimo-servlet_2.5_spec-1.2.jar" />
+            <file name="twitter4j/twitter4j-2.0.10.jar" />
+            <file name="wave/wave-robot-api-20090916.jar" />
+            <file name="jdo/jdo2-api-2.3-eb.jar" />
+            <file name="appengine/appengine-api-1.0-sdk-1.2.6.jar" />
+            <file name="appengine/appengine-local-runtime.jar" />
+            <file name="appengine/appengine-api-stubs.jar" />
+            <file name="dyuproject/dyuproject-openid-1.1.6.jar" />
+            <file name="dyuproject/dyuproject-util-1.1.6.jar" />
+            <file name="dyuproject/dyuproject-web-1.1.6.jar" />
+        </filelist>
+    </path>
 
-	<path id="jsunit.classpath">
-		<fileset dir="bin/jsunit/java/bin">
-			<include name="jsunit.jar" />
-		</fileset>
-		<fileset dir="bin/jsunit/java/lib">
-			<include name="*.jar" />
-			<exclude name="ant.jar" />
-		</fileset>
-		<dirset dir="bin/jsunit/java/config" />
-	</path>
+    <path id="cobertura.classpath">
+        <filelist dir="deps/lib">
+            <file name="junit/junit-4.7.jar" />
+            <file name="junit/junit-dep-4.7.jar" />
+            <file name="xml/xalan-2.7.0.jar" />
+            <file name="xml/xercesImpl-2.4.0.jar" />
+            <file name="xml/xml-apis-1.3.02.jar" />
+            <file name="geronimo/geronimo-servlet_2.5_spec-1.2.jar" />
+            <file name="cobertura/cobertura.jar" />
+            <file name="cobertura/asm-3.0.jar" />
+            <file name="cobertura/asm-tree-3.0.jar" />
+            <file name="cobertura/jakarta-oro-2.0.8.jar" />
+            <file name="cobertura/log4j-1.2.9.jar" />
+        </filelist>
+    </path>
 
-	<filterchain id="genericFilterChain">
-		<replacetokens>
-			<token key="dojo.optimization" value="${dojo.optimization}" />
-			<token key="dd2tu.release" value="${dd2tu.release}" />
-			<token key="dd2tu.productName" value="domderrien 2tiers utils" />
-			<token key="dd2tu.companyShortName" value="Dom Derrien" />
-			<token key="dd2tu.contextRoot" value="domderrien" />
-			<token key="dd2tu.languageListFilename" value="${dd2tu.languageListFilename}" />
-			<token key="dd2tu.localizedLabelBaseFilename" value="${dd2tu.localizedLabelBaseFilename}" />
-			<token key="dd2tu.stageId" value="${dd2tu.stageId}" />
-			<token key="dd2tu.stageYear" value="${dd2tu.stageYear}" />
-			<token key="dd2tu.sessionTimeout" value="${dd2tu.sessionTimeout}" />
-		</replacetokens>
-	</filterchain>
+    <taskdef name="cobertura-instrument" classname="net.sourceforge.cobertura.ant.InstrumentTask">
+        <classpath refid="cobertura.classpath" />
+    </taskdef>
 
-	<!-- ··············· -->
-	<!-- Private targets -->
-	<!-- ··············· -->
+    <taskdef name="cobertura-report" classname="net.sourceforge.cobertura.ant.ReportTask">
+        <classpath refid="cobertura.classpath" />
+    </taskdef>
 
-	<target name="step-info-get" unless="dd2tu.stageId">
-		<tstamp description="Set the properties {DSTAMP, TSTAMP, TODAY} to the current time">
-			<format pattern="yyyy" property="dd2tu.stageYear" />
-		</tstamp>
-		<property name="dd2tu.stageId" value="${DSTAMP}.${TSTAMP}" />
-		<resourcecount property="java.source.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/Java" includes="**/*.java" /></tokens>
-		</resourcecount>
-		<resourcecount property="java.test.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/Java" includes="**/*.java" /></tokens>
-		</resourcecount>
-		<resourcecount property="html.source.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent" includes="**/*.html,**/*.jsp" excludes="**/dojo/**" /></tokens>
-		</resourcecount>
-		<resourcecount property="html.test.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.html" excludes="**/dojo/**" /></tokens>
-		</resourcecount>
-		<resourcecount property="javascript.source.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent/js" includes="**/*.js" excludes="**/dojo/**" /></tokens>
-		</resourcecount>
-		<resourcecount property="javascript.test.line.count">
-			<tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.js" excludes="**/dojo/**" /></tokens>
-		</resourcecount>
-		<echo>
+    <path id="jsunit.classpath">
+        <fileset dir="bin/jsunit/java/bin">
+            <include name="jsunit.jar" />
+        </fileset>
+        <fileset dir="bin/jsunit/java/lib">
+            <include name="*.jar" />
+            <exclude name="ant.jar" />
+        </fileset>
+        <dirset dir="bin/jsunit/java/config" />
+    </path>
+
+    <filterchain id="genericFilterChain">
+        <replacetokens>
+            <token key="dojo.optimization" value="${dojo.optimization}" />
+            <token key="dd2tu.release" value="${dd2tu.release}" />
+            <token key="dd2tu.productName" value="domderrien 2tiers utils" />
+            <token key="dd2tu.companyShortName" value="Dom Derrien" />
+            <token key="dd2tu.contextRoot" value="domderrien" />
+            <token key="dd2tu.languageListFilename" value="${dd2tu.languageListFilename}" />
+            <token key="dd2tu.localizedLabelBaseFilename" value="${dd2tu.localizedLabelBaseFilename}" />
+            <token key="dd2tu.stageId" value="${dd2tu.stageId}" />
+            <token key="dd2tu.stageYear" value="${dd2tu.stageYear}" />
+            <token key="dd2tu.sessionTimeout" value="${dd2tu.sessionTimeout}" />
+        </replacetokens>
+    </filterchain>
+
+    <!-- =============== -->
+    <!-- Private targets -->
+    <!-- =============== -->
+
+    <target name="step-info-get" unless="dd2tu.stageId">
+        <tstamp description="Set the properties {DSTAMP, TSTAMP, TODAY} to the current time">
+            <format pattern="yyyy" property="dd2tu.stageYear" />
+        </tstamp>
+        <property name="dd2tu.stageId" value="${DSTAMP}.${TSTAMP}" />
+        <echo>
             ${ant.project.name}
-            ${TODAY} (${dd2tu.stageId})
+            ${TODAY} (${rwa.stageId})
             JVM version detected by Ant: ${ant.java.version}
+        </echo>
+    </target>
+
+    <target name="step-statistics-get" unless="testcase">
+        <resourcecount property="java.source.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="src/Java" includes="**/*.java" /></tokens>
+        </resourcecount>
+        <resourcecount property="java.test.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="test/Java" includes="**/*.java" /></tokens>
+        </resourcecount>
+        <resourcecount property="html.source.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent" includes="**/*.html,**/*.jsp" excludes="**/dojo/**" /></tokens>
+        </resourcecount>
+        <resourcecount property="html.test.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.html" excludes="**/dojo/**" /></tokens>
+        </resourcecount>
+        <resourcecount property="javascript.source.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="src/WebContent/js" includes="**/*.js" excludes="**/dojo/**" /></tokens>
+        </resourcecount>
+        <resourcecount property="javascript.test.line.count">
+            <tokens><linetokenizer includedelims="yes" /><fileset dir="test/WebContent" includes="**/*.js" excludes="**/dojo/**" /></tokens>
+        </resourcecount>
+        <echo>
             --
             Statistics:
                Java source/test files: ${java.source.line.count} lines / ${java.test.line.count} lines
                HTML source/test files: ${html.source.line.count} lines / ${html.test.line.count} lines
                Javacript source/test files: ${javascript.source.line.count} lines / ${javascript.test.line.count} lines
-		</echo>
-	</target>
+        </echo>
+    </target>
 
-	<target name="step-file-format">
-		<fixcrlf
-			eof="remove"
-			eol="crlf"
-			excludes="**/dojo/**/*.*"
-			includes="**/*java,**/*.jsp,**/*.html,**/*.js"
-			srcdir="src"
-			tab="remove"
-			tablength="4"
-		/>
-		<fixcrlf
-			eof="remove"
-			eol="crlf"
-			excludes="**/dojo/**/*.*"
-			includes="**/*java,**/*.jsp,**/*.html,**/*.js"
-			srcdir="test"
-			tab="remove"
-			tablength="4"
-		/>
-		<replaceregexp byline="true" flags="gm">
-			<regexp pattern="\s+$" />
-			<substitution expression=""/>
-			<fileset
-				dir="src"
-				excludes="**/dojo/**/*.*"
-				includes="**/*java,**/*.jsp,**/*.html,**/*.js"
-			/>
-		</replaceregexp>
-		<replaceregexp byline="true" flags="gm">
-			<regexp pattern="\s+$" />
-			<substitution expression=""/>
-			<fileset
-				dir="test"
-				excludes="**/dojo/**/*.*"
-				includes="**/*java,**/*.jsp,**/*.html,**/*.js"
-			/>
-		</replaceregexp>
-	</target>
+    <target name="step-file-format" unless="testcase">
+        <fixcrlf
+            eof="remove"
+            eol="crlf"
+            excludes="**/dojo/**/*.*"
+            includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+            srcdir="src"
+            tab="remove"
+            tablength="4"
+        />
+        <fixcrlf
+            eof="remove"
+            eol="crlf"
+            excludes="**/dojo/**/*.*"
+            includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+            srcdir="test"
+            tab="remove"
+            tablength="4"
+        />
+        <replaceregexp byline="true" flags="gm">
+            <regexp pattern="\s+$" />
+            <substitution expression=""/>
+            <fileset
+                dir="src"
+                excludes="**/dojo/**/*.*"
+                includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+            />
+        </replaceregexp>
+        <replaceregexp byline="true" flags="gm">
+            <regexp pattern="\s+$" />
+            <substitution expression=""/>
+            <fileset
+                dir="test"
+                excludes="**/dojo/**/*.*"
+                includes="**/*java,**/*.jsp,**/*.html,**/*.js"
+            />
+        </replaceregexp>
+    </target>
 
-	<target name="step-dojo-unzip" unless="dojo.already.expanded">
-		<delete dir="src/WebContent/js/dojo" includeemptydirs="true" />
-		<mkdir dir="src/WebContent/js/dojo" />
-		<unzip src="deps/tools/dojo/dojo-release-1.3.2-src.zip" dest="${temp.dir}">
-			<patternset>
-				<include name="dojo-release-1.3.2-src/dojo/**/*" />
-				<exclude name="dojo-release-1.3.2-src/dojo/tests/**/*" />
-				<include name="dojo-release-1.3.2-src/dijit/**/*" />
-				<exclude name="dojo-release-1.3.2-src/dijit/demos/**/*" />
-				<exclude name="dojo-release-1.3.2-src/dijit/tests/**/*" />
-				<include name="dojo-release-1.3.2-src/dojox/**/*" />
-				<exclude name="dojo-release-1.3.2-src/dojox/demos**/*" />
-				<exclude name="dojo-release-1.3.2-src/dojox/tests/**/*" />
-				<include name="dojo-release-1.3.2-src/util/**/*" />
-			</patternset>
-		</unzip>
-		<move file="${temp.dir}/dojo-release-1.3.2-src/dojo" todir="src/WebContent/js/dojo" overwrite="yes" />
-		<move file="${temp.dir}/dojo-release-1.3.2-src/dijit" todir="src/WebContent/js/dojo" overwrite="yes" />
-		<move file="${temp.dir}/dojo-release-1.3.2-src/dojox" todir="src/WebContent/js/dojo" overwrite="yes" />
-		<move file="${temp.dir}/dojo-release-1.3.2-src/util" todir="src/WebContent/js/dojo" overwrite="yes" />
-	</target>
+    <target name="step-dojo-unzip" unless="dojo.already.expanded">
+        <delete dir="src/WebContent/js/dojo" includeemptydirs="true" />
+        <mkdir dir="src/WebContent/js/dojo" />
+        <unzip src="deps/tools/dojo/dojo-release-1.3.2-src.zip" dest="${temp.dir}">
+            <patternset>
+                <include name="dojo-release-1.3.2-src/dojo/**/*" />
+                <exclude name="dojo-release-1.3.2-src/dojo/tests/**/*" />
+                <include name="dojo-release-1.3.2-src/dijit/**/*" />
+                <exclude name="dojo-release-1.3.2-src/dijit/demos/**/*" />
+                <exclude name="dojo-release-1.3.2-src/dijit/tests/**/*" />
+                <include name="dojo-release-1.3.2-src/dojox/**/*" />
+                <exclude name="dojo-release-1.3.2-src/dojox/demos**/*" />
+                <exclude name="dojo-release-1.3.2-src/dojox/tests/**/*" />
+                <include name="dojo-release-1.3.2-src/util/**/*" />
+            </patternset>
+        </unzip>
+        <move file="${temp.dir}/dojo-release-1.3.2-src/dojo" todir="src/WebContent/js/dojo" overwrite="yes" />
+        <move file="${temp.dir}/dojo-release-1.3.2-src/dijit" todir="src/WebContent/js/dojo" overwrite="yes" />
+        <move file="${temp.dir}/dojo-release-1.3.2-src/dojox" todir="src/WebContent/js/dojo" overwrite="yes" />
+        <move file="${temp.dir}/dojo-release-1.3.2-src/util" todir="src/WebContent/js/dojo" overwrite="yes" />
+    </target>
 
-	<target name="step-jsunit-unzip" unless="jsunit.already.expanded">
-		<unzip src="deps/tools/testing/jsunit2.2alpha11.zip" dest="bin">
-			<patternset>
-				<include name="jsunit/build.xml" />
-				<include name="jsunit/testRunner.html" />
-				<include name="jsunit/app/**/*" />
-				<include name="jsunit/bin/**/*" />
-				<include name="jsunit/css/**/*" />
-				<include name="jsunit/images/**/*" />
-				<include name="jsunit/java/bin/**/*" />
-				<include name="jsunit/java/config/**/*" />
-				<include name="jsunit/java/lib/**/*" />
-				<exclude name="jsunit/java/source_core/**/*" />
-				<exclude name="jsunit/java/source_server/**/*" />
-				<exclude name="jsunit/java/testlib/**/*" />
-				<exclude name="jsunit/java/tests_core/**/*" />
-				<exclude name="jsunit/java/tests_server/**/*" />
-				<exclude name="jsunit/licenses/**/*" />
-				<exclude name="jsunit/logs/**/*" />
-				<exclude name="jsunit/tests/**/*" />
-			</patternset>
-		</unzip>
-	</target>
+    <target name="step-jsunit-unzip" unless="jsunit.already.expanded">
+        <unzip src="deps/tools/testing/jsunit2.2alpha11.zip" dest="bin">
+            <patternset>
+                <include name="jsunit/build.xml" />
+                <include name="jsunit/testRunner.html" />
+                <include name="jsunit/app/**/*" />
+                <include name="jsunit/bin/**/*" />
+                <include name="jsunit/css/**/*" />
+                <include name="jsunit/images/**/*" />
+                <include name="jsunit/java/bin/**/*" />
+                <include name="jsunit/java/config/**/*" />
+                <include name="jsunit/java/lib/**/*" />
+                <exclude name="jsunit/java/source_core/**/*" />
+                <exclude name="jsunit/java/source_server/**/*" />
+                <exclude name="jsunit/java/testlib/**/*" />
+                <exclude name="jsunit/java/tests_core/**/*" />
+                <exclude name="jsunit/java/tests_server/**/*" />
+                <exclude name="jsunit/licenses/**/*" />
+                <exclude name="jsunit/logs/**/*" />
+                <exclude name="jsunit/tests/**/*" />
+            </patternset>
+        </unzip>
+    </target>
 
-	<target name="step-jscoverage-unzip" unless="jscoverage.already.expanded">
-		<unzip src="deps/tools/testing/jscoverage-0.4-windows.zip" dest="${temp.dir}">
-			<patternset>
-				<include name="jscoverage-0.4/jscoverage.exe" />
-			</patternset>
-		</unzip>
-		<move file="${temp.dir}/jscoverage-0.4/jscoverage.exe" todir="${temp.dir}" overwrite="no" />
-	</target>
+    <target name="step-jscoverage-unzip" unless="jscoverage.already.expanded">
+        <unzip src="deps/tools/testing/jscoverage-0.4-windows.zip" dest="${temp.dir}">
+            <patternset>
+                <include name="jscoverage-0.4/jscoverage.exe" />
+            </patternset>
+        </unzip>
+        <move file="${temp.dir}/jscoverage-0.4/jscoverage.exe" todir="${temp.dir}" overwrite="no" />
+    </target>
 
-	<target name="step-jsdoc-unzip" unless="jsdoc.already.expanded">
-		<!-- Cannot unzip in ${temp.dir} because the relative path for the files in test\WebContent MUST be maintained -->
-		<unzip src="deps/tools/documentation/jsdoc_toolkit-1.2.1.zip" dest="${temp.dir}/">
-			<patternset>
-				<include name="jsdoc_toolkit-1.2.1/app/**/*" />
-				<exclude name="jsdoc_toolkit-1.2.1/examples/**/*" />
-				<include name="jsdoc_toolkit-1.2.1/plugins/**/*" />
-				<include name="jsdoc_toolkit-1.2.1/templates/**/*" />
-				<exclude name="jsdoc_toolkit-1.2.1/test/**/*" />
-			</patternset>
-		</unzip>
-		<move file="${temp.dir}/jsdoc_toolkit-1.2.1" tofile="${temp.dir}/jsdoc" />
-	</target>
+    <target name="step-jsdoc-unzip" unless="jsdoc.already.expanded">
+        <!-- Cannot unzip in ${temp.dir} because the relative path for the files in test\WebContent MUST be maintained -->
+        <unzip src="deps/tools/documentation/jsdoc_toolkit-1.2.1.zip" dest="${temp.dir}/">
+            <patternset>
+                <include name="jsdoc_toolkit-1.2.1/app/**/*" />
+                <exclude name="jsdoc_toolkit-1.2.1/examples/**/*" />
+                <include name="jsdoc_toolkit-1.2.1/plugins/**/*" />
+                <include name="jsdoc_toolkit-1.2.1/templates/**/*" />
+                <exclude name="jsdoc_toolkit-1.2.1/test/**/*" />
+            </patternset>
+        </unzip>
+        <move file="${temp.dir}/jsdoc_toolkit-1.2.1" tofile="${temp.dir}/jsdoc" />
+    </target>
 
-	<target name="step-compile">
-		<delete dir="bin/classes" />
-		<mkdir dir="bin/classes" />
-		<!--
-		Use following arguments to compile Java 1.5 code for JVM 1.4
-			source="1.5"
-			target="jsr14"
-		-->
-		<javac
-			destdir="bin/classes"
-			deprecation="false"
-			debug="true"
-			optimize="false"
-			excludes=""
-			srcdir="src/java"
-		>
-			<classpath refid="java.compile.classpath" />
-		</javac>
-		<javac
-			destdir="bin/classes"
-			deprecation="false"
-			debug="true"
-			optimize="false"
-			excludes=""
-			srcdir="test/java"
-		>
-			<classpath refid="java.compile.classpath" />
-		</javac>
-		<copy todir="${temp.dir}/resources" overwrite="yes">
-			<fileset dir="src/resources">
-				<include name="**/*.x*" />
-				<include name="**/*.properties" />
-			</fileset>
-			<filterchain refid="genericFilterChain" />
-		</copy>
-	</target>
+    <target name="step-compile">
+        <delete dir="bin/classes" />
+        <mkdir dir="bin/classes" />
+        <!--
+        Use following arguments to compile Java 1.5 code for JVM 1.4
+            source="1.5"
+            target="jsr14"
+        -->
+        <javac
+            destdir="bin/classes"
+            deprecation="false"
+            debug="true"
+            optimize="false"
+            excludes=""
+            srcdir="src/java"
+        >
+            <classpath refid="java.compile.classpath" />
+        </javac>
+        <javac
+            destdir="bin/classes"
+            deprecation="false"
+            debug="true"
+            optimize="false"
+            excludes=""
+            srcdir="test/java"
+        >
+            <classpath refid="java.compile.classpath" />
+        </javac>
+        <copy todir="${temp.dir}/resources" overwrite="yes">
+            <fileset dir="src/resources">
+                <include name="**/*.x*" />
+                <include name="**/*.properties" />
+            </fileset>
+            <filterchain refid="genericFilterChain" />
+        </copy>
+    </target>
 
-	<target name="step-tmx-convert">
-		<mkdir dir="${temp.dir}/resources" />
-		<mkdir dir="src/WebContent/js/domderrien/i18n/nls" />
-		<java classname="domderrien.build.TMXConverter" fork="true" failonerror="true">
-			<classpath refid="tmxconverter.classpath" />
-			<classpath location="${temp.dir}/resources" />
-			<jvmarg value="-Dfile.encoding=UTF-8" />
-			<arg value="-tmxFilenameBase" />
-			<arg value="${dd2tu.localizedLabelBaseFilename}" />
-			<arg value="-sourcePath" />
-			<arg value="${basedir}\src\resources" />
-			<arg value="-jsDestPath" />
-			<arg value="${basedir}\src\WebContent\js\domderrien\i18n\nls" />
-			<arg value="-javaDestPath" />
-			<arg value="${temp.dir}/resources" />
-			<arg value="-languageFilenameBase" />
-			<arg value="${dd2tu.languageListFilename}" />
-			<arg value="-buildStamp" />
-			<arg value="${dd2tu.stageId}" />
-		</java>
-		<native2ascii src="${temp.dir}/resources" dest="${temp.dir}/resources" encoding="UTF8" includes="*.properties-utf8" ext=".properties" />
-		<!--copy file="bin/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="${temp.dir}/resources/${dd2tu.localizedLabelBaseFilename}_en.properties" /-->
-		<mkdir dir="src/WebContent/js/domderrien/i18n/nls/en" />
-		<copy file="src/WebContent/js/domderrien/i18n/nls/${dd2tu.localizedLabelBaseFilename}.js" todir="src/WebContent/js/domderrien/i18n/nls/en" />
-	</target>
+    <target name="step-tmx-convert">
+        <mkdir dir="${temp.dir}/resources" />
+        <mkdir dir="src/WebContent/js/domderrien/i18n/nls" />
+        <java classname="domderrien.build.TMXConverter" fork="true" failonerror="true">
+            <classpath refid="tmxconverter.classpath" />
+            <classpath location="${temp.dir}/resources" />
+            <jvmarg value="-Dfile.encoding=UTF-8" />
+            <arg value="-tmxFilenameBase" />
+            <arg value="${dd2tu.localizedLabelBaseFilename}" />
+            <arg value="-sourcePath" />
+            <arg value="${basedir}\src\resources" />
+            <arg value="-jsDestPath" />
+            <arg value="${basedir}\src\WebContent\js\domderrien\i18n\nls" />
+            <arg value="-javaDestPath" />
+            <arg value="${temp.dir}/resources" />
+            <arg value="-languageFilenameBase" />
+            <arg value="${dd2tu.languageListFilename}" />
+            <arg value="-buildStamp" />
+            <arg value="${dd2tu.stageId}" />
+        </java>
+        <native2ascii src="${temp.dir}/resources" dest="${temp.dir}/resources" encoding="UTF8" includes="*.properties-utf8" ext=".properties" />
+        <!--copy file="bin/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="${temp.dir}/resources/${dd2tu.localizedLabelBaseFilename}_en.properties" /-->
+        <mkdir dir="src/WebContent/js/domderrien/i18n/nls/en" />
+        <copy file="src/WebContent/js/domderrien/i18n/nls/${dd2tu.localizedLabelBaseFilename}.js" todir="src/WebContent/js/domderrien/i18n/nls/en" />
+    </target>
 
-	<xmlcatalog id="tmx.dtd">
-		<dtd publicId="http://www.lisa.org/tmx/tmx14.dtd" location="src/resources/tmx14.dtd" />
-	</xmlcatalog>
+    <target name="step-tmx-iterative-convert">
+        <style basedir="src/resources" destdir="src/resources" extension=".js" includes="*.tmx" style="src/resources/tmx2json.xsl">
+            <xmlcatalog refid="tmx.dtd" />
+        </style>
+    </target>
 
-	<target name="step-tmx-iterative-convert">
-		<style basedir="src/resources" destdir="src/resources" extension=".js" includes="*.tmx" style="src/resources/tmx2json.xsl">
-			<xmlcatalog refid="tmx.dtd" />
-		</style>
-	</target>
+    <target name="step-dojo-build" if="dojo.optimization">
+        <delete dir="src/WebContent/js-release" />
+        <copy file="src/WebContent/js/domderrien/dojo-build.profile.js" tofile="src/WebContent/js/dojo/util/buildscripts/profiles/domderrien.profile.js" />
+        <copy file="src/WebContent/js/domderrien/dojo-build.copyright.txt" tofile="src/WebContent/js/dojo/util/buildscripts/domderrien.copyright.txt" />
+        <antcall target="step-dojo-build-deeper" />
+    </target>
 
-	<target name="step-dojo-build" if="dojo.optimization">
-		<delete dir="src/WebContent/js-release" />
-		<copy file="src/WebContent/js/domderrien/dojo-build.profile.js" tofile="src/WebContent/js/dojo/util/buildscripts/profiles/domderrien.profile.js" />
-		<copy file="src/WebContent/js/domderrien/dojo-build.copyright.txt" tofile="src/WebContent/js/dojo/util/buildscripts/domderrien.copyright.txt" />
-		<antcall target="step-dojo-build-deeper" />
-	</target>
+    <target name="step-dojo-build-deeper" if="dojo.optimization">
+        <exec executable="cmd" dir="src/WebContent/js/dojo/util/buildscripts">
+            <arg value="/c" />
+            <arg value="build.bat" />
+            <arg value="action=release" />
+            <arg value="copyTests=false" />
+            <arg value="optimize=shrinksafe" />
+            <arg value="profile=domderrien" />
+            <arg value="releaseDir=../../../../js-release" />
+            <arg value="version=${dd2tu.release}" />
+        </exec>
+    </target>
 
-	<target name="step-dojo-build-deeper" if="dojo.optimization">
-		<exec executable="cmd" dir="src/WebContent/js/dojo/util/buildscripts">
-			<arg value="/c" />
-			<arg value="build.bat" />
-			<arg value="action=release" />
-			<arg value="copyTests=false" />
-			<arg value="optimize=shrinksafe" />
-			<arg value="profile=domderrien" />
-			<arg value="releaseDir=../../../../js-release" />
-			<arg value="version=${dd2tu.release}" />
-		</exec>
-	</target>
+    <target name="step-package-jar">
+        <delete file="dist/domderrien-${dd2tu.release}.jar" />
+        <jar destfile="dist/domderrien-${dd2tu.release}.jar">
+            <fileset dir="bin/classes">
+                <exclude name="**/Test*.class" />
+                <!--exclude name="**/Mock*.class" /-->
+            </fileset>
+            <fileset dir="${temp.dir}/resources">
+                <include name="**/*.x*" />
+                <include name="**/*.properties" />
+                <!-- To avoid conflicts with host application own file !-->
+                <exclude name="**/domderrien-i18n.properties" />
+            </fileset>
+            <fileset dir="src/resources">
+                <exclude name="**/*.x*" />
+                <exclude name="**/*.properties" />
+                <!-- TMX file are included as examples -->
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
+                <attribute name="Implementation-Version" value="${dd2tu.stageId}" />
+                <attribute name="Implementation-Vendor" value="Dom Derrien" />
+            </manifest>
+        </jar>
+    </target>
 
-	<target name="step-package-jar">
-		<delete file="dist/domderrien-${dd2tu.release}.jar" />
-		<jar destfile="dist/domderrien-${dd2tu.release}.jar">
-			<fileset dir="bin/classes">
-				<exclude name="**/Test*.class" />
-				<!--exclude name="**/Mock*.class" /-->
-			</fileset>
-			<fileset dir="${temp.dir}/resources">
-				<include name="**/*.x*" />
-				<include name="**/*.properties" />
-				<!-- To avoid conflicts with host application own file !-->
-				<exclude name="**/domderrien-i18n.properties" />
-			</fileset>
-			<fileset dir="src/resources">
-				<exclude name="**/*.x*" />
-				<exclude name="**/*.properties" />
-				<!-- TMX file are included as examples -->
-			</fileset>
-			<manifest>
-				<attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
-				<attribute name="Implementation-Version" value="${dd2tu.stageId}" />
-				<attribute name="Implementation-Vendor" value="Dom Derrien" />
-			</manifest>
-		</jar>
-	</target>
+    <target name="step-package-src-jar">
+        <mkdir dir="dist" />
+        <jar destfile="dist/domderrien-${dd2tu.release}-src.jar">
+            <fileset dir="src/Java" excludes="**/package.html,**/*.db,**/*.keep*,**/*.contrib*,**/.svn" />
+        </jar>
+    </target>
 
-	<target name="step-package-src-jar">
-		<mkdir dir="dist" />
-		<jar destfile="dist/domderrien-${dd2tu.release}-src.jar">
-			<fileset dir="src/Java" excludes="**/package.html,**/*.db,**/*.keep*,**/*.contrib*,**/.svn" />
-		</jar>
-	</target>
+    <target name="step-package-src-javadoc">
+        <mkdir dir="dist" />
+        <jar destfile="dist/domderrien-${dd2tu.release}-javadoc.jar">
+            <fileset dir="docs/generated-doc/javadoc" />
+        </jar>
+    </target>
 
-	<target name="step-package-src-javadoc">
-		<mkdir dir="dist" />
-		<jar destfile="dist/domderrien-${dd2tu.release}-javadoc.jar">
-			<fileset dir="docs/generated-doc/javadoc" />
-		</jar>
-	</target>
+    <target name="step-package-war" depends="step-info-get">
+        <delete dir="${temp.dir}/stage" includeemptydirs="yes" failonerror="false" />
+        <mkdir dir="${temp.dir}/stage" />
+        <copy todir="${temp.dir}/stage" overwrite="yes">
+            <fileset dir="src/WebContent">
+                <include name="index.jsp" />
+                <include name="META-INF/**/*" />
+                <include name="WEB-INF/**/*" />
+            </fileset>
+            <filterchain refid="genericFilterChain" />
+        </copy>
+        <copy todir="${temp.dir}/stage/${dd2tu.stageId}" overwrite="yes">
+            <fileset dir="src/WebContent">
+                <include name="**/*" />
+                <exclude name="**/*.ico" />
+                <exclude name="**/*.png" />
+                <exclude name="**/*.gif" />
+                <exclude name="**/*.svg" />
+                <exclude name="**/*.as" />
+                <exclude name="**/*.swf" />
+                <exclude name="**/*.sh" />
+                <exclude name="**/tests/**/*" />
+                <exclude name="js/dojo/util/**/*" />
+            </fileset>
+            <filterchain refid="genericFilterChain" />
+        </copy>
+        <copy todir="${temp.dir}/stage/${dd2tu.stageId}" overwrite="yes">
+            <fileset dir="src/WebContent">
+                <include name="**/*.ico" />
+                <include name="**/*.png" />
+                <include name="**/*.gif" />
+                <include name="**/*.svg" />
+                <include name="**/*.as" />
+                <include name="**/*.swf" />
+                <include name="**/*.sh" />
+            </fileset>
+        </copy>
+        <copy todir="${temp.dir}/stage/WEB-INF/lib" flatten="true" overwrite="yes" failonerror="yes">
+            <fileset dir="dist">
+                <include name="domderrien-${dd2tu.release}.jar" />
+            </fileset>
+            <fileset refid="runtime.deps" />
+        </copy>
+        <war destfile="dist/domderrien-${dd2tu.release}.war"
+            webxml="${temp.dir}/stage/WEB-INF/web.xml" compress="true">
+            <fileset dir="${temp.dir}/stage">
+                <exclude name="META-INF/application.xml" />
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
+                <attribute name="Implementation-Version" value="${dd2tu.stageId}" />
+                <attribute name="Implementation-Vendor" value="Dom Derrien" />
+            </manifest>
+        </war>
+    </target>
 
-	<target name="step-package-war" depends="step-info-get">
-		<delete dir="${temp.dir}/stage" includeemptydirs="yes" failonerror="false" />
-		<mkdir dir="${temp.dir}/stage" />
-		<copy todir="${temp.dir}/stage" overwrite="yes">
-			<fileset dir="src/WebContent">
-				<include name="index.jsp" />
-				<include name="META-INF/**/*" />
-				<include name="WEB-INF/**/*" />
-			</fileset>
-			<filterchain refid="genericFilterChain" />
-		</copy>
-		<copy todir="${temp.dir}/stage/${dd2tu.stageId}" overwrite="yes">
-			<fileset dir="src/WebContent">
-				<include name="**/*" />
-				<exclude name="**/*.ico" />
-				<exclude name="**/*.png" />
-				<exclude name="**/*.gif" />
-				<exclude name="**/*.svg" />
-				<exclude name="**/*.as" />
-				<exclude name="**/*.swf" />
-				<exclude name="**/*.sh" />
-				<exclude name="**/tests/**/*" />
-				<exclude name="js/dojo/util/**/*" />
-			</fileset>
-			<filterchain refid="genericFilterChain" />
-		</copy>
-		<copy todir="${temp.dir}/stage/${dd2tu.stageId}" overwrite="yes">
-			<fileset dir="src/WebContent">
-				<include name="**/*.ico" />
-				<include name="**/*.png" />
-				<include name="**/*.gif" />
-				<include name="**/*.svg" />
-				<include name="**/*.as" />
-				<include name="**/*.swf" />
-				<include name="**/*.sh" />
-			</fileset>
-		</copy>
-		<copy todir="${temp.dir}/stage/WEB-INF/lib" flatten="true" overwrite="yes" failonerror="yes">
-			<fileset dir="dist">
-				<include name="domderrien-${dd2tu.release}.jar" />
-			</fileset>
-			<fileset refid="runtime.deps" />
-		</copy>
-		<war destfile="dist/domderrien-${dd2tu.release}.war"
-			webxml="${temp.dir}/stage/WEB-INF/web.xml" compress="true">
-			<fileset dir="${temp.dir}/stage">
-				<exclude name="META-INF/application.xml" />
-			</fileset>
-			<manifest>
-				<attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
-				<attribute name="Implementation-Version" value="${dd2tu.stageId}" />
-				<attribute name="Implementation-Vendor" value="Dom Derrien" />
-			</manifest>
-		</war>
-	</target>
+    <target name="step-package-ear">
+        <delete verbose="true" failonerror="false">
+            <fileset dir="dist">
+                <include name="domderrien-${dd2tu.release}.ear" />
+            </fileset>
+        </delete>
+        <copy file="src/WebContent/META-INF/application.xml" todir="${temp.dir}/stage" overwrite="yes">
+            <filterchain refid="genericFilterChain" />
+        </copy>
+        <mkdir dir="dist" />
+        <ear appxml="${temp.dir}/stage/application.xml" destfile="dist/domderrien-${dd2tu.release}.ear" compress="true">
+            <fileset dir="dist">
+                <include name="domderrien-${dd2tu.release}.war" />
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
+                <attribute name="Implementation-Version" value="${dd2tu.stageId}" />
+                <attribute name="Implementation-Vendor" value="Dom Derrien" />
+            </manifest>
+        </ear>
+    </target>
 
-	<target name="step-package-ear">
-		<delete verbose="true" failonerror="false">
-			<fileset dir="dist">
-				<include name="domderrien-${dd2tu.release}.ear" />
-			</fileset>
-		</delete>
-		<copy file="src/WebContent/META-INF/application.xml" todir="${temp.dir}/stage" overwrite="yes">
-			<filterchain refid="genericFilterChain" />
-		</copy>
-		<mkdir dir="dist" />
-		<ear appxml="${temp.dir}/stage/application.xml" destfile="dist/domderrien-${dd2tu.release}.ear" compress="true">
-			<fileset dir="dist">
-				<include name="domderrien-${dd2tu.release}.war" />
-			</fileset>
-			<manifest>
-				<attribute name="Implementation-Title" value="domderrien 2tiers utils ${dd2tu.release}" />
-				<attribute name="Implementation-Version" value="${dd2tu.stageId}" />
-				<attribute name="Implementation-Vendor" value="Dom Derrien" />
-			</manifest>
-		</ear>
-	</target>
+    <target name="step-java-test">
+        <!-- Run Cobertura on the top of JUnit -->
+        <antcall target="step-cobertura-instrument" />
+        <antcall target="step-junit-test" />
+        <antcall target="step-cobertura-xml-report" />
+        <antcall target="step-cobertura-html-report" />
+    </target>
 
-	<target name="step-java-test">
-		<!-- Run Cobertura on the top of JUnit -->
-		<antcall target="step-cobertura-instrument" />
-		<antcall target="step-junit-test" />
-		<antcall target="step-cobertura-xml-report" />
-		<antcall target="step-cobertura-html-report" />
-	</target>
+    <target name="step-cobertura-instrument">
+        <!-- Remove the coverage data file.-->
+        <delete file="cobertura.ser"/>
+        <delete dir="bin/instrumented" />
+        <delete verbose="true" failonerror="false">
+            <fileset dir="bin/classes">
+                <include name="*.properties" />
+            </fileset>
+        </delete>
 
-	<target name="step-cobertura-instrument">
-		<!-- Remove the coverage data file.-->
-		<delete file="cobertura.ser"/>
-		<delete dir="bin/instrumented" />
-		<delete verbose="true" failonerror="false">
-			<fileset dir="bin/classes">
-				<include name="*.properties" />
-			</fileset>
-		</delete>
+        <!--Instrument the application classes    -->
+        <cobertura-instrument todir="bin/instrumented">
+            <!-- Ignore log4j -->
+            <ignore regex="org.apache.log4j.*" />
 
-		<!--Instrument the application classes	-->
-		<cobertura-instrument todir="bin/instrumented">
-			<!-- Ignore log4j -->
-			<ignore regex="org.apache.log4j.*" />
+            <fileset dir="bin/classes">
+                <!-- Instrument all the application classes -->
+                <include name="**/*.class" />
+                <exclude name="**/Test*.class" />
+                <exclude name="**/Mock*.class" />
+            </fileset>
+        </cobertura-instrument>
+    </target>
 
-			<fileset dir="bin/classes">
-				<!-- Instrument all the application classes -->
-				<include name="**/*.class" />
-				<exclude name="**/Test*.class" />
-				<exclude name="**/Mock*.class" />
-			</fileset>
-		</cobertura-instrument>
-	</target>
+    <target name="step-junit-test">
+        <mkdir dir="docs/test-reports" />
+        <mkdir dir="docs/test-reports/junit-xml" />
+        <mkdir dir="docs/test-reports/junit-html" />
+        <junit
+            dir="${basedir}"
+            failureProperty="junit.test.failed"
+            fork="yes"
+            printSummary="yes"
+            haltonerror="true"
+            haltonfailure="true"
+            timeout="10000"
+            maxmemory="512M"
+        >
+            <classpath location="bin/instrumented" />
+            <classpath location="bin/classes" />
+            <!-- Important: instrumented classes are before the original (uninstrumented) classes. -->
+            <classpath refid="cobertura.classpath" />
+            <classpath location="${temp.dir}/resources" />
 
-	<target name="step-junit-test">
-		<mkdir dir="docs/test-reports" />
-		<mkdir dir="docs/test-reports/junit-xml" />
-		<mkdir dir="docs/test-reports/junit-html" />
-		<junit
-			dir="${basedir}"
-			failureProperty="junit.test.failed"
-			fork="yes"
-			printSummary="yes"
-			haltonerror="true"
-			haltonfailure="true"
-			timeout="10000"
-			maxmemory="512M"
-		>
-			<classpath location="bin/instrumented" />
-			<classpath location="bin/classes" />
-			<!-- Important: instrumented classes are before the original (uninstrumented) classes. -->
-			<classpath refid="cobertura.classpath" />
-			<classpath location="${temp.dir}/resources" />
+            <formatter type="xml" />
+            <formatter usefile="false" type="plain" />
 
-			<formatter type="xml" />
-			<formatter usefile="false" type="plain" />
+            <test name="${testcase}" todir="docs/test-reports/junit-xml" if="testcase" />
+            <batchtest todir="docs/test-reports/junit-xml" unless="testcase">
+                <fileset dir="test/Java">
+                    <include name="**/Test*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
 
-			<test name="${testcase}" todir="docs/test-reports/junit-xml" if="testcase" />
-			<batchtest todir="docs/test-reports/junit-xml" unless="testcase">
-				<fileset dir="test/Java">
-					<include name="**/Test*.java" />
-				</fileset>
-			</batchtest>
-		</junit>
+        <junitreport todir="docs/test-reports/junit-xml">
+            <fileset dir="docs/test-reports/junit-xml">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="docs/test-reports/junit-html" />
+        </junitreport>
 
-		<junitreport todir="docs/test-reports/junit-xml">
-			<fileset dir="docs/test-reports/junit-xml">
-				<include name="TEST-*.xml" />
-			</fileset>
-			<report format="frames" todir="docs/test-reports/junit-html" />
-		</junitreport>
+        <delete file="junit*.properties" />
+    </target>
 
-		<delete file="junit*.properties" />
-	</target>
+    <target name="step-cobertura-xml-report" unless="no.cobertura.xml.reports">
+        <!-- Generate an XML file coverage -->
+        <mkdir dir="docs/test-reports" />
+        <mkdir dir="docs/test-reports/cobertura-xml" />
+        <mkdir dir="docs/test-reports/cobertura-html" />
+        <cobertura-report srcdir="src/Java" destdir="docs/test-reports/cobertura-xml" format="xml" />
+    </target>
 
-	<target name="step-cobertura-xml-report" unless="no.cobertura.xml.reports">
-		<!-- Generate an XML file coverage -->
-		<mkdir dir="docs/test-reports" />
-		<mkdir dir="docs/test-reports/cobertura-xml" />
-		<mkdir dir="docs/test-reports/cobertura-html" />
-		<cobertura-report srcdir="src/Java" destdir="docs/test-reports/cobertura-xml" format="xml" />
-	</target>
+    <target name="step-cobertura-html-report" unless="no.cobertura.html.reports">
+        <!-- Generate a series of HTML files containing the coverage -->
+        <cobertura-report destdir="docs/test-reports/cobertura-html">
+            <fileset dir="src/Java">
+                <include name="**/*.java" />
+                <exclude name="**/Test*.java" />
+                <exclude name="**/Mock*.java" />
+            </fileset>
+        </cobertura-report>
+        <delete file="cobertura.ser" />
+        <delete file="nop" />
+    </target>
 
-	<target name="step-cobertura-html-report" unless="no.cobertura.html.reports">
-		<!-- Generate a series of HTML files containing the coverage -->
-		<cobertura-report destdir="docs/test-reports/cobertura-html">
-			<fileset dir="src/Java">
-				<include name="**/*.java" />
-				<exclude name="**/Test*.java" />
-				<exclude name="**/Mock*.java" />
-			</fileset>
-		</cobertura-report>
-		<delete file="cobertura.ser" />
-		<delete file="nop" />
-	</target>
+    <target name="step-javascript-test">
+        <!-- Run JSUnit -->
+        <antcall target="step-jsunit-test" />
+        <antcall target="step-jsunit-report-transform" />
+        <antcall target="step-jscoverage-test" />
+    </target>
 
-	<target name="step-javascript-test">
-		<!-- Run JSUnit -->
-		<antcall target="step-jsunit-test" />
-		<antcall target="step-jsunit-report-transform" />
-		<antcall target="step-jscoverage-test" />
-	</target>
+    <target name="step-jsunit-test">
+        <mkdir dir="docs/test-reports/jsunit-xml/" />
+        <junit
+            dir="${basedir}" 
+            failureProperty="jsunit.test.failed" 
+            fork="yes" 
+            printSummary="yes" 
+            haltonerror="true" 
+            haltonfailure="true" 
+            timeout="60000" 
+            maxmemory="512M"
+        >
+            <classpath refid="jsunit.classpath" />
 
-	<target name="step-jsunit-test">
-		<mkdir dir="docs/test-reports/jsunit-xml/" />
-		<junit
-			dir="${basedir}" 
-			failureProperty="jsunit.test.failed" 
-			fork="yes" 
-			printSummary="yes" 
-			haltonerror="true" 
-			haltonfailure="true" 
-			timeout="60000" 
-			maxmemory="512M"
-		>
-			<classpath refid="jsunit.classpath" />
+            <formatter type="xml" />
+            <formatter usefile="false" type="plain" />
 
-			<formatter type="xml" />
-			<formatter usefile="false" type="plain" />
+            <sysproperty key="browserFileNames" value="${jsunit.browser.filenames}" />
+            <sysproperty key="closeBrowsersAfterTestRuns" value="yes" />
+            <sysproperty key="logsDirectory" value="${basedir}\docs\test-reports\jsunit-xml" />
+            <sysproperty key="port" value="${jsunit.server.port}" />
+            <sysproperty key="resourceBase" value="${basedir}" />
+            <sysproperty key="timeoutSeconds" value="${jsunit.timeout.seconds}" />
+            <!-- See: http://www.jsunit.net/documentation/standardQueryStrings.html -->
+            <sysproperty key="url" value="file:///${basedir}/bin/jsunit/testRunner.html?testPage=${basedir}/test/WebContent/js/JSUnitSuite.html&amp;resultId=domderrien" />
 
-			<sysproperty key="browserFileNames" value="${jsunit.browser.filenames}" />
-			<sysproperty key="closeBrowsersAfterTestRuns" value="yes" />
-			<sysproperty key="logsDirectory" value="${basedir}\docs\test-reports\jsunit-xml" />
-			<sysproperty key="port" value="${jsunit.server.port}" />
-			<sysproperty key="resourceBase" value="${basedir}" />
-			<sysproperty key="timeoutSeconds" value="${jsunit.timeout.seconds}" />
-			<!-- See: http://www.jsunit.net/documentation/standardQueryStrings.html -->
-			<sysproperty key="url" value="file:///${basedir}/bin/jsunit/testRunner.html?testPage=${basedir}/test/WebContent/js/JSUnitSuite.html&amp;resultId=domderrien" />
+            <test name="net.jsunit.StandaloneTest" todir="${basedir}/docs/test-reports/jsunit-xml" />
+        </junit>
+    </target>
 
-			<test name="net.jsunit.StandaloneTest" todir="${basedir}/docs/test-reports/jsunit-xml" />
-		</junit>
-	</target>
-
-	<target name="step-jsunit-report-transform">
-		<mkdir dir="docs/test-reports/jsunit-html/" />
-		<concat destfile="docs/test-reports/jsunit-html/index.xml">
-			<header filtering="no" trimleading="yes">&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;?xml-stylesheet type="text/xsl" href="xml2html.xsl"?&gt;</header>
-			<filelist dir="docs/test-reports/jsunit-xml" files="JSTEST-domderrien.0.xml" />
-		</concat>
-		<copy file="deps/tools/testing/jsunit-results2html.xsl" tofile="docs/test-reports/jsunit-html/xml2html.xsl" />
-	</target>
+    <target name="step-jsunit-report-transform">
+        <mkdir dir="docs/test-reports/jsunit-html/" />
+        <concat destfile="docs/test-reports/jsunit-html/index.xml">
+            <header filtering="no" trimleading="yes">&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;?xml-stylesheet type="text/xsl" href="xml2html.xsl"?&gt;</header>
+            <filelist dir="docs/test-reports/jsunit-xml" files="JSTEST-domderrien.0.xml" />
+        </concat>
+        <copy file="deps/tools/testing/jsunit-results2html.xsl" tofile="docs/test-reports/jsunit-html/xml2html.xsl" />
+    </target>
 
 
-	<target name="step-jscoverage-test">
-		<!-- Process only the JS application code -->
-		<mkdir dir="docs/test-reports/jscoverage-html" />
-		<mkdir dir="docs/test-reports/jscoverage-html/js" />
-		<delete dir="docs/test-reports/jscoverage-html/temp" failonerror="yes" />
-		<exec dir="docs/test-reports/jscoverage-html" executable="${temp.dir}/jscoverage.exe">
-			<!-- Check documentation on http://siliconforks.com/jscoverage/manual.html -->
-			<arg value="--verbose" />
-			<!-- do not use no-instrument switch from jscoverage because it will always copy the files -->
-			<!--arg value="- -exclude=dojo/util" /-->
-			<!--arg value="- -no-instrument=dojo" /-->
-			<arg value="--exclude=dojo" />
-			<arg value="--exclude=domderrien/i18n/nls" />
-			<arg value="${basedir}/src/WebContent/js" />
-			<arg value="temp" />
-		</exec>
-		<!-- Move the instrumented files -->
-		<move todir="docs/test-reports/jscoverage-html/js" overwrite="yes">
-			<fileset dir="docs/test-reports/jscoverage-html/temp" includes="**/*" />
-		</move>
-		<!-- Copy the dojo library -->
-		<mkdir dir="docs/test-reports/jscoverage-html/js/dojo" />
-		<copy todir="docs/test-reports/jscoverage-html/js/dojo" includeemptydirs="no" overwrite="no">
-			<fileset dir="src/WebContent/js/dojo">
-				<exclude name="**/tests/**/*" />
-				<exclude name="util/**/*" />
-			</fileset>
-		</copy>
-		<!-- Copy the dictionaries -->
-		<mkdir dir="docs/test-reports/jscoverage-html/js/domderrien/i18n/nls" />
-		<copy todir="docs/test-reports/jscoverage-html/js/domderrien/i18n/nls" includeemptydirs="no" overwrite="yes">
-			<fileset dir="src/WebContent/js/domderrien/i18n/nls" />
-		</copy>
-		<!-- Copy the test files -->
-		<copy todir="docs/test-reports/jscoverage-html/" includeemptydirs="no" overwrite="yes">
-			<fileset dir="test/WebContent">
-				<include name="**/Test*.js" />
-			</fileset>
-		</copy>
-		<!-- Copy the test suite files  that will exercise all instrumented unit tests -->
-		<copy todir="docs/test-reports/jscoverage-html/js" overwrite="no">
-			<fileset dir="test/WebContent/js">
-				<include name="JSCoverageSuite.*" />
-			</fileset>
-		</copy>
-		<!-- Launch firefox to produce the coverage numbers -->
-		<exec executable="${jscoverage.browser.filenames}">
-			<arg value="file:///${basedir}/docs/test-reports/jscoverage-html/js/jscoverage.html?url=JSCoverageSuite.html" />
-		</exec>
-		<!--exec executable="${test.browser.executable}">
-    		<arg value="file:///${basedir}/docs/test-reports/jscoverage-html/JSCoverageSuite.html" />
-    	</exec-->
-	</target>
+    <target name="step-jscoverage-test">
+        <!-- Process only the JS application code -->
+        <mkdir dir="docs/test-reports/jscoverage-html" />
+        <mkdir dir="docs/test-reports/jscoverage-html/js" />
+        <delete dir="docs/test-reports/jscoverage-html/temp" failonerror="yes" />
+        <exec dir="docs/test-reports/jscoverage-html" executable="${temp.dir}/jscoverage.exe">
+            <!-- Check documentation on http://siliconforks.com/jscoverage/manual.html -->
+            <arg value="--verbose" />
+            <!-- do not use no-instrument switch from jscoverage because it will always copy the files -->
+            <!--arg value="- -exclude=dojo/util" /-->
+            <!--arg value="- -no-instrument=dojo" /-->
+            <arg value="--exclude=dojo" />
+            <arg value="--exclude=domderrien/i18n/nls" />
+            <arg value="${basedir}/src/WebContent/js" />
+            <arg value="temp" />
+        </exec>
+        <!-- Move the instrumented files -->
+        <move todir="docs/test-reports/jscoverage-html/js" overwrite="yes">
+            <fileset dir="docs/test-reports/jscoverage-html/temp" includes="**/*" />
+        </move>
+        <!-- Copy the dojo library -->
+        <mkdir dir="docs/test-reports/jscoverage-html/js/dojo" />
+        <copy todir="docs/test-reports/jscoverage-html/js/dojo" includeemptydirs="no" overwrite="no">
+            <fileset dir="src/WebContent/js/dojo">
+                <exclude name="**/tests/**/*" />
+                <exclude name="util/**/*" />
+            </fileset>
+        </copy>
+        <!-- Copy the dictionaries -->
+        <mkdir dir="docs/test-reports/jscoverage-html/js/domderrien/i18n/nls" />
+        <copy todir="docs/test-reports/jscoverage-html/js/domderrien/i18n/nls" includeemptydirs="no" overwrite="yes">
+            <fileset dir="src/WebContent/js/domderrien/i18n/nls" />
+        </copy>
+        <!-- Copy the test files -->
+        <copy todir="docs/test-reports/jscoverage-html/" includeemptydirs="no" overwrite="yes">
+            <fileset dir="test/WebContent">
+                <include name="**/Test*.js" />
+            </fileset>
+        </copy>
+        <!-- Copy the test suite files  that will exercise all instrumented unit tests -->
+        <copy todir="docs/test-reports/jscoverage-html/js" overwrite="no">
+            <fileset dir="test/WebContent/js">
+                <include name="JSCoverageSuite.*" />
+            </fileset>
+        </copy>
+        <!-- Launch firefox to produce the coverage numbers -->
+        <exec executable="${jscoverage.browser.filenames}">
+            <arg value="file:///${basedir}/docs/test-reports/jscoverage-html/js/jscoverage.html?url=JSCoverageSuite.html" />
+        </exec>
+        <!--exec executable="${test.browser.executable}">
+            <arg value="file:///${basedir}/docs/test-reports/jscoverage-html/JSCoverageSuite.html" />
+        </exec-->
+    </target>
 
-	<target name="step-javadoc-produce" unless="no.javadoc.reports">
-		<mkdir dir="docs/generated-doc/javadoc" />
-		<javadoc use="true" private="true" destdir="docs/generated-doc/javadoc" author="true" version="true" packagenames="domderrien.*" sourcepath="src/Java" windowtitle="${javadoc.docs.window.title}">
-			<classpath>
-				<path refid="java.compile.classpath" />
-			</classpath>
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api" />
-			<bottom>
-				<![CDATA[<center>${javadoc.docs.copyright}</center>]]></bottom>
-		</javadoc>
-	</target>
-	
-	<target name="step-jsdoc-produce" unless="no.jsdoc.reports">
-		<mkdir dir="docs/generated-doc/jsdoc" />
-		<java jar="${temp.dir}/jsdoc/app/js.jar" fork="true" dir="${temp.dir}/jsdoc">
-			<arg value="app/run.js" />
-			<arg value="-r" />
-			<arg value="-t=templates/sunny" />
-			<arg value="-d=${basedir}/docs/generated-doc/jsdoc" />
-			<arg value="-r=2" /> <!-- depth limited to 2 -->
-			<arg value="${basedir}/src/WebContent/js/domderrien/" />
-			<!-- List all files deeper than depth 2 -->
-			<!--arg value="${basedir}/src/WebContent/js/domderrien/utils/sample/sample.js" /-->
-		</java>
-	</target>
+    <target name="step-javadoc-produce" unless="no.javadoc.reports">
+        <mkdir dir="docs/generated-doc/javadoc" />
+        <javadoc use="true" private="true" destdir="docs/generated-doc/javadoc" author="true" version="true" packagenames="domderrien.*" sourcepath="src/Java" windowtitle="${javadoc.docs.window.title}">
+            <classpath>
+                <path refid="java.compile.classpath" />
+            </classpath>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api" />
+            <bottom>
+                <![CDATA[<center>${javadoc.docs.copyright}</center>]]></bottom>
+        </javadoc>
+    </target>
+    
+    <target name="step-jsdoc-produce" unless="no.jsdoc.reports">
+        <mkdir dir="docs/generated-doc/jsdoc" />
+        <java jar="${temp.dir}/jsdoc/app/js.jar" fork="true" dir="${temp.dir}/jsdoc">
+            <arg value="app/run.js" />
+            <arg value="-r" />
+            <arg value="-t=templates/sunny" />
+            <arg value="-d=${basedir}/docs/generated-doc/jsdoc" />
+            <arg value="-r=2" /> <!-- depth limited to 2 -->
+            <arg value="${basedir}/src/WebContent/js/domderrien/" />
+            <!-- List all files deeper than depth 2 -->
+            <!--arg value="${basedir}/src/WebContent/js/domderrien/utils/sample/sample.js" /-->
+        </java>
+    </target>
+
+    <target name="step-tmxdoc-produce">
+        <xslt
+            basedir="src/resources"
+            destdir="docs/generated-doc"
+            extension=".html"
+            includes="*.tmx"
+            style="src/resources/tmx2html.xsl"
+        >
+            <xmlcatalog refid="tmx.dtd" />
+        </xslt>
+    </target>
 
 </project>

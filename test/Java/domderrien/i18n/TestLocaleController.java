@@ -13,8 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import domderrien.mocks.MockHttpServletRequest;
-import domderrien.mocks.MockHttpSession;
+import javax.servlet.http.MockHttpServletRequest;
+import javax.servlet.http.MockHttpSession;
 
 public class TestLocaleController {
 
