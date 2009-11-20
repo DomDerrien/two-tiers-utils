@@ -19,7 +19,7 @@ import com.google.apphosting.api.ApiProxy;
  * Mock for the App Engine Java environment used by the JDO wrapper.
  *
  * These class has been build with information gathered on:
- * - App Engine documentation: http://code.google.com/appengine/docs/java/howtos/unittesting.html
+ * - App Engine documentation: http://code.google.com/appengine/docs/java/howto/unittesting.html
  * - App Engine Fan blog: http://blog.appenginefan.com/2009/05/jdo-and-unit-tests.html
  *
  * @author Dom Derrien
