@@ -616,7 +616,6 @@ public class TMXConverter {
                 text = n.getNodeValue();
             }
             l = null;
-            System.err.println("j: " + i);
             if (text == null) {
                 reportError("TMXConverter: Empty text node of <seg> for entry \"" + id + "\"."); //$NON-NLS-1$
                 text = "";
