@@ -575,6 +575,7 @@ public class TMXConverter {
         jsOS.write(JS_FILE_START.getBytes());
 
         Pattern bracesPattern = Pattern.compile("(\\{[\\d]+\\})"); //$NON-NLS-1$
+        Pattern doubleQuotesPattern = Pattern.compile("\""); //$NON-NLS-1$
         boolean languageIdSearched = true;
 
         for (int i = 0; i < nl.getLength(); i++) {
@@ -617,7 +618,7 @@ public class TMXConverter {
             l = null;
             if (text == null) {
                 reportError("TMXConverter: Empty text node of <seg> for entry \"" + id + "\"."); //$NON-NLS-1$
-                return;
+                break; // Entry skipped
             }
             text = text.replaceAll("\\s+", " ").trim();
 
@@ -629,6 +630,7 @@ public class TMXConverter {
                     updatedText = bracesPattern.matcher(text).replaceAll("\\$$1"); //$NON-NLS-1$
 
                 }
+                updatedText = doubleQuotesPattern.matcher(updatedText).replaceAll("\\\\u0022"); // To avoid conflicts with the delimiters //$NON_NLS-1$
                 jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             if (saveToJava) {
