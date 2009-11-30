@@ -616,11 +616,14 @@ public class TMXConverter {
                 text = n.getNodeValue();
             }
             l = null;
+            System.err.println("j: " + i);
             if (text == null) {
                 reportError("TMXConverter: Empty text node of <seg> for entry \"" + id + "\"."); //$NON-NLS-1$
-                break; // Entry skipped
+                text = "";
             }
-            text = text.replaceAll("\\s+", " ").trim();
+            else {
+                text = text.replaceAll("\\s+", " ").trim();
+            }
 
             if (saveToJS) {
                 // js.append("'" + id + "':\"").append(text.replaceAll("(\\{[\\d]+\\})", "\\$$1")).append("\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$

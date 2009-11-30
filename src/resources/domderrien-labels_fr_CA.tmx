@@ -40,5 +40,25 @@
 				</seg>
 			</tuv>
 		</tu>
-	</body>
+        <tu tuid="unit_test_sample_with_double_quotes_to_be_escaped_for_JavaScript_bundle" datatype="Text">
+            <prop type="x-tier">dojotk</prop>
+            <prop type="x-tier">javarb</prop>
+            <note>test</note>
+            <tuv xml:lang="en">
+                <seg>
+                    Quand il faut générer le code pour le langage JavaScript
+                    les guillements doubles (") doit être remplacées par la séquence \u0022,
+                    pour éviter les conflits avec les délimiteurs de chaînes de caractères.
+                </seg>
+            </tuv>
+        </tu>
+        <tu tuid="unit_test_sample_with_harmless_empty_segment" datatype="Text">
+            <prop type="x-tier">dojotk</prop>
+            <prop type="x-tier">javarb</prop>
+            <note>test</note>
+            <tuv xml:lang="en">
+                <seg></seg>
+            </tuv>
+        </tu>
+    </body>
 </tmx>
