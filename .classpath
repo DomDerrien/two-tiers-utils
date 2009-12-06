@@ -12,10 +12,10 @@
     <classpathentry kind="lib" path="deps/lib/dyuproject/jetty-util-6.1.19.jar"/>
 	<!-- For Google App Engine -->
     <classpathentry kind="lib" path="deps/lib/jdo/jdo2-api-2.3-eb.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-1.0-sdk-1.2.6.jar"/>
+    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-1.0-sdk-1.2.8.jar"/>
     <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-stubs.jar"/>
     <classpathentry kind="lib" path="deps/lib/appengine/appengine-local-runtime.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-labs-1.2.6.jar"/>
+    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-labs-1.2.8.jar"/>
     <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-jpa-1.1.5.jar"/>
     <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-appengine-1.0.3.jar"/>
     <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-core-1.1.5.jar"/>

@@ -186,7 +186,8 @@
             <file name="twitter4j/twitter4j-2.0.10.jar" />
             <file name="wave/wave-robot-api-20090916.jar" />
             <file name="jdo/jdo2-api-2.3-eb.jar" />
-            <file name="appengine/appengine-api-1.0-sdk-1.2.6.jar" />
+            <file name="appengine/appengine-api-1.0-sdk-1.2.8.jar" />
+            <file name="appengine/appengine-api-labs-1.2.8.jar" />
             <file name="appengine/appengine-local-runtime.jar" />
             <file name="appengine/appengine-api-stubs.jar" />
             <file name="dyuproject/dyuproject-openid-1.1.6.jar" />
