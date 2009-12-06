@@ -26,37 +26,43 @@ import com.google.apphosting.api.ApiProxy;
  */
 public class MockAppEngineEnvironment {
 
-    private class ApiProxyEnvironment implements ApiProxy.Environment {
+    private class MockApiProxyEnvironment implements ApiProxy.Environment {
         public String getAppId() {
-          return "test";
+            return "test";
         }
 
         public String getVersionId() {
-          return "1.0";
+            return "1.0";
         }
 
         public String getEmail() {
-          throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         public boolean isLoggedIn() {
-          throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         public boolean isAdmin() {
-          throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         public String getAuthDomain() {
-          throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         public String getRequestNamespace() {
-          return "";
+            return "";
         }
 
         public Map<String, Object> getAttributes() {
-          return new HashMap<String, Object>();
+            Map<String, Object> out = new HashMap<String, Object>();
+
+            // Only be necessary for tasks that are added when there is no "live" request
+            // See: http://groups.google.com/group/google-appengine-java/msg/8f5872b052144c8d?pli=1
+            out.put("com.google.appengine.server_url_key", "http://localhost:8080");
+
+            return out;
         }
     };
 
@@ -64,7 +70,7 @@ public class MockAppEngineEnvironment {
     private PersistenceManagerFactory pmf;
 
     public MockAppEngineEnvironment() {
-        env = new ApiProxyEnvironment();
+        env = new MockApiProxyEnvironment();
     }
 
     /**
