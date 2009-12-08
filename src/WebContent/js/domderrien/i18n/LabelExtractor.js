@@ -8,7 +8,8 @@
 
     dojo.require("dojo.string");
 
-    var _dictionnary = null;
+    var _dictionary = {};
+    var _defaultDictionary = null;
 
     /**
      * Initialize the library for the specified resource bundle
@@ -21,7 +22,7 @@
      *                 resource bundles (dojo implements a fallback mechanism
      *                 if the corresponding localized bundle cannot be loaded)
      */
-    module.init = function(/*String*/ namespace, /*String*/ filename, /*String*/ locale) {
+    module.init = function(namespace, filename, locale) {
         // Dojo uses dash-separated (e.g en-US not en_US) and uses lower case names (e.g en-us not en_US)
         locale = (locale || dojo.locale).replace('_','-').toLowerCase();
 
@@ -33,7 +34,10 @@
             //   waiting for a call with meaningful <namespace> and <filename> values
             dojo["requireLocalization"](namespace, filename, locale); // Blocking call getting the file per XHR or <iframe/>
 
-            _dictionary = dojo.i18n.getLocalization(namespace, filename, locale);
+            _dictionary[filename] = dojo.i18n.getLocalization(namespace, filename, locale);
+            if (_defaultDictionary == null) {
+                _defaultDictionary = filename;
+            }
         }
         catch(ex) {
             module._reportError("Deployment issue:" +
@@ -46,7 +50,8 @@
     };
 
     /**
-     * Return the message associated to the given identifier.
+     * Return the message associated to the given identifier after a lookup
+     * in the first initialized dictionary.
      *
      * @param {String} key  Identifier used to retrieve the localized label.
      * @param {String} args Array of parameters, each one used to replace a
@@ -54,13 +59,27 @@
      * @return A localized label associated to the given identifier. If no
      *         association is found, the message identifier is returned.
      */
-    module.get = function(/*String*/ key, /*Array*/ args) {
-        if (_dictionary == null) {
+    module.get = function(key, args) {
+        return module.getFrom(_defaultDictionary, key, args);
+    };
+
+    /**
+     * Return the message associated to the given identifier after a lookup
+     * in the specified dictionary.
+     *
+     * @param {String} name Dictionary name.
+     * @param {String} key  Identifier used to retrieve the localized label.
+     * @param {String} args Array of parameters, each one used to replace a
+     *                 pattern made of a number between curly braces.
+     * @return A localized label associated to the given identifier. If no
+     *         association is found, the message identifier is returned.
+     */
+    module.getFrom = function(name, key, args) {
+        if (_dictionary[name] == null) {
             return key;
         }
-        var message = _dictionary[key] || key;
+        var message = _dictionary[name][key] || key;
         if (args != null) {
-            // dojo.string.substituteParams(message, args);
             message = dojo.string.substitute(message, args);
         }
         return message;
@@ -68,7 +87,7 @@
 
     // Just provided to be able to control the environment during the unit tests
     module._resetDictionary = function(message) {
-        _dictionary = null;
+        _dictionary = {};
     };
 
     // Just provided to be able to control the error reporting during the unit tests
