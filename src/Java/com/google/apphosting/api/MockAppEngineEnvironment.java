@@ -2,6 +2,7 @@ package com.google.apphosting.api;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,13 +13,16 @@ import javax.jdo.PersistenceManagerFactory;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.dev.LocalTaskQueue;
+import com.google.appengine.api.labs.taskqueue.dev.QueueStateInfo;
+import com.google.appengine.api.labs.taskqueue.dev.QueueStateInfo.TaskStateInfo;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
-import com.google.apphosting.api.ApiProxy;
 
 /**
  * Mock for the App Engine Java environment used by the JDO wrapper.
  *
- * These class has been build with information gathered on:
+ * This class has been build with information gathered on:
  * - App Engine documentation: http://code.google.com/appengine/docs/java/howto/unittesting.html
  * - App Engine Fan blog: http://blog.appenginefan.com/2009/05/jdo-and-unit-tests.html
  *
@@ -84,6 +88,9 @@ public class MockAppEngineEnvironment {
         // Setup the App Engine data store
         proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY, Boolean.TRUE.toString());
         ApiProxy.setDelegate(proxy);
+
+        // Setup the Task Queue
+        // Nothing special here, just a flush during tearDown()
     }
 
     /**
@@ -108,6 +115,13 @@ public class MockAppEngineEnvironment {
         ApiProxy.setDelegate(null);
         ApiProxy.clearEnvironmentForCurrentThread();
 
+        // Clean-uup the Task Queue
+        // See: http://groups.google.com/group/google-appengine-java/browse_thread/thread/fe334c9e461026fa/8f5872b052144c8d?#8f5872b052144c8d
+        if (proxy != null) {
+            LocalTaskQueue ltq = (LocalTaskQueue) proxy.getService(LocalTaskQueue.PACKAGE);
+            ltq.flushQueue(QueueFactory.getDefaultQueue().getQueueName());
+        }
+
         // Report the issue with the transaction still open
         if (transactionPending) {
             throw new IllegalStateException("Found a transaction nor commited neither rolled-back. Probably related to a missing PersistenceManager.close() call.");
@@ -116,12 +130,13 @@ public class MockAppEngineEnvironment {
 
     /**
      * Creates a PersistenceManagerFactory on the fly, with the exact same information
-     * stored in the <war-dir>/WEB-INF/META-INF/jdoconfig.xml file.
+     *  stored in the<war-dir>/WEB-INF/META-INF/jdoconfig.xml file.
      */
     public PersistenceManagerFactory getPersistenceManagerFactory() {
         if (pmf == null) {
             Properties newProperties = new Properties();
-            newProperties.put("javax.jdo.PersistenceManagerFactoryClass", "org.datanucleus.store.appengine.jdo.DatastoreJDOPersistenceManagerFactory");
+            newProperties.put("javax.jdo.PersistenceManagerFactoryClass",
+                    "org.datanucleus.store.appengine.jdo.DatastoreJDOPersistenceManagerFactory");
             newProperties.put("javax.jdo.option.ConnectionURL", "appengine");
             newProperties.put("javax.jdo.option.NontransactionalRead", "true");
             newProperties.put("javax.jdo.option.NontransactionalWrite", "true");
@@ -138,5 +153,33 @@ public class MockAppEngineEnvironment {
      */
     public PersistenceManager getPersistenceManager() {
         return getPersistenceManagerFactory().getPersistenceManager();
+    }
+
+    /**
+     * Return the list of TaskStateInfo instance added to the specified queue.
+     *
+     * Note: TaskOptions instances added to the queue have been transformed
+     * into TaskStateInfo ones. Use the following accessors to verify that the
+     * expected tasks have been added to the queue as expected.
+     * - TaskStateInfo.getMethod(): GET/POST/PUT/DELETE
+     * - TaskStateInfo.getUrl(): URL with request parameters if method == GET
+     * -  TaskStateInfo.getBody(): Request parameters if method == POST/PUT
+     *
+     * @param queueName Name of the queue to query
+     *
+     * @return List of TaskStateInfo representing the processed TaskOptions
+     * added to the specified queue
+     */
+    public List<TaskStateInfo> getTaskStateInfo(String queueName) {
+        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
+        if (proxy != null) {
+            LocalTaskQueue taskQueue = (LocalTaskQueue) proxy.getService(LocalTaskQueue.PACKAGE);
+            QueueStateInfo queueStateInfo = taskQueue.getQueueStateInfo().get(queueName);
+            if (queueStateInfo != null) {
+                return queueStateInfo.getTaskInfo();
+            }
+            return null;
+        }
+        return null;
     }
 }
