@@ -19,8 +19,12 @@ public class MockOutputStream extends OutputStream {
         return stream.indexOf(excerpt) != -1;
     }
 
-    public String getStream() {
+    public String toString() {
         return stream.toString();
+    }
+
+    public StringBuilder getStream() {
+        return stream;
     }
 
     public int length() {

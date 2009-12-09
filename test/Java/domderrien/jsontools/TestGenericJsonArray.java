@@ -351,12 +351,12 @@ public class TestGenericJsonArray {
         list.add(new Object()); // will be ignored
         MockOutputStream stream = new MockOutputStream();
         new GenericJsonArray(list).toStream(stream, true);
-        assertTrue(stream.getStream().contains("true"));
-        assertTrue(stream.getStream().contains("'test'"));
-        assertTrue(stream.getStream().contains("1"));
-        assertTrue(stream.getStream().contains("1.0"));
-        assertTrue(stream.getStream().contains("{}"));
-        assertTrue(stream.getStream().contains("[]"));
+        assertNotSame(-1, stream.getStream().indexOf("true"));
+        assertNotSame(-1, stream.getStream().indexOf("'test'"));
+        assertNotSame(-1, stream.getStream().indexOf("1"));
+        assertNotSame(-1, stream.getStream().indexOf("1.0"));
+        assertNotSame(-1, stream.getStream().indexOf("{}"));
+        assertNotSame(-1, stream.getStream().indexOf("[]"));
     }
 
     @Test

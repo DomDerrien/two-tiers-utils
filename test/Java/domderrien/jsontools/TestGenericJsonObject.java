@@ -562,13 +562,13 @@ public class TestGenericJsonObject {
         map.put("k7", new Object()); // will be ignored
         MockOutputStream stream = new MockOutputStream();
         new GenericJsonObject(map).toStream(stream, true);
-        assertTrue(stream.getStream().contains("'k1':true"));
-        assertTrue(stream.getStream().contains("'k2':'test'"));
-        assertTrue(stream.getStream().contains("'k3':1"));
-        assertTrue(stream.getStream().contains("'k4':1.0"));
-        assertTrue(stream.getStream().contains("'k5':{}"));
-        assertTrue(stream.getStream().contains("'k6':[]"));
-        assertFalse(stream.getStream().contains("'k7'"));
+        assertNotSame(-1, stream.getStream().indexOf("'k1':true"));
+        assertNotSame(-1, stream.getStream().indexOf("'k2':'test'"));
+        assertNotSame(-1, stream.getStream().indexOf("'k3':1"));
+        assertNotSame(-1, stream.getStream().indexOf("'k4':1.0"));
+        assertNotSame(-1, stream.getStream().indexOf("'k5':{}"));
+        assertNotSame(-1, stream.getStream().indexOf("'k6':[]"));
+        assertEquals(-1, stream.getStream().indexOf("'k7'"));
     }
 
     // See GenericJsonArrayTest.java for ordered list of values tokenizing

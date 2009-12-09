@@ -188,13 +188,13 @@ public class TestJsonException {
         catch (IOException e) {
             fail("No expected exception");
         }
-        assertTrue(out.getStream().contains("isException"));
-        assertTrue(out.getStream().contains("true"));
-        assertTrue(out.getStream().contains("exceptionId"));
-        assertTrue(out.getStream().contains("exceptionMessage"));
-        assertTrue(out.getStream().contains(message));
-        assertTrue(out.getStream().contains("orginalException"));
-        assertTrue(out.getStream().contains("[no cause]"));
+        assertNotSame(-1, out.getStream().indexOf("isException"));
+        assertNotSame(-1, out.getStream().indexOf("true"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionId"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf(message));
+        assertNotSame(-1, out.getStream().indexOf("originalExceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("[no cause]"));
     }
 
     @Test
@@ -209,12 +209,12 @@ public class TestJsonException {
         catch (IOException e) {
             fail("No expected exception");
         }
-        assertTrue(out.getStream().contains("isException"));
-        assertTrue(out.getStream().contains("true"));
-        assertTrue(out.getStream().contains("exceptionId"));
-        assertTrue(out.getStream().contains("exceptionMessage"));
-        assertTrue(out.getStream().contains("orginalException"));
-        assertTrue(out.getStream().contains(message));
+        assertNotSame(-1, out.getStream().indexOf("isException"));
+        assertNotSame(-1, out.getStream().indexOf("true"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionId"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("originalExceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf(message));
     }
 
     @Test
@@ -229,13 +229,13 @@ public class TestJsonException {
         catch (IOException e) {
             fail("No expected exception");
         }
-        assertTrue(out.getStream().contains("isException"));
-        assertTrue(out.getStream().contains("true"));
-        assertTrue(out.getStream().contains("exceptionId"));
-        assertTrue(out.getStream().contains("exceptionMessage"));
-        assertTrue(out.getStream().contains("null"));
-        assertTrue(out.getStream().contains("orginalException"));
-        assertTrue(out.getStream().contains("[no cause message]"));
+        assertNotSame(-1, out.getStream().indexOf("isException"));
+        assertNotSame(-1, out.getStream().indexOf("true"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionId"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("null"));
+        assertNotSame(-1, out.getStream().indexOf("originalExceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("[no cause message]"));
     }
 
     @Test
