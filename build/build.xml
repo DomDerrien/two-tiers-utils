@@ -16,7 +16,7 @@
         description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
         value="${basedir}${file.separator}bin${file.separator}temp" />
 
-    <property name="dd2tu.release" description="Planned release of this build" value="0.9.1" />
+    <property name="dd2tu.release" description="Planned release of this build" value="0.9.2" />
 
     <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -257,7 +257,7 @@
         <property name="dd2tu.stageId" value="${DSTAMP}.${TSTAMP}" />
         <echo>
             ${ant.project.name}
-            ${TODAY} (${rwa.stageId})
+            ${TODAY} (${dd2tu.stageId})
             JVM version detected by Ant: ${ant.java.version}
         </echo>
     </target>

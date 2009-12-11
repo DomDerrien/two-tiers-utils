@@ -1,6 +1,7 @@
 package domderrien.i18n;
 
 import java.util.ListResourceBundle;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MockLabelExtractor extends LabelExtractor {
@@ -18,11 +19,11 @@ public class MockLabelExtractor extends LabelExtractor {
 
     private static ResourceBundle originalRB;
 
-    public static void init(ResourceFileId fileId, Object [][] bundleContent) {
-        originalRB = LabelExtractor.setResourceBundle(fileId, new MockResourceBundle(bundleContent), null);
+    public static void setup(ResourceFileId fileId, Object [][] bundleContent, Locale locale) {
+        originalRB = LabelExtractor.setResourceBundle(fileId, new MockResourceBundle(bundleContent), locale);
     }
 
-    public static void close(ResourceFileId fileId) {
-        LabelExtractor.setResourceBundle(LabelExtractor.ResourceFileId.master, originalRB, null);
+    public static void cleanup(ResourceFileId fileId, Locale locale) {
+        LabelExtractor.setResourceBundle(fileId, originalRB, locale);
     }
 }

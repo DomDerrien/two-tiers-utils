@@ -227,8 +227,23 @@ public class LabelExtractor
      */
     protected static ResourceBundle setResourceBundle(ResourceFileId resId, ResourceBundle rb, Locale locale) {
         String rbId = getResourceBundleId(locale);
-        ResourceBundle previousRB = masterResourceBundleSet.get(rbId);
-        masterResourceBundleSet.put(rbId, rb);
+        ResourceBundle previousRB = null;
+        if (ResourceFileId.second.equals(resId)) {
+            previousRB = secondResourceBundleSet.get(rbId);
+            secondResourceBundleSet.put(rbId, rb);
+        }
+        else if (ResourceFileId.third.equals(resId)) {
+            previousRB = thirdResourceBundleSet.get(rbId);
+            thirdResourceBundleSet.put(rbId, rb);
+        }
+        else if (ResourceFileId.fourth.equals(resId)) {
+            previousRB = fourthResourceBundleSet.get(rbId);
+            fourthResourceBundleSet.put(rbId, rb);
+        }
+        else {
+            previousRB = masterResourceBundleSet.get(rbId);
+            masterResourceBundleSet.put(rbId, rb);
+        }
         return previousRB;
     }
 
@@ -238,8 +253,8 @@ public class LabelExtractor
      *
      * @param resId Identifier of the resource file where the localized data should be extracted from
      * @param locale locale to use when getting the resource bundle
-     *
      * @return The already resolved/set resource bundle or the one expected at runtime
+     *
      * @throws MissingResourceException
      */
     protected static ResourceBundle getResourceBundle(ResourceFileId resId, Locale locale) throws MissingResourceException {
