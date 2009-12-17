@@ -50,7 +50,7 @@
         value="60"
     />
 
-    <property name="jscoverage.browser.filenames"
+    <property name="jscoverage.browser.filename"
         description="List of browsers in which to run tests when StandaloneTest is invoked on this machine."
         value="${chrome.browser.executable}"
     />
@@ -791,8 +791,8 @@
                 <include name="JSCoverageSuite.*" />
             </fileset>
         </copy>
-        <!-- Launch firefox to produce the coverage numbers -->
-        <exec executable="${jscoverage.browser.filenames}">
+        <!-- Launch browser to produce the coverage numbers -->
+        <exec executable="${jscoverage.browser.filename}">
             <arg value="file:///${basedir}/docs/test-reports/jscoverage-html/js/jscoverage.html?url=JSCoverageSuite.html" />
         </exec>
         <!--exec executable="${test.browser.executable}">
