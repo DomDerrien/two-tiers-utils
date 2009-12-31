@@ -16,7 +16,7 @@
         description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
         value="${basedir}${file.separator}bin${file.separator}temp" />
 
-    <property name="dd2tu.release" description="Planned release of this build" value="0.9.3" />
+    <property name="dd2tu.release" description="Planned release of this build" value="1.0.0" />
 
     <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -106,6 +106,7 @@
         <!-- Compile Java code -->
         <antcall target="step-compile" />
         <!-- Process TMXs -->
+        <antcall target="step-tmx-generate" />
         <antcall target="step-tmx-convert" />
         <!-- Verify Java coding rules -->
         <!-- TODO: call verification tools -->
@@ -117,6 +118,7 @@
         <antcall target="step-javadoc-produce" />
         <antcall target="step-jsdoc-produce" />
         <antcall target="step-tmxdoc-produce" />
+    	<antcall target="step-tmxtranslator-produce" />
         <!-- Produce the JARs -->
         <antcall target="step-package-jar" />
         <!-- Produce the WAR -->
@@ -433,6 +435,19 @@
             </fileset>
             <filterchain refid="genericFilterChain" />
         </copy>
+    </target>
+
+    <target name="step-tmx-generate">
+        <mkdir dir="${temp.dir}/resources" />
+        <java classname="domderrien.build.TMXGenerator" fork="true" failonerror="true">
+            <classpath refid="tmxconverter.classpath" />
+            <classpath location="${temp.dir}/resources" />
+            <jvmarg value="-Dfile.encoding=UTF-8" />
+            <arg value="-filenameBase" />
+            <arg value="${dd2tu.localizedLabelBaseFilename}" />
+            <arg value="-directoryName" />
+            <arg value="${basedir}\src\resources" />
+        </java>
     </target>
 
     <target name="step-tmx-convert">
@@ -833,6 +848,18 @@
             extension=".html"
             includes="*.tmx"
             style="src/resources/tmx2html.xsl"
+        >
+            <xmlcatalog refid="tmx.dtd" />
+        </xslt>
+    </target>
+
+    <target name="step-tmxtranslator-produce">
+        <xslt
+            basedir="src/resources"
+            destdir="docs/generated-doc"
+            extension=".l10n.html"
+            includes="*_??.tmx"
+            style="src/resources/tmx2l10n.xsl"
         >
             <xmlcatalog refid="tmx.dtd" />
         </xslt>

@@ -6,11 +6,9 @@
 		<html>
 			<head>
 				<title>TMX representation</title>
-			    <link rel="shortcut icon" href="../../src/war/images/logo/favicon.ico" />
-			    <link rel="icon" href="../../src/war/images/logo/favicon.ico" type="image/x-icon"/>
 			    <style type="text/css">
-			        @import "http://ajax.googleapis.com/ajax/libs/dojo/1.3/dojo/resources/dojo.css";
-			        @import "http://ajax.googleapis.com/ajax/libs/dojo/1.3/dijit/themes/tundra/tundra.css";
+			        @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4/dojo/resources/dojo.css";
+			        @import "http://ajax.googleapis.com/ajax/libs/dojo/1.4/dijit/themes/tundra/tundra.css";
 			        body { margin: 10px; }
 			        dl { margin-bottom: 10px; }
 			        dl#bundle_language, dl#\_introduction\_ { display: none; }
@@ -23,41 +21,8 @@
 					span.python { color: orange; }
 					span.javarb { color: blue; }
 			    </style>
-				<script language="JavaScript" type="text/javascript">
-					function processSeeAlsoLinks() {
-						if (typeof String.prototype.trim == "undefined") {
-							String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ""); };
-						}
-						var entries = document.getElementsByTagName("dl");
-						var entryNb = entries == null ? 0 : entries.length;
-						var links = new Array();
-						while(0 &lt; entryNb) {
-							-- entryNb;
-							var entry = entries[entryNb];
-							var entryTitle = entry.id;
-							var entryDef = entry.firstChild.nextSibling.innerHTML;
-							var seeAlsoPos = entryDef == null ? -1 : entryDef.indexOf("(see also):");
-							if (seeAlsoPos != -1) {
-								links.length = 0;
-								// Get first part of the definition
-								var before = entryDef.substring(0, seeAlsoPos + ("(see also):").length);
-								var after = entryDef.substring(before.length);
-								var eolPos = after.indexOf("<br/>");
-								if (eolPos == -1) { eolPos = after.indexOf("<BR/>"); }
-								var equivalents = after.substring(0, eolPos - 1);
-								after = after.substring(eolPos);
-								equivalents = equivalents.split(",");
-								for (var i = 0; i &lt; equivalents.length; i++) {
-									var equivalent = equivalents[i].trim();
-								    links.push('<a href="#' + equivalent.toLowerCase() + '">' + equivalent + "</a>");
-								}
-								entry.firstChild.nextSibling.innerHTML = before + " " + links.join(", ") + after;
-							}
-						}
-					}
-				</script>
-			</head>
-			<body onload="processSeeAlsoLinks();">
+            </head>
+            <body onload="" class="tundra">
 				<xsl:for-each select="tu">
 					<xsl:sort select="@tuid" />
 					<dl id="{@tuid}">

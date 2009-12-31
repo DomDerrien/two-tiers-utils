@@ -1,15 +1,10 @@
 package domderrien.build;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -19,19 +14,10 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * TMX to Resource Bundle converter.
@@ -43,26 +29,17 @@ import org.xml.sax.SAXException;
  *    Ex. <code>native2ascii -encoding UTF-8 &lt;base_name&gt;.properties-utf8 &lt;base_name&gt;.properties</code></li>
  *   <li>Running with ant, specify <code>-Dfile.encoding=UTF-8</code> as a JVM argument.</li>
  */
-public class TMXConverter {
+public class TMXConverter extends TMXCommandLineToolBase {
 
     /**
      * TMX Converter entry point: extract the parameters and process the retrieved TMX files.
      * @param args Usual arguments of a program
      */
     public static void main(String[] args) {
-        TMXConverter converter = new TMXConverter(true);
-        converter.setContext(args);
-        converter.processContext();
-        converter.processTMX();
-    }
-
-    /**
-     * Default constructor
-     * @param isStandalone Specifies that any error should invoke "System.exit(1)" to report a
-     *                     an application error code to the instanciator environment
-     */
-    public TMXConverter(boolean isStandalone) {
-        runStandalone = isStandalone;
+        TMXCommandLineToolBase application = new TMXConverter(true);
+        application.loadContext(args);
+        application.processContext();
+        application.processTMX();
     }
 
     protected final static String TMX_FILENAME_BASE_ARG = "-tmxFilenameBase";
@@ -72,121 +49,6 @@ public class TMXConverter {
     protected final static String LANGUAGE_FILENAME_BASE_ARG = "-languageFilenameBase";
     protected final static String BUILD_STAMP_ARG = "-buildStamp";
 
-    /**
-     * Set the class instance variables with data extracted from the command line arguments
-     * @param args Usual command line argument list
-     * @throws NullPointerException if the given parameter is <code>null</code>
-     */
-    public void setContext(String[] args) {
-        if (args.length % 2 != 0 ||
-            args.length < 12)
-            {
-                displayUsage();
-                return;
-            }
-
-        List<String> arguments = Arrays.asList(args);
-        int tmxFilenameBaseIdx = arguments.indexOf(TMX_FILENAME_BASE_ARG);
-        int sourcePathIdx = arguments.indexOf(SOURCE_PATH_ARG);
-        int jsDestPathIdx = arguments.indexOf(JS_DEST_PATH_ARG);
-        int javaDestPathIdx = arguments.indexOf(JAVA_DEST_PATH_ARG);
-        int languageFilenameBaseIdx = arguments.indexOf(LANGUAGE_FILENAME_BASE_ARG);
-        int buildStampIdx = arguments.indexOf(BUILD_STAMP_ARG);
-
-        if (tmxFilenameBaseIdx == -1 ||
-            sourcePathIdx == -1 ||
-            jsDestPathIdx == -1 ||
-            javaDestPathIdx == -1 ||
-            languageFilenameBaseIdx == -1 ||
-            buildStampIdx == -1)
-        {
-            displayUsage();
-            return;
-        }
-
-        try {
-            tmxFilenameBase = arguments.get(tmxFilenameBaseIdx + 1);
-            sourcePath = arguments.get(sourcePathIdx + 1);
-            jsDestPath = arguments.get(jsDestPathIdx + 1);
-            javaDestPath = arguments.get(javaDestPathIdx + 1);
-            languageFilenameBase = arguments.get(languageFilenameBaseIdx + 1);
-            buildStamp = arguments.get(buildStampIdx + 1);
-        }
-        catch(ArrayIndexOutOfBoundsException ex) {
-            displayUsage();
-            return;
-        }
-
-        if (tmxFilenameBase.length() == 0 ||
-            sourcePath.length() == 0 ||
-            jsDestPath.length() == 0 ||
-            javaDestPath.length() == 0 ||
-            languageFilenameBase.length() == 0 ||
-            buildStamp.length() == 0)
-        {
-            displayUsage();
-            return;
-        }
-    }
-
-    /**
-     * Just display how the class should be invoked from the command line
-     */
-    protected void displayUsage() {
-        if (runStandalone)
-        {
-            System.out.println("TMX Converter usage:");
-            System.out.print("TMXConverter: ");
-            System.out.print(TMX_FILENAME_BASE_ARG + " <filename> ");
-            System.out.print(SOURCE_PATH_ARG + " <path> ");
-            System.out.print(JS_DEST_PATH_ARG + " <path> ");
-            System.out.print(JAVA_DEST_PATH_ARG + " <path> ");
-            System.out.print(LANGUAGE_FILENAME_BASE_ARG + " <filename>");
-            System.out.print(BUILD_STAMP_ARG + " <build stamp>");
-            System.out.println(".");
-        }
-        stopProcess();
-    }
-
-    /**
-     * Report an error code to the application instaniator if it works
-     * in standalone mode.
-     *
-     */
-    protected void stopProcess() {
-        processStopped = true;
-        if (runStandalone) {
-            // To make the standalone program
-            // failing the build process
-            System.exit(1);
-        }
-    }
-
-    /**
-     * Report an error message.
-     *
-     */
-    protected void reportError(String message) {
-        errorReported = true;
-        if (runStandalone) {
-            System.err.println(message);
-        }
-    }
-
-    private boolean runStandalone = false;
-    private boolean processStopped = false;
-    private boolean errorReported = false;
-
-    /** Accessor */
-    protected boolean getProcessStopped() {
-        return processStopped;
-    }
-
-    /** Accessor */
-    protected boolean isErrorReported() {
-        return errorReported;
-    }
-
     private String tmxFilenameBase = null;
     private String sourcePath = null;
     private String jsDestPath = null;
@@ -194,7 +56,7 @@ public class TMXConverter {
     private String languageFilenameBase = null;
     private String buildStamp = null;
 
-    private Map<String, Long> sourceFileDates = new HashMap<String, Long>();
+    private Map<String, Long> sourceFileDates;
     private Map<String, Long> jsDestFileDates = new HashMap<String, Long>();
     private Map<String, Long> javaDestFileDates = new HashMap<String, Long>();
     private Map<String, String> processedLanguages = new HashMap<String, String>();
@@ -239,6 +101,78 @@ public class TMXConverter {
         buildStamp = name;
     }
 
+    /**
+     * Default constructor
+     * @param isStandalone Specifies that any error should invoke "System.exit(1)" to report a
+     *                     an application error code to the instanciator environment
+     */
+    public TMXConverter(boolean isStandalone) {
+        super(isStandalone);
+    }
+
+    @Override
+    protected void displayUsage() {
+        if (runStandalone) {
+            System.out.println("TMX Converter usage:");
+            System.out.print("TMXConverter: ");
+            System.out.print(TMX_FILENAME_BASE_ARG + " <filename> ");
+            System.out.print(SOURCE_PATH_ARG + " <path> ");
+            System.out.print(JS_DEST_PATH_ARG + " <path> ");
+            System.out.print(JAVA_DEST_PATH_ARG + " <path> ");
+            System.out.print(LANGUAGE_FILENAME_BASE_ARG + " <filename>");
+            System.out.print(BUILD_STAMP_ARG + " <build stamp>");
+            System.out.println(".");
+        }
+        stopProcess();
+    }
+
+    @Override
+    public void loadContext(String[] args) {
+        List<String> arguments = Arrays.asList(args);
+
+        int tmxFilenameBaseIdx = arguments.indexOf(TMX_FILENAME_BASE_ARG);
+        int sourcePathIdx = arguments.indexOf(SOURCE_PATH_ARG);
+        int jsDestPathIdx = arguments.indexOf(JS_DEST_PATH_ARG);
+        int javaDestPathIdx = arguments.indexOf(JAVA_DEST_PATH_ARG);
+        int languageFilenameBaseIdx = arguments.indexOf(LANGUAGE_FILENAME_BASE_ARG);
+        int buildStampIdx = arguments.indexOf(BUILD_STAMP_ARG);
+
+        if (tmxFilenameBaseIdx == -1 ||
+            sourcePathIdx == -1 ||
+            jsDestPathIdx == -1 ||
+            javaDestPathIdx == -1 ||
+            languageFilenameBaseIdx == -1 ||
+            buildStampIdx == -1)
+        {
+            displayUsage();
+            return;
+        }
+
+        try {
+            tmxFilenameBase = arguments.get(tmxFilenameBaseIdx + 1);
+            sourcePath = arguments.get(sourcePathIdx + 1);
+            jsDestPath = arguments.get(jsDestPathIdx + 1);
+            javaDestPath = arguments.get(javaDestPathIdx + 1);
+            languageFilenameBase = arguments.get(languageFilenameBaseIdx + 1);
+            buildStamp = arguments.get(buildStampIdx + 1);
+        }
+        catch(ArrayIndexOutOfBoundsException ex) {
+            displayUsage();
+            return;
+        }
+
+        if (tmxFilenameBase.length() == 0 ||
+            sourcePath.length() == 0 ||
+            jsDestPath.length() == 0 ||
+            javaDestPath.length() == 0 ||
+            languageFilenameBase.length() == 0 ||
+            buildStamp.length() == 0)
+        {
+            displayUsage();
+            return;
+        }
+    }
+
     private ResourceBundle documentedLanguages;
 
     protected ResourceBundle getDocumentedLanguages() throws MissingResourceException {
@@ -248,11 +182,9 @@ public class TMXConverter {
         return documentedLanguages;
     }
 
-    /**
-     * Process the contextual information
-     */
+    @Override
     public void processContext() {
-        getSourceFileDates(tmxFilenameBase, sourcePath, sourceFileDates);
+        sourceFileDates = getSourceFileDates(tmxFilenameBase, sourcePath);
         getJSFileDates(sourceFileDates, jsDestPath, jsDestFileDates);
         getJavaFileDates(sourceFileDates, javaDestPath, javaDestFileDates);
 
@@ -266,35 +198,6 @@ public class TMXConverter {
     }
 
     /**
-     * Extract the name of the files contained in the given directory and their
-     * last-modified date.
-     *
-     * @param filenameBase Base name of the TMX files
-     * @param directory File instance to study (can be relative or absolute).
-     * @param fileDates List where extracted information are stored.
-     */
-    protected void getFileDates(String filenameBase, File directory, Map<String, Long> fileDates) {
-        if (directory.isDirectory()) {
-            File[] file = directory.listFiles();
-            for (int i = 0; i <file.length; i++) {
-                File containedFile = file[i];
-                if (containedFile.isFile()) {
-                    String filename = containedFile.getName();
-                    if (filename.startsWith(filenameBase)) {
-                        int dotIndex = filename.indexOf('.');
-                        String localizedFilenameBase = dotIndex == -1 ? filename : filename.substring(0, filename.indexOf('.'));
-                        fileDates.put(localizedFilenameBase, containedFile.lastModified());
-                    }
-                }
-            }
-        }
-    }
-
-    protected File getFile(String filename) {
-        return new File(filename);
-    }
-
-    /**
      * Extract the name of the files contained in the specified directory and their
      * last-modified date.
      *
@@ -303,11 +206,11 @@ public class TMXConverter {
      *
      * @param filenameBase Beginning of the filename to consider
      * @param directoryName Name of the directory to study (can be relative or absolute).
-     * @param fileDates List where extracted information are stored.
+     * @return Map with extracted file dates
      */
-    protected void getSourceFileDates(String filenameBase, String directoryName, Map<String, Long> fileDates) {
+    protected Map<String, Long> getSourceFileDates(String filenameBase, String directoryName) {
         File directory = getFile(directoryName);
-        getFileDates(filenameBase, directory, fileDates);
+        return getFileDates(filenameBase, directory);
     }
 
     /**
@@ -388,7 +291,7 @@ public class TMXConverter {
                     System.out.print("running: TmxConverter process " + filename); //$NON-NLS-1$
                     convert(filename);
                     long end = System.currentTimeMillis();
-                    System.out.print("' in " + (end - start) + " ms\n"); //$NON-NLS-1$ //$NON-NLS-2$
+                    System.out.print(" in " + (end - start) + " ms\n"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 catch (FileNotFoundException e) {
                     // Just reported the non processed filename
@@ -443,18 +346,6 @@ public class TMXConverter {
     public static final String LANGUAGE_ID = "bundle_language"; //$NON-NLS-1$
     public static final String BUILD_STAMP_ID = "x_timeStamp"; //$NON-NLS-1$
 
-    protected InputStream getInputStream(String filename) throws FileNotFoundException {
-        return new BufferedInputStream(
-            new FileInputStream(filename)
-        );
-    }
-
-    protected OutputStream getOutputStream(String filename) throws FileNotFoundException {
-        return  new BufferedOutputStream(
-            new FileOutputStream(filename, false)
-        );
-    }
-
     /**
      * Convert TMX file to resource bundles.
      *
@@ -496,70 +387,6 @@ public class TMXConverter {
     }
 
     /**
-     * Nop entity resolver to avoid accessing an external DTD.
-     * Without this, you need to be online when you run the converter.
-     */
-    protected EntityResolver getEntityResolver() {
-        return new EntityResolver() {
-            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                return new InputSource(new StringReader(EMPTY));
-            }
-        };
-    }
-
-    private DocumentBuilder parser = null;
-
-    protected DocumentBuilderFactory getFactory() {
-        return DocumentBuilderFactory.newInstance();
-    }
-
-    protected DocumentBuilder getParser() {
-        if (parser == null) {
-            DocumentBuilderFactory factory = getFactory();
-            factory.setValidating(false);
-
-            parser = null;
-            try {
-                parser = factory.newDocumentBuilder();
-            }
-            catch (ParserConfigurationException ex) {
-                reportError("Cannot instanciate the DOM parser [Exception: " + ex + "]");
-                stopProcess();
-                return null;
-            }
-            parser.setEntityResolver(getEntityResolver());
-        }
-
-        return parser;
-    }
-
-    protected Document getDocument(InputStream sourceIS) {
-        try {
-            return getParser().parse(sourceIS);
-        }
-        catch (SAXException ex) {
-            reportError(" [Exception: " + ex + "] ");
-            stopProcess();
-        }
-        catch (IOException ex) {
-            reportError(" [Exception: " + ex + "] ");
-            stopProcess();
-        }
-        return null;
-    }
-
-    protected NodeList getNodeList(Node elem, String path) {
-        try {
-            return XPathAPI.selectNodeList(elem, path); //$NON-NLS-1$
-        }
-        catch (TransformerException ex) {
-            reportError(" [Exception: " + ex + "] ");
-            stopProcess();
-        }
-        return null;
-    }
-
-    /**
      * Convert TMX file to resource bundle.
      *
      * @param locale Identifier of the current locale
@@ -572,7 +399,7 @@ public class TMXConverter {
 
         NodeList nl = getNodeList(doc, "/tmx/body/tu"); //$NON-NLS-1$
 
-        jsOS.write(JS_FILE_START.getBytes());
+        jsOS.write(JS_FILE_START.getBytes(UTF8));
 
         Pattern bracesPattern = Pattern.compile("(\\{[\\d]+\\})"); //$NON-NLS-1$
         Pattern doubleQuotesPattern = Pattern.compile("\""); //$NON-NLS-1$
@@ -609,20 +436,9 @@ public class TMXConverter {
             }
             props = null;
 
-            String text = null;
-            NodeList l = getNodeList(tu, "tuv/seg/text()"); //$NON-NLS-1$
-            Node n = l.item(0);
-            if (n != null) {
-                text = n.getNodeValue();
-            }
-            l = null;
-            if (text == null) {
-                reportError("TMXConverter: Empty text node of <seg> for entry \"" + id + "\"."); //$NON-NLS-1$
-                text = "";
-            }
-            else {
-                text = text.replaceAll("\\s+", " ").trim();
-            }
+            Node n = getNodeList(tu, "tuv/seg/text()").item(0); //$NON-NLS-1$
+            String text = n == null ? null : n.getNodeValue();
+            text = text == null ? "" : text.replaceAll("\\s+", " ").trim();
 
             if (saveToJS) {
                 // js.append("'" + id + "':\"").append(text.replaceAll("(\\{[\\d]+\\})", "\\$$1")).append("\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
@@ -633,10 +449,10 @@ public class TMXConverter {
 
                 }
                 updatedText = doubleQuotesPattern.matcher(updatedText).replaceAll("\\\\u0022"); // To avoid conflicts with the delimiters //$NON_NLS-1$
-                jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes(UTF8)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             if (saveToJava) {
-                javaOS.write((id + JAVA_LINE_MIDDLE + text + NL).getBytes()); //$NON-NLS-1$
+                javaOS.write((id + JAVA_LINE_MIDDLE + text + NL).getBytes(UTF8)); //$NON-NLS-1$
             }
 
             if(languageIdSearched) {
@@ -648,8 +464,8 @@ public class TMXConverter {
         }
         nl = null;
 
-        jsOS.write((JS_LINE_START + BUILD_STAMP_ID + JS_LINE_MIDDLE + buildStamp + "\"" + JS_FILE_END).getBytes()); //$NON-NLS-1$ //$NON-NLS-2$
-        javaOS.write((BUILD_STAMP_ID + JAVA_LINE_MIDDLE + buildStamp).getBytes()); //$NON-NLS-1$
+        jsOS.write((JS_LINE_START + BUILD_STAMP_ID + JS_LINE_MIDDLE + buildStamp + "\"" + JS_FILE_END).getBytes(UTF8)); //$NON-NLS-1$ //$NON-NLS-2$
+        javaOS.write((BUILD_STAMP_ID + JAVA_LINE_MIDDLE + buildStamp).getBytes(UTF8)); //$NON-NLS-1$
 
         jsOS.flush();
         javaOS.flush();
@@ -707,11 +523,11 @@ public class TMXConverter {
                     transcript = processedLanguages.get(locale);
                     processedLanguages.remove(locale);
                 }
-                file.write((locale + JAVA_LINE_MIDDLE + transcript + NL).getBytes());
+                file.write((locale + JAVA_LINE_MIDDLE + transcript + NL).getBytes(UTF8));
             }
         }
         for (String locale: processedLanguages.keySet()) {
-            file.write((locale + JAVA_LINE_MIDDLE + processedLanguages.get(locale) + NL).getBytes());
+            file.write((locale + JAVA_LINE_MIDDLE + processedLanguages.get(locale) + NL).getBytes(UTF8));
         }
     }
 }

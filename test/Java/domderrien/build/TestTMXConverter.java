@@ -1,6 +1,10 @@
 package domderrien.build;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +20,9 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import javamocks.io.MockInputStream;
+import javamocks.io.MockOutputStream;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,20 +36,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 public class TestTMXConverter {
-
-    class MockOutputStream extends OutputStream {
-        StringBuffer stream = new StringBuffer();
-        public String getStream() {
-            return stream.toString();
-        }
-        public int length() {
-            return stream.length();
-        }
-        @Override
-        public void write(int b) throws IOException {
-            stream.append((char) b);
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -92,7 +85,7 @@ public class TestTMXConverter {
     public void testSetContextI() {
         // Exception expected because the <code>null</code> value is not checked
         TMXConverter converter = new TMXConverter(false);
-        converter.setContext(null);
+        converter.loadContext(null);
         fail("NullPointerException should have been thrown");
     }
 
@@ -100,7 +93,7 @@ public class TestTMXConverter {
     public void testSetContextII() {
         // Error because the number of arguments is even
         TMXConverter converter = new TMXConverter(false);
-        converter.setContext(new String[] {"nop"});
+        converter.loadContext(new String[] {"nop"});
         assertTrue(converter.getProcessStopped());
     }
 
@@ -108,7 +101,7 @@ public class TestTMXConverter {
     public void testSetContextIII() {
         // Error because the number of arguments is odd but under 10
         TMXConverter converter = new TMXConverter(false);
-        converter.setContext(new String[] {"nop", "nop"});
+        converter.loadContext(new String[] {"nop", "nop"});
         assertTrue(converter.getProcessStopped());
     }
 
@@ -117,7 +110,7 @@ public class TestTMXConverter {
         // Error because one of the expected arguments is missing
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-nop", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -129,7 +122,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-nop", "nop",
                     "-jsDestPath", "nop",
@@ -141,7 +134,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-nop", "nop",
@@ -153,7 +146,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -165,7 +158,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -177,7 +170,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -190,11 +183,11 @@ public class TestTMXConverter {
     }
 
     @Test
-    public void testSetContextV() {
+    public void testloadContextV() {
         // Error because one of the value of the expected arguments is emtpy
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -206,7 +199,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "",
                     "-jsDestPath", "nop",
@@ -218,7 +211,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "",
@@ -230,7 +223,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -242,7 +235,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -254,7 +247,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -271,7 +264,7 @@ public class TestTMXConverter {
         // Error because one of the value of the expected arguments is missing
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -284,7 +277,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "",
                     "-jsDestPath", "nop",
@@ -297,7 +290,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "",
@@ -310,7 +303,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -323,7 +316,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -336,7 +329,7 @@ public class TestTMXConverter {
         }
         {
             TMXConverter converter = new TMXConverter(false);
-            converter.setContext(new String[] {
+            converter.loadContext(new String[] {
                     "-tmxFilenameBase", "nop",
                     "-sourcePath", "nop",
                     "-jsDestPath", "nop",
@@ -353,7 +346,7 @@ public class TestTMXConverter {
     public void testSetContextVII() {
         // Everything is fine, so no error expected
         TMXConverter converter = new TMXConverter(false);
-        converter.setContext(new String[] {
+        converter.loadContext(new String[] {
                 "-tmxFilenameBase", "nop",
                 "-sourcePath", "nop",
                 "-jsDestPath", "nop",
@@ -387,7 +380,9 @@ public class TestTMXConverter {
     {
         TMXConverter converter = new TMXConverter(false) {
             @Override
-            protected void getSourceFileDates(String arg0, String arg1, Map<String, Long> arg2) {}
+            protected Map<String, Long> getSourceFileDates(String arg0, String arg1) {
+                return new HashMap<String, Long>();
+            }
             @Override
             protected void getJSFileDates(Map<String, Long> arg0, String arg1, Map<String, Long> arg2) {}
             @Override
@@ -406,7 +401,9 @@ public class TestTMXConverter {
     {
         TMXConverter converter = new TMXConverter(false) {
             @Override
-            protected void getSourceFileDates(String arg0, String arg1, Map<String, Long> arg2) {}
+            protected Map<String, Long> getSourceFileDates(String arg0, String arg1) {
+                return new HashMap<String, Long>();
+            }
             @Override
             protected void getJSFileDates(Map<String, Long> arg0, String arg1, Map<String, Long> arg2) {}
             @Override
@@ -439,9 +436,8 @@ public class TestTMXConverter {
                 return false;
             }
         };
-        Map<String, Long> fileDates = new HashMap<String, Long>();
-        (new TMXConverter(false)).getFileDates("tmx", directory, fileDates);
-        assertEquals(0, fileDates.keySet().size());
+        Map<String, Long> fileDates = (new TMXConverter(false)).getFileDates("tmx", directory);
+        assertNull(fileDates);
     }
 
     @Test
@@ -459,8 +455,7 @@ public class TestTMXConverter {
                 return new File[] {};
             }
         };
-        Map<String, Long> fileDates = new HashMap<String, Long>();
-        (new TMXConverter(false)).getFileDates("tmx", directory, fileDates);
+        Map<String, Long> fileDates = (new TMXConverter(false)).getFileDates("tmx", directory);
         assertEquals(0, fileDates.keySet().size());
     }
 
@@ -490,8 +485,7 @@ public class TestTMXConverter {
                 };
             }
         };
-        Map<String, Long> fileDates = new HashMap<String, Long>();
-        (new TMXConverter(false)).getFileDates("tmx", directory, fileDates);
+        Map<String, Long> fileDates = (new TMXConverter(false)).getFileDates("tmx", directory);
         assertEquals(0, fileDates.keySet().size());
     }
 
@@ -517,8 +511,7 @@ public class TestTMXConverter {
                 };
             }
         };
-        Map<String, Long> fileDates = new HashMap<String, Long>();
-        (new TMXConverter(false)).getFileDates("tmx", directory, fileDates);
+        Map<String, Long> fileDates = (new TMXConverter(false)).getFileDates("tmx", directory);
         assertEquals(0, fileDates.keySet().size());
     }
 
@@ -580,9 +573,7 @@ public class TestTMXConverter {
                 };
             }
         };
-        Map<String, Long> fileDates = new HashMap<String, Long>();
-
-        (new TMXConverter(false)).getFileDates("tmx", directory, fileDates);
+        Map<String, Long> fileDates = (new TMXConverter(false)).getFileDates("tmx", directory);
 
         assertEquals(3, fileDates.keySet().size());
         assertTrue(fileDates.containsKey("tmx"));
@@ -609,7 +600,7 @@ public class TestTMXConverter {
                 };
             }
         };
-        converter.getSourceFileDates("nop", "nop", new HashMap<String, Long>());
+        converter.getSourceFileDates("nop", "nop");
     }
 
     @Test
@@ -842,6 +833,7 @@ public class TestTMXConverter {
             }
         };
 
+        converter.setSourceMap(new HashMap<String, Long>());
         converter.setLanguageMap(languages);
         converter.processTMX();
 
@@ -863,6 +855,7 @@ public class TestTMXConverter {
             }
         };
 
+        converter.setSourceMap(new HashMap<String, Long>());
         converter.setLanguageMap(languages);
         converter.processTMX();
 
@@ -1231,16 +1224,7 @@ public class TestTMXConverter {
     {
         // Normal buffer
         final String testStream = "<xml></xml>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         converter.getDocument(stream);
@@ -1253,16 +1237,7 @@ public class TestTMXConverter {
     {
         // Corrupted buffer
         final String testStream = "<xml></>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         converter.getDocument(stream);
@@ -1291,16 +1266,7 @@ public class TestTMXConverter {
     public void testGetNodeListI()
     {
         final String testStream = "<tu><seg/></tu>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         Document doc = converter.getDocument(stream);
@@ -1314,16 +1280,7 @@ public class TestTMXConverter {
     public void testGetNodeListII()
     {
         final String testStream = "<tu><seg>text</seg></tu>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         Document doc = converter.getDocument(stream);
@@ -1336,16 +1293,7 @@ public class TestTMXConverter {
     public void testGetNodeListIII()
     {
         final String testStream = "<tu><seg/></tu>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         Document doc = converter.getDocument(stream);
@@ -1358,16 +1306,7 @@ public class TestTMXConverter {
     public void testGetNodeListVI()
     {
         final String testStream = "<tu><seg/><seg/><seg/></tu>";
-        InputStream stream = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream stream = new MockInputStream(testStream);
 
         TMXConverter converter = new TMXConverter(false);
         Document doc = converter.getDocument(stream);
@@ -1385,16 +1324,7 @@ public class TestTMXConverter {
 
         // <tu/> with tuid
         final String testStream = "<tmx><body><tu/></body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         OutputStream jsOS = new MockOutputStream();
         OutputStream javaOS = new MockOutputStream();
@@ -1412,16 +1342,7 @@ public class TestTMXConverter {
 
         // <tu/> with empty tuid
         final String testStream = "<tmx><body><tu tuid=''/></body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         OutputStream jsOS = new MockOutputStream();
         OutputStream javaOS = new MockOutputStream();
@@ -1439,16 +1360,7 @@ public class TestTMXConverter {
 
         // <tu/> without <prop/>
         final String testStream = "<tmx><body><tu tuid='1'/><tu tuid='2'/></body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         OutputStream jsOS = new MockOutputStream();
         OutputStream javaOS = new MockOutputStream();
@@ -1466,16 +1378,7 @@ public class TestTMXConverter {
 
         // <tu/> with <prop/> without an expected value in {DOJO_TK, JAVA_RB}
         final String testStream = "<tmx><body><tu tuid='1'><prop type=''/></tu></body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         OutputStream jsOS = new MockOutputStream();
         OutputStream javaOS = new MockOutputStream();
@@ -1508,16 +1411,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1529,8 +1423,8 @@ public class TestTMXConverter {
         assertFalse(converter.isErrorReported());
         assertEquals(converter.getMinimumJavaSize(), javaOS.length());
         assertTrue(converter.getMinimumJSSize() < jsOS.length());
-        assertTrue(jsOS.getStream().startsWith(TMXConverter.JS_FILE_START));
-        assertTrue(jsOS.getStream().endsWith(TMXConverter.JS_FILE_END));
+        assertTrue(jsOS.toString().startsWith(TMXConverter.JS_FILE_START));
+        assertTrue(jsOS.toString().endsWith(TMXConverter.JS_FILE_END));
         assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_START + "1" + TMXConverter.JS_LINE_MIDDLE + "one" + TMXConverter.JS_LINE_END) != -1);
         assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_START + "2" + TMXConverter.JS_LINE_MIDDLE + "two" + TMXConverter.JS_LINE_END) != -1);
     }
@@ -1557,16 +1451,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
             "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1605,16 +1490,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1648,16 +1524,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1666,7 +1533,8 @@ public class TestTMXConverter {
         converter.setBuildStamp(BuildStamp);
         converter.convert(locale, tmxIS, jsOS, javaOS);
 
-        assertTrue(converter.isErrorReported());
+        // Not a error trigger anymore
+        // assertTrue(converter.isErrorReported());
     }
 
     @Test
@@ -1685,16 +1553,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1733,16 +1592,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1782,16 +1632,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1831,16 +1672,7 @@ public class TestTMXConverter {
                 "</tuv>" +
             "</tu>" +
         "</body></tmx>";
-        InputStream tmxIS = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        InputStream tmxIS = new MockInputStream(testStream);
 
         MockOutputStream jsOS = new MockOutputStream();
         MockOutputStream javaOS = new MockOutputStream();
@@ -1937,16 +1769,7 @@ public class TestTMXConverter {
     {
         // Verify the saving of the existing language definitions
         final String testStream = "en=English" + TMXConverter.NL + "pl=Polski" + TMXConverter.NL + "da=Danske";
-        final InputStream rbFile = new InputStream() {
-            int idx = 0;
-            @Override
-            public int read() throws IOException {
-                if (idx < testStream.length()) {
-                    return (int) testStream.charAt(idx++);
-                }
-                return -1;
-            }
-        };
+        final InputStream rbFile = new MockInputStream(testStream);
 
         Map<String, String> foundLanguages = new HashMap<String, String>();
         foundLanguages.put("da", "Dansk");
