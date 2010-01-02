@@ -3,6 +3,7 @@ package domderrien.build;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -493,5 +494,37 @@ public class TestTMXGenerator {
         assertNotSame(0, outBuffer.length());
         assertFalse(generator.isErrorReported());
         assertFalse(generator.getProcessStopped());
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesI() {
+        assertNull(TMXGenerator.escapeHtmlEntities(null));
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesII() {
+        assertEquals("", TMXGenerator.escapeHtmlEntities(""));
+        assertEquals("normal \t\n\t string", TMXGenerator.escapeHtmlEntities("normal \t\n\t string"));
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesIII() {
+        assertEquals("&amp;", TMXGenerator.escapeHtmlEntities("&"));
+        assertEquals("proctle &amp; gamble", TMXGenerator.escapeHtmlEntities("proctle & gamble"));
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesIV() {
+        assertEquals("&lt;", TMXGenerator.escapeHtmlEntities("&lt;"));
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesV() {
+        assertEquals("&#48;", TMXGenerator.escapeHtmlEntities("&#48;"));
+    }
+
+    @Test
+    public void testEscapeHtmlEntitiesVI() {
+        assertEquals("0&lt;1 &amp;&amp; 2&gt;1", TMXGenerator.escapeHtmlEntities("0<1 && 2>1"));
     }
 }

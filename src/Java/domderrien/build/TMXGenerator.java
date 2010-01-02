@@ -222,8 +222,16 @@ public class TMXGenerator extends TMXCommandLineToolBase {
             // Override the translated one
             Node sourceSeg = getNodeList(sourceTU, "tuv/seg/text()").item(0); //$NON-NLS-1$
             text = sourceSeg == null ? null : sourceSeg.getNodeValue();
+            text = escapeHtmlEntities(text);
         }
 
         outBuffer.append(("\t\t\t<tuv xml:lang=\"" + locale + "\">\n\t\t\t\t<seg>" + (text == null ? "" : text) + "</seg>\n\t\t\t</tuv>\n\t\t</tu>\n"));
+    }
+
+    protected static String escapeHtmlEntities(String source) {
+        if (source == null) {
+            return null;
+        }
+        return source.replaceAll("&&(\\s|$)", "&amp;&amp;$1").replaceAll("&(\\s|$)", "&amp;$1").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 }
