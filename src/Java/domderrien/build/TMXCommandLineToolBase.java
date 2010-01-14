@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
@@ -211,5 +212,28 @@ public abstract class TMXCommandLineToolBase {
             stopProcess();
         }
         return null;
+    }
+
+    protected StringBuilder getTextRepresentation (StringBuilder out, NodeList nodeList) {
+        for (int idx = 0; idx < nodeList.getLength(); idx++) {
+            Node node = nodeList.item(idx);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                out.append("<").append(node.getNodeName());
+                NamedNodeMap attributes = node.getAttributes();
+                for(int crsr = 0; crsr < attributes.getLength(); crsr++) {
+                    out.append(" ").append(attributes.item(crsr).getNodeName()).append("=\"").append(attributes.item(crsr).getNodeValue()).append("\"");
+                }
+                out.append(">");
+                getTextRepresentation (out, node.getChildNodes());
+                out.append("</").append(node.getNodeName()).append(">");
+            }
+            else if (node.getNodeType() == Node.TEXT_NODE) {
+                out.append(node.getNodeValue());
+            }
+            else {
+                reportError("TMXCommandLineToolBase: Unexpected tag content: " + node.getNodeName()); //$NON-NLS-1$
+            }
+        }
+        return out;
     }
 }

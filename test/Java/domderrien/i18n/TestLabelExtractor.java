@@ -183,6 +183,13 @@ public class TestLabelExtractor {
     }
 
     @Test
+    public void testInsertParametersIV() {
+        assertEquals(LabelExtractor.NULL_INDICATOR, LabelExtractor.insertParameters("{0}", new Object[] { null } ));
+        assertEquals(LabelExtractor.NULL_INDICATOR + " - test0", LabelExtractor.insertParameters("{1} - {0}", new Object[] { "test0", null } ));
+        assertEquals(LabelExtractor.NULL_INDICATOR + " - test0 - " + LabelExtractor.NULL_INDICATOR, LabelExtractor.insertParameters("{1} - {0} - {1}", new Object[] { "test0", null } ));
+    }
+
+    @Test
     public void testGetResourceBundleExtendedI() {
         LabelExtractor.setResourceBundle(ResourceFileId.second, mock, Locale.US);
         // The label returned is the given error code because the entry is not in the dictionary

@@ -436,9 +436,8 @@ public class TMXConverter extends TMXCommandLineToolBase {
             }
             props = null;
 
-            Node n = getNodeList(tu, "tuv/seg/text()").item(0); //$NON-NLS-1$
-            String text = n == null ? null : n.getNodeValue();
-            text = text == null ? "" : text.replaceAll("\\s+", " ").trim();
+            StringBuilder accumulatedText = getTextRepresentation(new StringBuilder(), getNodeList(tu, "tuv/seg").item(0).getChildNodes()); //$NON-NLS-1$
+            String text = accumulatedText.toString().replaceAll("\\s+", " ").trim();
 
             if (saveToJS) {
                 // js.append("'" + id + "':\"").append(text.replaceAll("(\\{[\\d]+\\})", "\\$$1")).append("\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$

@@ -131,14 +131,24 @@
 			</tuv>
 		</tu>
 
-		<tu tuid="unit_test_sample_with_harmless_empty_segment" datatype="text">
-			<prop type="x-tier">dojotk</prop>
-			<prop type="x-tier">javarb</prop>
-			<prop type="x-version">1</prop>
-			<note>test</note>
-			<tuv xml:lang="en">
+        <tu tuid="unit_test_sample_with_harmless_empty_segment" datatype="text">
+            <prop type="x-tier">dojotk</prop>
+            <prop type="x-tier">javarb</prop>
+            <prop type="x-version">1</prop>
+            <note>test</note>
+            <tuv xml:lang="en">
                 <seg></seg>
-			</tuv>
-		</tu>
+            </tuv>
+        </tu>
+
+        <tu tuid="unit_test_sample_with_embedded_HTML_tags" datatype="text">
+            <prop type="x-tier">dojotk</prop>
+            <prop type="x-tier">javarb</prop>
+            <prop type="x-version">1</prop>
+            <note>test</note>
+            <tuv xml:lang="en">
+                <seg>Twetailer uses <a href="http://amazon.com/aws/fps">Amazon Flexible Payment System</a> for its operations.</seg>
+            </tuv>
+        </tu>
 	</body>
 </tmx>

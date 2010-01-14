@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -1829,5 +1830,85 @@ public class TestTMXConverter {
         converter.saveSupportedLanguages(stream);
         System.out.println("stream: " + stream.getStream());
         assertTrue(stream.getStream().indexOf("de=Deutsch") != -1);
+    }
+
+    @Test
+    public void testConvertStreamsXIII() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+        String complexContent = "Twetailer uses <a href=\"http://www.amazon.com/aws/fps\">Amazon Flexible Payment System</a> for its operations.";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='1'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + complexContent + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertTrue(converter.getMinimumJavaSize() < javaOS.length());
+        assertTrue(converter.getMinimumJSSize() < jsOS.length());
+        assertEquals(1, converter.getLanguageMap().keySet().size());
+        assertEquals("null", converter.getLanguageMap().get("en"));
+        assertNotSame(-1, javaOS.getStream().indexOf(complexContent));
+        assertNotSame(-1, jsOS.getStream().indexOf(complexContent.replaceAll("\"", "\\\\u0022")));
+    }
+
+    @Test
+    public void testConvertStreamsXIV() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+        String complexContent = "Twetailer uses <a href=\"http://www.amazon.com/aws/fps\">Amazon Flexible Payment System</a> for its operations.";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='1'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg><!-- comment --></seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertTrue(converter.isErrorReported());
     }
 }

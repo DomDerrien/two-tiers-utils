@@ -64,5 +64,13 @@
 				<seg></seg>
 			</tuv>
 		</tu>
+        <tu tuid="unit_test_sample_with_embedded_HTML_tags" datatype="text">
+            <prop type="x-tier">dojotk</prop>
+            <prop type="x-tier">javarb</prop>
+            <prop type="x-version">1</prop>
+            <tuv xml:lang="en">
+                <seg>Twetailer utilise le <a href="http://amazon.com/aws/fps">Système de paiement flexible d'Amazon</a> pour ces opérations.</seg>
+            </tuv>
+        </tu>
 	</body>
 </tmx>

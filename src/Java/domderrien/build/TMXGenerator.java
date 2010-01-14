@@ -212,20 +212,13 @@ public class TMXGenerator extends TMXCommandLineToolBase {
             }
         }
 
-        String text = "";
-        if (sourceVersion <= targetVersion) {
-            // Keep the translated one
-            Node targetSeg = getNodeList(targetNL.item(0), "tuv/seg/text()").item(0); //$NON-NLS-1$
-            text = targetSeg == null ? null : targetSeg.getNodeValue();
-        }
-        else {
-            // Override the translated one
-            Node sourceSeg = getNodeList(sourceTU, "tuv/seg/text()").item(0); //$NON-NLS-1$
-            text = sourceSeg == null ? null : sourceSeg.getNodeValue();
-            text = escapeHtmlEntities(text);
-        }
-
-        outBuffer.append(("\t\t\t<tuv xml:lang=\"" + locale + "\">\n\t\t\t\t<seg>" + (text == null ? "" : text) + "</seg>\n\t\t\t</tuv>\n\t\t</tu>\n"));
+        Node upToDateTU = sourceVersion <= targetVersion ? targetNL.item(0) : sourceTU;
+        StringBuilder accumulatedText = getTextRepresentation(
+                new StringBuilder(),
+                getNodeList(upToDateTU, "tuv/seg").item(0).getChildNodes() //$NON-NLS-1$
+        );
+        String text = escapeHtmlEntities(accumulatedText.toString());
+        outBuffer.append(("\t\t\t<tuv xml:lang=\"" + locale + "\">\n\t\t\t\t<seg>" + text + "</seg>\n\t\t\t</tuv>\n\t\t</tu>\n"));
     }
 
     protected static String escapeHtmlEntities(String source) {
