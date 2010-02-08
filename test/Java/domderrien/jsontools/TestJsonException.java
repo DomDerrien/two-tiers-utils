@@ -239,6 +239,28 @@ public class TestJsonException {
     }
 
     @Test
+    public void testToStreamIV() {
+        MockOutputStream out = new MockOutputStream();
+        String exceptionType = "Unexpected error";
+        String message = "test\r\nmessage";
+        JsonException o = new JsonException(exceptionType, new RuntimeException(message));
+        try {
+            o.toStream(out, false);
+        }
+        catch (IOException e) {
+            fail("No expected exception");
+        }
+
+        assertNotSame(-1, out.getStream().indexOf("isException"));
+        assertNotSame(-1, out.getStream().indexOf("true"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionId"));
+        assertNotSame(-1, out.getStream().indexOf("exceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("test message"));
+        assertNotSame(-1, out.getStream().indexOf("originalExceptionMessage"));
+        assertNotSame(-1, out.getStream().indexOf("test message"));
+    }
+
+    @Test
     @SuppressWarnings("serial")
     public void testGetString() {
         JsonException jsonException = new JsonException("test") {

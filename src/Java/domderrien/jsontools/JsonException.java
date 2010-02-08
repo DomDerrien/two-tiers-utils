@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javamocks.io.MockOutputStream;
 
@@ -207,7 +208,7 @@ public class JsonException extends Exception implements JsonObject {
         JsonSerializer.toStream("isException", true, out, true);
         JsonSerializer.toStream("exceptionId", id, out, true);
         // JsonSerializer.toStream("exceptionType", getExceptionType(), out, true);
-        JsonSerializer.toStream("exceptionMessage", getMessage(), out, true);
+        JsonSerializer.toStream("exceptionMessage", getMessage().replaceAll("[\\r\\n]+", " "), out, true);
         /** / // This call to printStackTrace() causes a StackOverflowException because of Corbetura instrumentation
         MockOutputStream temp = new MockOutputStream();
         printStackTrace(new PrintStream(temp));
@@ -215,7 +216,7 @@ public class JsonException extends Exception implements JsonObject {
         /**/
         // JsonSerializer.introduceComplexValue("originalException", out);
         // (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
-        String originalExceptionMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage();
+        String originalExceptionMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage().replaceAll("[\\r\\n]+", " ");
         JsonSerializer.endObject("originalExceptionMessage", originalExceptionMessage, out, isFollowed);
     }
 }

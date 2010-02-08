@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -451,6 +450,10 @@ public class TMXConverter extends TMXCommandLineToolBase {
                 jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes(UTF8)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             if (saveToJava) {
+                if (id.charAt(0) == '#') {
+                    // Escape the character starting a comment line
+                    id = "\\" + id;
+                }
                 javaOS.write((id + JAVA_LINE_MIDDLE + text + NL).getBytes(UTF8)); //$NON-NLS-1$
             }
 

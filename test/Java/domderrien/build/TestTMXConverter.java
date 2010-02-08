@@ -1880,7 +1880,6 @@ public class TestTMXConverter {
     {
         String locale = null;
         String BuildStamp = "bs";
-        String complexContent = "Twetailer uses <a href=\"http://www.amazon.com/aws/fps\">Amazon Flexible Payment System</a> for its operations.";
 
         // <tuv/> defines the language
         final String testStream = "<tmx><body>" +
@@ -1910,5 +1909,41 @@ public class TestTMXConverter {
         converter.convert(locale, tmxIS, jsOS, javaOS);
 
         assertTrue(converter.isErrorReported());
+    }
+
+    @Test
+    public void testConvertentryStartingWithHash() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='#1'>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>#1</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "\\#1=#1" + TMXConverter.NL));
     }
 }
