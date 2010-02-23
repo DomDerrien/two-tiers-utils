@@ -183,7 +183,8 @@ public class LabelExtractor
             for (int i=0; i<paramNb; ++i) {
                 String pattern = "\\{" + i + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
                 Object parameter = parameters[i];
-                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString());
+                // Dollar sign ($) neutralized in parameter to avoid issues with Regular Expression engine used by replaceAll();
+                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$"));
             }
         }
         return label;
