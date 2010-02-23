@@ -1,4 +1,5 @@
 bin/*
+dist/*
 docs/generated-doc/*
 docs/test-reports/*
 src/WebContent/js/dojo/*
