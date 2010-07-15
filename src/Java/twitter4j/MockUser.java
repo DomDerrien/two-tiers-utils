@@ -54,4 +54,9 @@ public class MockUser implements User {
     public boolean isStatusTruncated() { return false; }
     public boolean isVerified() { return false; }
     public RateLimitStatus getRateLimitStatus() { return null; }
+
+    public String getLang() { return null; }
+    public Status getStatus() { return null; }
+    public boolean isContributorsEnabled() { return false; }
+    public int compareTo(User o) { return 0; }
 }

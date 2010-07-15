@@ -221,8 +221,7 @@ public class TestJsonException {
     public void testToStreamIII() {
         MockOutputStream out = new MockOutputStream();
         String exceptionType = "Unexpected error";
-        String message = null;
-        JsonException o = new JsonException(exceptionType, new RuntimeException(message));
+        JsonException o = new JsonException(exceptionType);
         try {
             o.toStream(out, false);
         }
@@ -233,9 +232,9 @@ public class TestJsonException {
         assertNotSame(-1, out.getStream().indexOf("true"));
         assertNotSame(-1, out.getStream().indexOf("exceptionId"));
         assertNotSame(-1, out.getStream().indexOf("exceptionMessage"));
-        assertNotSame(-1, out.getStream().indexOf("null"));
+        assertNotSame(-1, out.getStream().indexOf(exceptionType));
         assertNotSame(-1, out.getStream().indexOf("originalExceptionMessage"));
-        assertNotSame(-1, out.getStream().indexOf("[no cause message]"));
+        assertNotSame(-1, out.getStream().indexOf("[no cause]"));
     }
 
     @Test

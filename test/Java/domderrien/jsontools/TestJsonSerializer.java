@@ -43,7 +43,7 @@ public class TestJsonSerializer {
 
     @Test
     public void testGetBytesIII() throws IOException {
-        assertEquals(20, JsonSerializer.getBytes("àéìôü").length);
+        assertEquals(10, JsonSerializer.getBytes("àéìôü").length);
     }
 
     @Test

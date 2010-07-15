@@ -142,6 +142,9 @@ public class GenericJsonObject implements JsonObject {
             else if (value instanceof Long) {
                 typedValue = (Long) value;
             }
+            else if (value instanceof String) {
+                typedValue = Long.valueOf((String) value);
+            }
             else { // if (value instanceof Double) {
                 // Because the JsonParser generates Double instances
                 typedValue = ((Double) value).longValue();
@@ -263,7 +266,7 @@ public class GenericJsonObject implements JsonObject {
         hashMap.putAll(additionalValues.getMap());
     }
 
-    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+    public OutputStream toStream(OutputStream out, boolean isFollowed) throws IOException {
         Iterator<String> it = hashMap.keySet().iterator();
         JsonSerializer.startObject(out);
         while (it.hasNext()) {
@@ -291,5 +294,6 @@ public class GenericJsonObject implements JsonObject {
             }
         }
         JsonSerializer.endObject(out, isFollowed);
+        return out;
     }
 }

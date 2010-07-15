@@ -2,13 +2,16 @@ package javax.servlet.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 public class MockHttpServletResponse implements HttpServletResponse {
+
+    private Map<String, String> headers = new HashMap<String, String>();
+    private int status;
 
     public void addCookie(Cookie arg0) {}
     public void addDateHeader(String arg0, long arg1) {}
@@ -16,7 +19,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public void addIntHeader(String arg0, int arg1) {}
 
     public boolean containsHeader(String arg0) {
-        return false;
+        return headers.containsKey(arg0);
     }
 
     public String encodeRedirectURL(String arg0) {
@@ -39,10 +42,16 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public void sendError(int arg0, String arg1) throws IOException {}
     public void sendRedirect(String arg0) throws IOException {}
     public void setDateHeader(String arg0, long arg1) {}
-    public void setHeader(String arg0, String arg1) {}
+    public void setHeader(String arg0, String arg1) {
+        headers.put(arg0, arg1);
+    }
     public void setIntHeader(String arg0, int arg1) {}
-    public void setStatus(int arg0) {}
-    public void setStatus(int arg0, String arg1) {}
+    public void setStatus(int arg0) {
+        status = arg0;
+    }
+    public void setStatus(int arg0, String arg1) {
+        status = arg0;
+    }
     public void flushBuffer() throws IOException {}
 
     public int getBufferSize() {
@@ -80,5 +89,12 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public void setContentLength(int arg0) {}
     public void setContentType(String arg0) {}
     public void setLocale(Locale arg0) {}
+
+    public String getHeader(String arg0) {
+        return headers.get(arg0);
+    }
+    public int getStatus() {
+        return status;
+    }
 
 }

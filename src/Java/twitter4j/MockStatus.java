@@ -27,4 +27,8 @@ public class MockStatus implements Status {
     public boolean isRetweet() { return false; }
     public boolean isTruncated() { return false; }
     public RateLimitStatus getRateLimitStatus() { return null;}
+
+    public String[] getContributors() { return null; }
+    public Place getPlace() { return null; }
+    public int compareTo(Status o) { return 0; }
 }

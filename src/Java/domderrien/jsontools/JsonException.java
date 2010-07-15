@@ -203,7 +203,7 @@ public class JsonException extends Exception implements JsonObject {
         throw new UnsupportedOperationException("Some JsonException attributes should not be preserved");
     }
 
-    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+    public OutputStream toStream(OutputStream out, boolean isFollowed) throws IOException {
         JsonSerializer.startObject("success", false, out, true);
         JsonSerializer.toStream("isException", true, out, true);
         JsonSerializer.toStream("exceptionId", id, out, true);
@@ -216,7 +216,8 @@ public class JsonException extends Exception implements JsonObject {
         /**/
         // JsonSerializer.introduceComplexValue("originalException", out);
         // (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
-        String originalExceptionMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[no cause message]" : getCause().getMessage().replaceAll("[\\r\\n]+", " ");
+        String originalExceptionMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[cause class: " + getCause().getClass().getName() + "]" : getCause().getMessage().replaceAll("[\\r\\n]+", " ");
         JsonSerializer.endObject("originalExceptionMessage", originalExceptionMessage, out, isFollowed);
+        return out;
     }
 }

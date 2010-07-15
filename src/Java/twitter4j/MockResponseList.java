@@ -1,6 +1,6 @@
 package twitter4j;
 
-import twitter4j.http.HttpResponse;
+import twitter4j.internal.http.HttpResponse;
 
 @SuppressWarnings("serial")
 public class MockResponseList<T extends TwitterResponse> extends ResponseList<T> {

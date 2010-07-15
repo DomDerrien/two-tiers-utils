@@ -223,9 +223,14 @@ public abstract class TMXCommandLineToolBase {
                 for(int crsr = 0; crsr < attributes.getLength(); crsr++) {
                     out.append(" ").append(attributes.item(crsr).getNodeName()).append("=\"").append(attributes.item(crsr).getNodeValue()).append("\"");
                 }
-                out.append(">");
-                getTextRepresentation (out, node.getChildNodes());
-                out.append("</").append(node.getNodeName()).append(">");
+                if (hasNoChild(node.getNodeName())) {
+                    out.append(" />");
+                }
+                else {
+                    out.append(">");
+                    getTextRepresentation (out, node.getChildNodes());
+                    out.append("</").append(node.getNodeName()).append(">");
+                }
             }
             else if (node.getNodeType() == Node.TEXT_NODE) {
                 out.append(node.getNodeValue());
@@ -235,5 +240,12 @@ public abstract class TMXCommandLineToolBase {
             }
         }
         return out;
+    }
+
+    protected boolean hasNoChild(String nodeName) {
+        nodeName = nodeName.toLowerCase();
+        if ("br".equals(nodeName)) return true;
+        if ("input".equals(nodeName)) return true;
+        return false;
     }
 }

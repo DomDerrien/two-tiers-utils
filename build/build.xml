@@ -16,7 +16,7 @@
         description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
         value="${basedir}${file.separator}bin${file.separator}temp" />
 
-    <property name="dd2tu.release" description="Planned release of this build" value="1.0.7" />
+    <property name="dd2tu.release" description="Planned release of this build" value="1.0.9" />
 
     <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -64,8 +64,8 @@
         <delete includeemptydirs="yes" failonerror="no">
             <fileset dir="${basedir}">
                 <exclude name="bin" />
-                <include name="bin/instrumented/**" />
-                <include name="bin/classes/**" />
+                <include name="${temp.dir}/instrumented/**" />
+                <include name="${temp.dir}/classes/**" />
                 <include name="bin/jsunit/**" />
                 <exclude name="build" />
                 <exclude name="deps" />
@@ -138,7 +138,7 @@
     <target name="test" description="compile, package, and test the application" depends="compile">
         <echo>Target: test</echo>
         <antcall target="step-java-test" />
-        <antcall target="step-javascript-test" />
+        <!--antcall target="step-javascript-test" /-->
     </target>
 
     <!-- ================= -->
@@ -158,7 +158,7 @@
 
     <path id="tmxconverter.classpath">
         <!-- For the TMXConverter code -->
-        <pathelement path="bin/classes" />
+        <pathelement path="${temp.dir}/classes" />
         <!-- For the existing ${dd2tu.languageListFilename}.properties file -->
         <filelist dir="deps/lib/xml">
             <file name="xalan-2.7.0.jar" />
@@ -173,7 +173,7 @@
     <fileset id="runtime.deps" dir="${basedir}">
         <include name="deps/lib/apache/commons-lang-2.2.jar" />
         <include name="deps/lib/apache/commons-logging-1.0.4.jar" />
-        <include name="bin/classes/" />
+        <include name="${temp.dir}/classes/" />
     </fileset>
 
     <path id="java.compile.classpath">
@@ -185,7 +185,7 @@
             <file name="junit/junit-4.7.jar" />
             <file name="junit/junit-dep-4.7.jar" />
             <file name="geronimo/geronimo-servlet_2.5_spec-1.2.jar" />
-            <file name="twitter4j/twitter4j-core-2.1.0.jar" />
+            <file name="twitter4j/twitter4j-core-2.1.2.jar" />
             <file name="wave/wave-robot-api-20090916.jar" />
             <file name="jdo/jdo2-api-2.3-eb.jar" />
             <file name="appengine/appengine-api-1.0-sdk-1.2.8.jar" />
@@ -401,30 +401,30 @@
     </target>
 
     <target name="step-compile">
-        <delete dir="bin/classes" />
-        <mkdir dir="bin/classes" />
+        <delete dir="${temp.dir}/classes" />
+        <mkdir dir="${temp.dir}/classes" />
         <!--
         Use following arguments to compile Java 1.5 code for JVM 1.4
             source="1.5"
             target="jsr14"
         -->
         <javac
-            destdir="bin/classes"
+            destdir="${temp.dir}/classes"
             deprecation="false"
             debug="true"
             optimize="false"
             excludes=""
-            srcdir="src/java"
+            srcdir="src/Java"
         >
             <classpath refid="java.compile.classpath" />
         </javac>
         <javac
-            destdir="bin/classes"
+            destdir="${temp.dir}/classes"
             deprecation="false"
             debug="true"
             optimize="false"
             excludes=""
-            srcdir="test/java"
+            srcdir="test/Java"
         >
             <classpath refid="java.compile.classpath" />
         </javac>
@@ -446,7 +446,7 @@
             <arg value="-filenameBase" />
             <arg value="${dd2tu.localizedLabelBaseFilename}" />
             <arg value="-directoryName" />
-            <arg value="${basedir}\src\resources" />
+            <arg value="${basedir}${file.separator}src${file.separator}resources" />
         </java>
     </target>
 
@@ -460,9 +460,9 @@
             <arg value="-tmxFilenameBase" />
             <arg value="${dd2tu.localizedLabelBaseFilename}" />
             <arg value="-sourcePath" />
-            <arg value="${basedir}\src\resources" />
+            <arg value="${basedir}${file.separator}src${file.separator}resources" />
             <arg value="-jsDestPath" />
-            <arg value="${basedir}\src\WebContent\js\domderrien\i18n\nls" />
+            <arg value="${basedir}${file.separator}src${file.separator}WebContent${file.separator}js${file.separator}domderrien${file.separator}i18n${file.separator}nls" />
             <arg value="-javaDestPath" />
             <arg value="${temp.dir}/resources" />
             <arg value="-languageFilenameBase" />
@@ -471,7 +471,7 @@
             <arg value="${dd2tu.stageId}" />
         </java>
         <native2ascii src="${temp.dir}/resources" dest="${temp.dir}/resources" encoding="UTF8" includes="*.properties-utf8" ext=".properties" />
-        <!--copy file="bin/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="${temp.dir}/resources/${dd2tu.localizedLabelBaseFilename}_en.properties" /-->
+        <!--copy file="${temp.dir}/classes/${dd2tu.localizedLabelBaseFilename}.properties" tofile="${temp.dir}/resources/${dd2tu.localizedLabelBaseFilename}_en.properties" /-->
         <mkdir dir="src/WebContent/js/domderrien/i18n/nls/en" />
         <copy file="src/WebContent/js/domderrien/i18n/nls/${dd2tu.localizedLabelBaseFilename}.js" todir="src/WebContent/js/domderrien/i18n/nls/en" />
     </target>
@@ -505,7 +505,7 @@
     <target name="step-package-jar">
         <delete file="dist/domderrien-${dd2tu.release}.jar" />
         <jar destfile="dist/domderrien-${dd2tu.release}.jar">
-            <fileset dir="bin/classes">
+            <fileset dir="${temp.dir}/classes">
                 <exclude name="**/Test*.class" />
                 <!--exclude name="**/Mock*.class" /-->
             </fileset>
@@ -630,20 +630,21 @@
 
     <target name="step-cobertura-instrument">
         <!-- Remove the coverage data file.-->
-        <delete file="cobertura.ser"/>
-        <delete dir="bin/instrumented" />
+        <delete file="${temp.dir}/cobertura.ser" />
+        <delete dir="${temp.dir}/instrumented" />
+
         <delete verbose="true" failonerror="false">
-            <fileset dir="bin/classes">
+            <fileset dir="${temp.dir}/classes">
                 <include name="*.properties" />
             </fileset>
         </delete>
 
         <!--Instrument the application classes    -->
-        <cobertura-instrument todir="bin/instrumented">
+        <cobertura-instrument todir="${temp.dir}/instrumented">
             <!-- Ignore log4j -->
             <ignore regex="org.apache.log4j.*" />
 
-            <fileset dir="bin/classes">
+            <fileset dir="${temp.dir}/classes">
                 <!-- Instrument all the application classes -->
                 <include name="**/*.class" />
                 <exclude name="**/Test*.class" />
@@ -660,14 +661,17 @@
             dir="${basedir}"
             failureProperty="junit.test.failed"
             fork="yes"
+            forkmode="once"
             printSummary="yes"
             haltonerror="true"
             haltonfailure="true"
             timeout="10000"
             maxmemory="512M"
         >
-            <classpath location="bin/instrumented" />
-            <classpath location="bin/classes" />
+            <sysproperty key="net.sourceforge.cobertura.datafile" file="${temp.dir}/cobertura.ser" />
+
+            <classpath location="${temp.dir}/instrumented" />
+            <classpath location="${temp.dir}/classes" />
             <!-- Important: instrumented classes are before the original (uninstrumented) classes. -->
             <classpath refid="cobertura.classpath" />
             <classpath location="${temp.dir}/resources" />
@@ -740,7 +744,7 @@
 
             <sysproperty key="browserFileNames" value="${jsunit.browser.filenames}" />
             <sysproperty key="closeBrowsersAfterTestRuns" value="yes" />
-            <sysproperty key="logsDirectory" value="${basedir}\docs\test-reports\jsunit-xml" />
+            <sysproperty key="logsDirectory" value="${basedir}${file.separator}docs${file.separator}test-reports${file.separator}jsunit-xml" />
             <sysproperty key="port" value="${jsunit.server.port}" />
             <sysproperty key="resourceBase" value="${basedir}" />
             <sysproperty key="timeoutSeconds" value="${jsunit.timeout.seconds}" />

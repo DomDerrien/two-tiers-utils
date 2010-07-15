@@ -37,7 +37,7 @@ public class MockTwitter extends Twitter {
 
     @Override
     public Status updateStatus(String text) throws TwitterException {
-        pubTo = screenName;
+        pubTo = getScreenName();
         pubText.add(text);
         return new MockStatus(from, text);
     }

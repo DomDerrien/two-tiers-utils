@@ -291,8 +291,9 @@ public interface JsonArray {
      *
      * @param out Output stream
      * @param isFollowed <code>true</code> if the object is not the last of its set
+     * @return The given output stream to facilitate the chaining
      *
      * @throws IOException If there is a problem during the serialization
      */
-    void toStream(OutputStream out, boolean isFollowed) throws IOException;
+    OutputStream toStream(OutputStream out, boolean isFollowed) throws IOException;
 }

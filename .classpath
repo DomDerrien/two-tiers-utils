@@ -2,38 +2,31 @@
 <classpath>
 	<classpathentry kind="src" path="src/Java"/>
 	<classpathentry kind="src" path="test/Java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_13"/>
-	<!-- For the HTTP servlet -->
-    <classpathentry kind="lib" path="deps/lib/geronimo/geronimo-servlet_2.5_spec-1.2.jar"/>
-    <!-- For OpenID -->
-    <classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-openid-1.1.6.jar"/>
-    <classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-util-1.1.6.jar"/>
-    <classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-web-1.1.6.jar"/>
-    <classpathentry kind="lib" path="deps/lib/dyuproject/jetty-util-6.1.19.jar"/>
-	<!-- For Google App Engine -->
-    <classpathentry kind="lib" path="deps/lib/jdo/jdo2-api-2.3-eb.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-1.0-sdk-1.2.8.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-stubs.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-local-runtime.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-api-labs-1.2.8.jar"/>
-    <classpathentry kind="lib" path="deps/lib/appengine/appengine-testing.jar"/>
-    <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-jpa-1.1.5.jar"/>
-    <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-appengine-1.0.3.jar"/>
-    <classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-core-1.1.5.jar"/>
-    <!-- For Google Wave -->
-    <classpathentry kind="lib" path="deps/lib/wave/wave-robot-api-20090916.jar"/>
-    <!-- For Twitter4J -->
-    <classpathentry kind="lib" path="deps/lib/twitter4j/twitter4j-core-2.1.0.jar" sourcepath="deps/lib/twitter4j/twitter4j-core-2.1.0-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="jar:platform:/resource/twetailerJ/deps/lib/twitter4j/twitter4j-core-2.1.0-javadoc.jar!/"/>
-        </attributes>
-    </classpathentry>
-    <!-- For the TMX converter -->
-    <classpathentry kind="lib" path="deps/lib/xml/xalan-2.7.0.jar"/>
-    <classpathentry kind="lib" path="deps/lib/xml/xercesImpl-2.4.0.jar"/>
-    <classpathentry kind="lib" path="deps/lib/xml/xml-apis-1.3.02.jar"/>
-    <classpathentry kind="lib" path="deps/lib/j2ee/servlet-api.jar"/>
-    <!-- For the unit tests -->
-    <classpathentry kind="lib" path="deps/lib/junit/junit-4.7.jar" sourcepath="deps/lib/junit/junit-4.7-src.jar"/>
+	<classpathentry kind="lib" path="deps/lib/geronimo/geronimo-servlet_2.5_spec-1.2.jar"/>
+	<classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-openid-1.1.6.jar"/>
+	<classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-util-1.1.6.jar"/>
+	<classpathentry kind="lib" path="deps/lib/dyuproject/dyuproject-web-1.1.6.jar"/>
+	<classpathentry kind="lib" path="deps/lib/dyuproject/jetty-util-6.1.19.jar"/>
+	<classpathentry kind="lib" path="deps/lib/jdo/jdo2-api-2.3-eb.jar"/>
+	<classpathentry kind="lib" path="deps/lib/appengine/appengine-api-1.0-sdk-1.2.8.jar"/>
+	<classpathentry kind="lib" path="deps/lib/appengine/appengine-api-stubs.jar"/>
+	<classpathentry kind="lib" path="deps/lib/appengine/appengine-local-runtime.jar"/>
+	<classpathentry kind="lib" path="deps/lib/appengine/appengine-api-labs-1.2.8.jar"/>
+	<classpathentry kind="lib" path="deps/lib/appengine/appengine-testing.jar"/>
+	<classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-jpa-1.1.5.jar"/>
+	<classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-appengine-1.0.3.jar"/>
+	<classpathentry kind="lib" path="deps/lib/datanucleus/datanucleus-core-1.1.5.jar"/>
+	<classpathentry kind="lib" path="deps/lib/wave/wave-robot-api-20090916.jar"/>
+	<classpathentry kind="lib" path="deps/lib/twitter4j/twitter4j-core-2.1.2.jar" sourcepath="deps/lib/twitter4j/twitter4j-core-2.1.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/twetailerJ/deps/lib/twitter4j/twitter4j-core-2.1.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="deps/lib/xml/xalan-2.7.0.jar"/>
+	<classpathentry kind="lib" path="deps/lib/xml/xercesImpl-2.4.0.jar"/>
+	<classpathentry kind="lib" path="deps/lib/xml/xml-apis-1.3.02.jar"/>
+	<classpathentry kind="lib" path="deps/lib/j2ee/servlet-api.jar"/>
+	<classpathentry kind="lib" path="deps/lib/junit/junit-4.7.jar" sourcepath="deps/lib/junit/junit-4.7-src.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

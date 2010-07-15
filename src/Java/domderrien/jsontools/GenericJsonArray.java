@@ -231,7 +231,7 @@ public class GenericJsonArray implements JsonArray {
         arrayList.addAll(additionalValues.getList());
     }
 
-    public void toStream(OutputStream out, boolean isFollowed) throws IOException {
+    public OutputStream toStream(OutputStream out, boolean isFollowed) throws IOException {
         Iterator<Object> it = arrayList.iterator();
         JsonSerializer.startArray(out);
         while (it.hasNext()) {
@@ -256,5 +256,6 @@ public class GenericJsonArray implements JsonArray {
             }
         }
         JsonSerializer.endArray(out, isFollowed);
+        return out;
     }
 }
