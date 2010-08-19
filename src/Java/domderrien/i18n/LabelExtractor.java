@@ -2,6 +2,7 @@ package domderrien.i18n;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -115,7 +116,7 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(ResourceFileId resId, String messageId, Locale locale) {
-        return get(resId, messageId, null, locale);
+        return get(resId, messageId, (Map<String, Object>) null, locale);
     }
 
     /**
@@ -135,6 +136,24 @@ public class LabelExtractor
         return get(ResourceFileId.master, messageId, parameters, locale);
     }
 
+
+    /**
+     * Return the message associated to the given identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param parameters Map of parameters, each one used to replace a
+     *                   pattern made of a map key between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(String messageId, Map<String, Object> parameters, Locale locale) {
+        return get(ResourceFileId.master, messageId, parameters, locale);
+    }
+
     /**
      * Return the message associated to the given identifier.
      *
@@ -150,6 +169,34 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(ResourceFileId resId, String messageId, Object[] parameters, Locale locale) {
+        String label = messageId;
+        if (messageId != null && 0 < messageId.length()) {
+            try {
+                ResourceBundle labels = getResourceBundle(resId, locale);
+                label = labels.getString(messageId);
+            }
+            catch (MissingResourceException ex) {
+                // nothing
+            }
+        }
+        return insertParameters(label, parameters);
+    }
+
+    /**
+     * Return the message associated to the given identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param resId     Identifier of the resource file where the localized data should be extracted from
+     * @param parameters Map of parameters, each one used to replace a
+     *                   pattern made of a map key between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, Map<String, Object> parameters, Locale locale) {
         String label = messageId;
         if (messageId != null && 0 < messageId.length()) {
             try {
@@ -183,7 +230,31 @@ public class LabelExtractor
             for (int i=0; i<paramNb; ++i) {
                 String pattern = "\\{" + i + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
                 Object parameter = parameters[i];
-                // Dollar sign ($) neutralized in parameter to avoid issues with Regular Expression engine used by replaceAll();
+                // Dollar sign ($) neutralised in parameter to avoid issues with Regular Expression engine used by replaceAll();
+                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$"));
+            }
+        }
+        return label;
+    }
+
+    /**
+     * Utility method inserting the parameters into the given string
+     *
+     * @param label      Text to process
+     * @param parameters Map of parameters, each one used to replace a
+     *                   pattern made of a map key between curly braces.
+     * @return Text where the place holders have been replaced by the
+     *         toString() of the objects passed in the array.
+     *
+     * @see java.text.MessageFormat#format(String, Object[])
+     */
+    public static String insertParameters(String label, Map<String, Object> parameters) {
+        if (label != null && parameters != null) {
+            // Note Message.format(label, parameters) does NOT work.
+            for (String key: parameters.keySet()) {
+                String pattern = "\\{" + key + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
+                Object parameter = parameters.get(key);
+                // Dollar sign ($) neutralised in parameter to avoid issues with Regular Expression engine used by replaceAll();
                 label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$"));
             }
         }

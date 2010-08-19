@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +61,23 @@ public class TestDateUtils {
         assertEquals("2008", dateParts[0]);
         assertEquals("01", dateParts[1]);
         assertEquals("23", dateParts[2]);
+    }
+
+    @Test
+    public void testDateToCustomI() {
+        Date date = new GregorianCalendar(2008, 0, 23, 1, 23, 45).getTime();
+        String computedDate = DateUtils.dateToCustom(date, "yyyy", Locale.US);
+        assertEquals(4, computedDate.length());
+        assertEquals("2008", computedDate);
+    }
+
+    @Test
+    public void testDateToCustomII() {
+        Date date = new GregorianCalendar(2008, 0, 23, 1, 23, 45).getTime();
+        DateUtils.dateToCustom(date, "yyyy", Locale.CANADA_FRENCH);
+        String computedDate = DateUtils.dateToCustom(date, "yyyy", Locale.CANADA_FRENCH);
+        assertEquals(4, computedDate.length());
+        assertEquals("2008", computedDate);
     }
 
     @Test

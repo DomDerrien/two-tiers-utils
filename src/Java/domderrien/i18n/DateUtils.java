@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class DateUtils {
 
@@ -25,11 +28,21 @@ public class DateUtils {
         return getNowCalendar().getTime();
     }
 
-    // This is the ISO format for Dojo application
-    private static final DateFormat isoFormatter = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss");
+    // See documentation on http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/java/text/SimpleDateFormat.html
 
     // This is the ISO format for Dojo application
-    private static final DateFormat ymdFormatter = new SimpleDateFormat ("yyyy-MM-dd");
+    public final static String ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateFormat isoFormatter = new SimpleDateFormat (ISO_DATE_FORMAT, Locale.US);
+
+    // This is the ISO format for Dojo application
+    public final static String YMD_DATE_FORMAT = "yyyy-MM-dd";
+    private static final DateFormat ymdFormatter = new SimpleDateFormat (YMD_DATE_FORMAT, Locale.US);
+
+    private static final Map<String, DateFormat> formatters = new HashMap<String, DateFormat>();
+    static {
+        formatters.put(Locale.US.toString() + "_" + ISO_DATE_FORMAT, isoFormatter);
+        formatters.put(Locale.US.toString() + "_" + YMD_DATE_FORMAT, ymdFormatter);
+    }
 
     /**
      * Transform the given date in an ISO formatted string
@@ -56,6 +69,24 @@ public class DateUtils {
      */
     public static String dateToYMD(Date date) {
         return ymdFormatter.format(date);
+    }
+
+    /**
+     * Transform the given date in as specified by the given format
+     * @param date date to transform
+     * @param format date formatter, as given to the <code>DateFormat</code> constructor
+     * @param locale the locale whose date format symbols should be used
+     * @return Expected representation of the given date
+     * @see java.text.SimpleDateFormat
+     */
+    public static String dateToCustom(Date date, String format, Locale locale) {
+        String formatterKey = locale.toString() + "_" + format;
+        DateFormat formatter = formatters.get(formatterKey);
+        if (formatter == null) {
+            formatter = new SimpleDateFormat(format, locale);
+            formatters.put(formatterKey, formatter);
+        }
+        return formatter.format(date);
     }
 
     /**

@@ -1,7 +1,14 @@
 package domderrien.i18n;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.util.HashMap;
 import java.util.ListResourceBundle;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -10,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import domderrien.i18n.LabelExtractor.ResourceFileId;
-import static org.junit.Assert.*;
 
 public class TestLabelExtractor {
 
@@ -50,6 +56,7 @@ public class TestLabelExtractor {
     public void testConstructor() {
         new LabelExtractor();
     }
+
     @Test
     public void testSetResourceBundleI() {
         // Set a resource bundle with a null locale reference
@@ -107,6 +114,27 @@ public class TestLabelExtractor {
     }
 
     @Test
+    public void testGetResourceBundleVI() {
+        // Expected to read a English file for the locale fr_BE => fallback on fr
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.second, Locale.FRENCH);
+        assertEquals("Fran\u00e7ais", rb.getString("bundle_language"));
+    }
+
+    @Test
+    public void testGetResourceBundleVII() {
+        // Expected to read a English file for the locale fr_BE => fallback on fr
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.third, Locale.FRENCH);
+        assertEquals("Fran\u00e7ais", rb.getString("bundle_language"));
+    }
+
+    @Test
+    public void testGetResourceBundleVIIII() {
+        // Expected to read a English file for the locale fr_BE => fallback on fr
+        ResourceBundle rb = LabelExtractor.getResourceBundle(ResourceFileId.fourth, Locale.FRENCH);
+        assertEquals("Fran\u00e7ais", rb.getString("bundle_language"));
+    }
+
+    @Test
     public void testGetI() {
         LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label asked has an entry in the dictionary
@@ -149,10 +177,17 @@ public class TestLabelExtractor {
     }
 
     @Test
-    public void testGetV() {
+    public void testGetVa() {
         LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
         // The label returned is the given error code because the entry is not in the dictionary
         assertEquals("33", LabelExtractor.get(33, new Object[0], Locale.US));
+    }
+
+    @Test
+    public void testGetVb() {
+        LabelExtractor.setResourceBundle(ResourceFileId.master, mock, Locale.US);
+        // The label returned is the given error code because the entry is not in the dictionary
+        assertEquals("33", LabelExtractor.get("33", new HashMap<String, Object>(), Locale.US));
     }
 
     @Test
@@ -167,19 +202,20 @@ public class TestLabelExtractor {
 
     @Test
     public void testInsertParametersI() {
-        assertEquals("test", LabelExtractor.insertParameters("{0}", new Object[] { "test" } ));
+        assertEquals("test0", LabelExtractor.insertParameters("{0}", new Object[] { "test0" } ));
         assertEquals("test1 - test0", LabelExtractor.insertParameters("{1} - {0}", new Object[] { "test0", "test1" } ));
         assertEquals("test1 - test0 - test1", LabelExtractor.insertParameters("{1} - {0} - {1}", new Object[] { "test0", "test1" } ));
     }
 
     @Test
     public void testInsertParametersII() {
-        assertNull(LabelExtractor.get(null, new Object[] { "test" }, Locale.US));
+        assertNull(LabelExtractor.get(null, new Object[] { "test0" }, Locale.US));
+        assertEquals("", LabelExtractor.get("", new Object[] { "test0" }, Locale.US));
     }
 
     @Test
     public void testInsertParametersIII() {
-        assertEquals("{1} - {0}", LabelExtractor.get("{1} - {0}", null, Locale.US));
+        assertEquals("{1} - {0}", LabelExtractor.get("{1} - {0}", (Object[]) null, Locale.US));
     }
 
     @Test
@@ -208,5 +244,37 @@ public class TestLabelExtractor {
         LabelExtractor.setResourceBundle(ResourceFileId.fourth, mock, Locale.US);
         // The label returned is the given error code because the entry is not in the dictionary
         assertNotNull(LabelExtractor.getResourceBundle(ResourceFileId.fourth, Locale.US));
+    }
+
+    @Test
+    public void testInsertParametersV() {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("0", "test0");
+        parameters.put("1", "test1");
+        assertEquals("test0", LabelExtractor.insertParameters("{0}", parameters ));
+        assertEquals("test1 - test0", LabelExtractor.insertParameters("{1} - {0}", parameters ));
+        assertEquals("test1 - test0 - test1", LabelExtractor.insertParameters("{1} - {0} - {1}", parameters ));
+
+    }
+
+    @Test
+    public void testInsertParametersVI() {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("0", "test0");
+        assertNull(LabelExtractor.get(null, parameters, Locale.US));
+        assertEquals("", LabelExtractor.get("", parameters, Locale.US));
+    }
+
+    @Test
+    public void testInsertParametersVII() {
+        assertEquals("{1} - {0}", LabelExtractor.get("{1} - {0}", (Map<String, Object>) null, Locale.US));
+    }
+
+    @Test
+    public void testInsertParametersVIII() {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("0", "test0");
+        parameters.put("1", null);
+        assertEquals("test0" + LabelExtractor.NULL_INDICATOR, LabelExtractor.insertParameters("{0}{1}", parameters ));
     }
 }

@@ -1948,7 +1948,7 @@ public class TestTMXConverter {
     }
 
     @Test
-    public void testConvertEntryWithManyNodes() throws IOException
+    public void testConvertEntryWithManyNodesI() throws IOException
     {
         String locale = null;
         String BuildStamp = "bs";
@@ -1981,5 +1981,41 @@ public class TestTMXConverter {
 
         assertFalse(converter.isErrorReported());
         assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "complexOne=Avertissement\\u00a0:<br />attention aux <b>marches</b>\\u00a0!" + TMXConverter.NL));
+    }
+
+    @Test
+    public void testConvertEntryWithManyNodesII() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='complexOne'>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>Avertissement\\u00a0: attention <input type=\"text\" value=\"aux\"/> <b>marches</b>\\u00a0!</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "complexOne=Avertissement\\u00a0: attention <input type=\"text\" value=\"aux\" /> <b>marches</b>\\u00a0!" + TMXConverter.NL));
     }
 }

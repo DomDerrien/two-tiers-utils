@@ -16,7 +16,7 @@
         description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
         value="${basedir}${file.separator}bin${file.separator}temp" />
 
-    <property name="dd2tu.release" description="Planned release of this build" value="1.0.9" />
+    <property name="dd2tu.release" description="Planned release of this build" value="1.5.0" />
 
     <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 
@@ -640,9 +640,10 @@
         </delete>
 
         <!--Instrument the application classes    -->
-        <cobertura-instrument todir="${temp.dir}/instrumented">
+        <cobertura-instrument datafile="${temp.dir}/cobertura.ser" todir="${temp.dir}/instrumented">
             <!-- Ignore log4j -->
             <ignore regex="org.apache.log4j.*" />
+            <ignore regex="org.apache.commons.logging.*" />
 
             <fileset dir="${temp.dir}/classes">
                 <!-- Instrument all the application classes -->
@@ -702,19 +703,19 @@
         <mkdir dir="docs/test-reports" />
         <mkdir dir="docs/test-reports/cobertura-xml" />
         <mkdir dir="docs/test-reports/cobertura-html" />
-        <cobertura-report srcdir="src/Java" destdir="docs/test-reports/cobertura-xml" format="xml" />
+        <cobertura-report srcdir="src/Java" datafile="${temp.dir}/cobertura.ser" destdir="docs/test-reports/cobertura-xml" format="xml" />
     </target>
 
     <target name="step-cobertura-html-report" unless="no.cobertura.html.reports">
         <!-- Generate a series of HTML files containing the coverage -->
-        <cobertura-report destdir="docs/test-reports/cobertura-html">
+        <cobertura-report datafile="${temp.dir}/cobertura.ser" destdir="docs/test-reports/cobertura-html">
             <fileset dir="src/Java">
                 <include name="**/*.java" />
                 <exclude name="**/Test*.java" />
                 <exclude name="**/Mock*.java" />
             </fileset>
         </cobertura-report>
-        <delete file="cobertura.ser" />
+        <delete file="${temp.dir}/cobertura.ser" />
         <delete file="nop" />
     </target>
 
