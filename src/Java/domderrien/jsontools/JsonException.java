@@ -3,11 +3,7 @@ package domderrien.jsontools;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import javamocks.io.MockOutputStream;
 
 /**
  * Errors are conveyed to the browser application logic using JsonException, a special type of
@@ -216,7 +212,16 @@ public class JsonException extends Exception implements JsonObject {
         /**/
         // JsonSerializer.introduceComplexValue("originalException", out);
         // (new JsonException("SOURCE_EXCEPTION"), getCause()).toStream(out, isFollowed);
-        String originalExceptionMessage = getCause() == null ? "[no cause]" : getCause().getMessage() == null ? "[cause class: " + getCause().getClass().getName() + "]" : getCause().getMessage().replaceAll("[\\r\\n]+", " ");
+        String originalExceptionMessage = null;
+        if (getCause() == null) {
+            originalExceptionMessage = "[no cause]";
+        }
+        else if (getCause().getMessage() == null) {
+            originalExceptionMessage = "[cause class: " + getCause().getClass().getName() + "]";
+        }
+        else {
+            originalExceptionMessage = getCause().getMessage().replaceAll("[\\r\\n]+", " ");
+        }
         JsonSerializer.endObject("originalExceptionMessage", originalExceptionMessage, out, isFollowed);
         return out;
     }

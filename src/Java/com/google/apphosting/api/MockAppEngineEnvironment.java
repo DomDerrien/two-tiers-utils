@@ -17,7 +17,9 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.labs.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.api.labs.taskqueue.dev.QueueStateInfo.TaskStateInfo;
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
+import com.google.appengine.tools.development.ApiProxyLocal;
+import com.google.appengine.tools.development.ApiProxyLocalFactory;
+import com.google.appengine.tools.development.LocalServerEnvironment;
 
 /**
  * Mock for the App Engine Java environment used by the JDO wrapper.
@@ -83,7 +85,13 @@ public class MockAppEngineEnvironment {
     public void setUp() throws Exception {
         // Setup the App Engine services
         ApiProxy.setEnvironmentForCurrentThread(env);
-        ApiProxyLocalImpl proxy = new ApiProxyLocalImpl(new File(".")) {};
+        ApiProxyLocalFactory factory = new ApiProxyLocalFactory();
+        ApiProxyLocal proxy = factory.create(new LocalServerEnvironment() {
+            public void waitForServerToStart() throws InterruptedException {}
+            public int getPort() { return 0; }
+            public File getAppDir() { return new File("."); }
+            public String getAddress() { return null; }
+        });
 
         // Setup the App Engine data store
         proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY, Boolean.TRUE.toString());
@@ -105,7 +113,7 @@ public class MockAppEngineEnvironment {
         }
 
         // Clean up the App Engine data store
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
+        ApiProxyLocal proxy = (ApiProxyLocal) ApiProxy.getDelegate();
         if (proxy != null) {
             LocalDatastoreService datastoreService = (LocalDatastoreService) proxy.getService("datastore_v3");
             datastoreService.clearProfiles();
@@ -171,7 +179,7 @@ public class MockAppEngineEnvironment {
      * added to the specified queue
      */
     public List<TaskStateInfo> getTaskStateInfo(String queueName) {
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
+        ApiProxyLocal proxy = (ApiProxyLocal) ApiProxy.getDelegate();
         if (proxy != null) {
             LocalTaskQueue taskQueue = (LocalTaskQueue) proxy.getService(LocalTaskQueue.PACKAGE);
             QueueStateInfo queueStateInfo = taskQueue.getQueueStateInfo().get(queueName);

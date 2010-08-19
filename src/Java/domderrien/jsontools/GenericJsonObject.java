@@ -163,7 +163,16 @@ public class GenericJsonObject implements JsonObject {
             }
         }
         else {
-            typedValue = value == null ? 0.0D : (Double) value;
+            if (value == null) {
+                typedValue = 0.0D;
+            }
+            else if (value instanceof String) {
+                typedValue = Double.valueOf((String) value);
+            }
+            else { // if (value instanceof Double) {
+                // Because the JsonParser generates Double instances
+                typedValue = (Double) value;
+            }
         }
         return typedValue.doubleValue();
     }

@@ -33,4 +33,14 @@ public class MockQueue implements Queue {
     public void resetHistory() {
         history.clear();
     }
+
+    @Override
+    public List<TaskHandle> add(Iterable<TaskOptions> arg0) {
+        return null;
+    }
+
+    @Override
+    public List<TaskHandle> add(Transaction arg0, Iterable<TaskOptions> arg1) {
+        return null;
+    }
 }

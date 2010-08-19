@@ -226,6 +226,15 @@ public class TestGenericJsonObject {
     }
 
     @Test
+    public void testExtractFromOneNumberX() throws JsonException {
+        JsonParser p = new JsonParser("{\"key\":\"12345\"}", logger);
+        JsonObject o0 = p.getJsonObject();
+        assertEquals("Attribute #", 1, o0.size());
+        assertEquals("Attribute value", 12345, o0.getLong("key"));
+        assertEquals("Attribute value", 1.2345e4d, o0.getDouble("key"), 0);
+    }
+
+    @Test
     public void testExtractFromOneStringI() throws JsonException {
         JsonParser p = new JsonParser("{\"key\":\"value\"}", logger);
         JsonObject o0 = p.getJsonObject();
