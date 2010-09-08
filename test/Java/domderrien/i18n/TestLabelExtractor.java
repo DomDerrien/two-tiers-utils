@@ -277,4 +277,64 @@ public class TestLabelExtractor {
         parameters.put("1", null);
         assertEquals("test0" + LabelExtractor.NULL_INDICATOR, LabelExtractor.insertParameters("{0}{1}", parameters ));
     }
+
+    @Test
+    public void testWithFallbackI() {
+        String fakeId = "000";
+        assertEquals(fakeId, LabelExtractor.get(fakeId, fakeId, Locale.US)); // Return the given identifier
+    }
+
+    @Test
+    public void testWithFallbackII() {
+        String fakeId = "000";
+        assertEquals(mock.LABEL_1, LabelExtractor.get(fakeId, mock.LABEL_1, Locale.US)); // Return the label for the second identifier
+    }
+
+    @Test
+    public void testWithFallbackIII() {
+        String fakeId = "000";
+        String secondId = "321432";
+        assertEquals(secondId, LabelExtractor.get(fakeId, secondId, Locale.US)); // Return the second identifier
+    }
+
+    @Test
+    public void testWithFallbackIV() {
+        String fakeId = "000";
+        assertNull(LabelExtractor.get(fakeId, (String) null, Locale.US)); // Return <code>null</code> instead of throwing the exception MissingResourceException
+    }
+
+    @Test
+    public void testWithFallbackV() {
+        String fakeId = "000";
+        assertEquals(fakeId, LabelExtractor.get(fakeId, fakeId, (Object[]) null, Locale.US)); // Return the given identifier
+    }
+
+    @Test
+    public void testWithFallbackVI() {
+        String fakeId = "000";
+        assertEquals(mock.LABEL_1, LabelExtractor.get(fakeId, mock.LABEL_1, (Object[]) null, Locale.US)); // Return the label for the second identifier
+    }
+
+    @Test
+    public void testWithFallbackVII() {
+        String fakeId = "000";
+        String secondId = "321432";
+        assertEquals(secondId, LabelExtractor.get(fakeId, secondId, (Object[]) null, Locale.US)); // Return the second identifier
+    }
+
+    @Test
+    public void testWithFallbackVIII() {
+        String fakeId = "000";
+        assertNull(LabelExtractor.get(fakeId, (String) null, (Object[]) null, Locale.US)); // Return <code>null</code> instead of throwing the exception MissingResourceException
+    }
+
+    @Test
+    public void testGetExtendedI() {
+        assertEquals(mock.LABEL_0, LabelExtractor.get(ResourceFileId.master, mock.LABEL_0, Locale.US));
+    }
+
+    @Test
+    public void testGetExtendedII() {
+        assertEquals(mock.LABEL_0, LabelExtractor.get(ResourceFileId.master, mock.LABEL_0, (Map<String, Object>) null, Locale.US));
+    }
 }

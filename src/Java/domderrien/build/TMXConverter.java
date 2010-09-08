@@ -313,7 +313,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
                 long end = System.currentTimeMillis();
                 System.out.print("' in " + (end - start) + " ms\n"); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            catch (IOException ex) {
+            catch (Exception ex) {
                 // Returning non zero should stop the build
                 reportError(": [Exception: " + ex + "] ");
                 stopProcess();

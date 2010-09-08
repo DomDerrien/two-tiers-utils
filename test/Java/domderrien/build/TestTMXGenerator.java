@@ -509,8 +509,8 @@ public class TestTMXGenerator {
 
     @Test
     public void testEscapeHtmlEntitiesIII() {
-        assertEquals("&amp;", TMXGenerator.escapeHtmlEntities("&"));
-        assertEquals("proctle &amp; gamble", TMXGenerator.escapeHtmlEntities("proctle & gamble"));
+        assertEquals("&amp;amp;", TMXGenerator.escapeHtmlEntities("&")); // Double escaping for &amp to be inserted back into the TMX
+        assertEquals("proctle &amp;amp; gamble", TMXGenerator.escapeHtmlEntities("proctle & gamble"));
     }
 
     @Test
@@ -525,6 +525,6 @@ public class TestTMXGenerator {
 
     @Test
     public void testEscapeHtmlEntitiesVI() {
-        assertEquals("0&lt;1 &amp;&amp; 2&gt;1", TMXGenerator.escapeHtmlEntities("0<1 && 2>1"));
+        assertEquals("0<1 &amp;amp;&amp;amp; 2>1", TMXGenerator.escapeHtmlEntities("0<1 && 2>1")); // Balanced brackets don't have to be escaped
     }
 }

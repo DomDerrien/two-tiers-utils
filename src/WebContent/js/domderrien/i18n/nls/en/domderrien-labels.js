@@ -5,4 +5,4 @@ unit_test_sample_with_text_on_many_lines:"As a writer, it's possible I'm going t
 unit_test_sample_with_double_quotes_to_be_escaped_for_JavaScript_bundle:"When it's time to generate JavaScript, the double-quotes (\u0022) should be escaped with the \u0022 sequence, to avoid conflicts with the String delimiters.",
 unit_test_sample_with_harmless_empty_segment:"",
 unit_test_sample_with_embedded_HTML_tags:"Twetailer uses <a href=\u0022http://amazon.com/aws/fps\u0022>Amazon Flexible Payment System</a> for its operations.",
-x_timeStamp:"20100819.1803"})
+x_timeStamp:"20100908.1447"})

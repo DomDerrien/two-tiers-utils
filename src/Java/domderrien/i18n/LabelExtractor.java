@@ -100,7 +100,26 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(String messageId, Locale locale) {
-        return get(ResourceFileId.master, messageId, locale);
+        return get(messageId, messageId, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(String messageId, String fallbackId, Locale locale) {
+        return get(ResourceFileId.master, messageId, fallbackId, locale);
     }
 
     /**
@@ -116,7 +135,27 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(ResourceFileId resId, String messageId, Locale locale) {
-        return get(resId, messageId, (Map<String, Object>) null, locale);
+        return get(resId, messageId, messageId, (Map<String, Object>) null, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param resId      Identifier of the resource file where the localized data should be extracted from
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, String fallbackId, Locale locale) {
+        return get(resId, messageId, fallbackId, (Map<String, Object>) null, locale);
     }
 
     /**
@@ -133,9 +172,29 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(String messageId, Object[] parameters, Locale locale) {
-        return get(ResourceFileId.master, messageId, parameters, locale);
+        return get(messageId, messageId, parameters, locale);
     }
 
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param parameters Array of parameters, each one used to replace a
+     *                   pattern made of a number between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(String messageId, String fallbackId, Object[] parameters, Locale locale) {
+        return get(ResourceFileId.master, messageId, fallbackId, parameters, locale);
+    }
 
     /**
      * Return the message associated to the given identifier.
@@ -151,7 +210,28 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(String messageId, Map<String, Object> parameters, Locale locale) {
-        return get(ResourceFileId.master, messageId, parameters, locale);
+        return get(messageId, messageId, parameters, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param parameters Map of parameters, each one used to replace a
+     *                   pattern made of a map key between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(String messageId, String fallbackId, Map<String, Object> parameters, Locale locale) {
+        return get(ResourceFileId.master, messageId, fallbackId, parameters, locale);
     }
 
     /**
@@ -169,6 +249,28 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(ResourceFileId resId, String messageId, Object[] parameters, Locale locale) {
+        return get(resId, messageId, messageId, parameters, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param resId      Identifier of the resource file where the localized data should be extracted from
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param parameters Array of parameters, each one used to replace a
+     *                   pattern made of a number between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, String fallbackId, Object[] parameters, Locale locale) {
         String label = messageId;
         if (messageId != null && 0 < messageId.length()) {
             try {
@@ -176,7 +278,12 @@ public class LabelExtractor
                 label = labels.getString(messageId);
             }
             catch (MissingResourceException ex) {
-                // nothing
+                if (fallbackId == null) {
+                    return null;
+                }
+                if (messageId != fallbackId) {
+                    return get(resId, fallbackId, fallbackId, parameters, locale);
+                }
             }
         }
         return insertParameters(label, parameters);
@@ -197,6 +304,28 @@ public class LabelExtractor
      *         association is found, the message identifier is returned.
      */
     public static String get(ResourceFileId resId, String messageId, Map<String, Object> parameters, Locale locale) {
+        return get(resId, messageId, messageId, parameters, locale);
+    }
+
+    /**
+     * Return the message associated to the given identifier. If it's missing,
+     * fall back on the second identifier.
+     *
+     * @param resId      Identifier of the resource file where the localized data should be extracted from
+     * @param messageId  Identifier used to retrieve the localized label.
+     * @param fallbackId Identifier to be used if the first message can't be loaded.
+     *                   If the retrieval of the second message fails too, this second
+     *                   identifier is returned.
+     * @param parameters Map of parameters, each one used to replace a
+     *                   pattern made of a map key between curly braces.
+     * @param locale     Optional locale instance, use to determine in which
+     *                   resource files the label should be found. If the
+     *                   reference is <code>null</code>, the root resource
+     *                   bundle is used (written in English).
+     * @return A localized label associated to the given error code. If no
+     *         association is found, the message identifier is returned.
+     */
+    public static String get(ResourceFileId resId, String messageId, String fallbackId, Map<String, Object> parameters, Locale locale) {
         String label = messageId;
         if (messageId != null && 0 < messageId.length()) {
             try {
@@ -204,7 +333,12 @@ public class LabelExtractor
                 label = labels.getString(messageId);
             }
             catch (MissingResourceException ex) {
-                // nothing
+                if (fallbackId == null) {
+                    return null;
+                }
+                if (messageId != fallbackId) {
+                    return get(resId, fallbackId, fallbackId, parameters, locale);
+                }
             }
         }
         return insertParameters(label, parameters);

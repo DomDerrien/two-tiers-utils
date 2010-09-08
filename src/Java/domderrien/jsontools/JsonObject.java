@@ -70,7 +70,7 @@ public interface JsonObject {
     double getDouble(String key) throws ClassCastException, NumberFormatException;
 
     /**
-     * Return the identified <code>Sting</code> value
+     * Return the identified <code>String</code> value
      *
      * @param key Data identifier
      * @return <code>String</code> value located at the specified place
