@@ -245,6 +245,8 @@ public abstract class TMXCommandLineToolBase {
     protected boolean hasNoChild(String nodeName) {
         nodeName = nodeName.toLowerCase();
         if ("br".equals(nodeName)) return true;
+        if ("hr".equals(nodeName)) return true;
+        if ("img".equals(nodeName)) return true;
         if ("input".equals(nodeName)) return true;
         return false;
     }

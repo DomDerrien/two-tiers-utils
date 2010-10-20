@@ -200,7 +200,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
      * Extract the name of the files contained in the specified directory and their
      * last-modified date.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      *
      * @param filenameBase Beginning of the filename to consider
@@ -216,7 +216,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
      * Using the list of identified source files, extract the date of the corresponding
      * JavaScript map files.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      *
      * @param sourceFileDates List where extracted information are stored.
@@ -248,7 +248,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
      * Using the list of identified source files, extract the date of the corresponding
      * Java map files.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      *
      * @param sourceFileDates List where extracted information are stored.
@@ -348,7 +348,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
     /**
      * Convert TMX file to resource bundles.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      *
      * @param filename Name of the TMX file to process
@@ -486,7 +486,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
     /**
      * Convert TMX file to resource bundles.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      */
     protected void saveSupportedLanguages() throws IOException {
@@ -502,7 +502,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
     /**
      * Convert TMX file to resource bundles.
      *
-     * Note: this method decouples the File object instanciation from the directory
+     * Note: this method decouples the File object instantiation from the directory
      * content parsing just to ease the unit testing.
      *
      * @param file Stream of the file where the language list is going to be saved
@@ -514,7 +514,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
         }
         catch (MissingResourceException ex) {
             reportError("No previous language definitions found.");
-            // Ignore execption because the file content will be built from the list of processed TMX
+            // Ignore exception because the file content will be built from the list of processed TMX
         }
         if (documentedLanguages != null) {
             Enumeration<String> localeEnum = documentedLanguages.getKeys();
