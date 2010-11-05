@@ -18,6 +18,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import domderrien.i18n.StringUtils;
+
 /**
  * TMX to Resource Bundle converter.
  * JDK 1.5 is expected.
@@ -398,7 +400,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
 
         NodeList nl = getNodeList(doc, "/tmx/body/tu"); //$NON-NLS-1$
 
-        jsOS.write(JS_FILE_START.getBytes(UTF8));
+        jsOS.write(JS_FILE_START.getBytes(StringUtils.JAVA_UTF8_CHARSET));
 
         Pattern bracesPattern = Pattern.compile("(\\{[\\d]+\\})"); //$NON-NLS-1$
         Pattern doubleQuotesPattern = Pattern.compile("\""); //$NON-NLS-1$
@@ -447,14 +449,14 @@ public class TMXConverter extends TMXCommandLineToolBase {
 
                 }
                 updatedText = doubleQuotesPattern.matcher(updatedText).replaceAll("\\\\u0022"); // To avoid conflicts with the delimiters //$NON_NLS-1$
-                jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes(UTF8)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                jsOS.write((JS_LINE_START + id + JS_LINE_MIDDLE + updatedText + JS_LINE_END + NL).getBytes(StringUtils.JAVA_UTF8_CHARSET)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             if (saveToJava) {
                 if (id.charAt(0) == '#') {
                     // Escape the character starting a comment line
                     id = "\\" + id;
                 }
-                javaOS.write((id + JAVA_LINE_MIDDLE + text + NL).getBytes(UTF8)); //$NON-NLS-1$
+                javaOS.write((id + JAVA_LINE_MIDDLE + text + NL).getBytes(StringUtils.JAVA_UTF8_CHARSET)); //$NON-NLS-1$
             }
 
             if(languageIdSearched) {
@@ -466,8 +468,8 @@ public class TMXConverter extends TMXCommandLineToolBase {
         }
         nl = null;
 
-        jsOS.write((JS_LINE_START + BUILD_STAMP_ID + JS_LINE_MIDDLE + buildStamp + "\"" + JS_FILE_END).getBytes(UTF8)); //$NON-NLS-1$ //$NON-NLS-2$
-        javaOS.write((BUILD_STAMP_ID + JAVA_LINE_MIDDLE + buildStamp).getBytes(UTF8)); //$NON-NLS-1$
+        jsOS.write((JS_LINE_START + BUILD_STAMP_ID + JS_LINE_MIDDLE + buildStamp + "\"" + JS_FILE_END).getBytes(StringUtils.JAVA_UTF8_CHARSET)); //$NON-NLS-1$ //$NON-NLS-2$
+        javaOS.write((BUILD_STAMP_ID + JAVA_LINE_MIDDLE + buildStamp).getBytes(StringUtils.JAVA_UTF8_CHARSET)); //$NON-NLS-1$
 
         jsOS.flush();
         javaOS.flush();
@@ -525,11 +527,11 @@ public class TMXConverter extends TMXCommandLineToolBase {
                     transcript = processedLanguages.get(locale);
                     processedLanguages.remove(locale);
                 }
-                file.write((locale + JAVA_LINE_MIDDLE + transcript + NL).getBytes(UTF8));
+                file.write((locale + JAVA_LINE_MIDDLE + transcript + NL).getBytes(StringUtils.JAVA_UTF8_CHARSET));
             }
         }
         for (String locale: processedLanguages.keySet()) {
-            file.write((locale + JAVA_LINE_MIDDLE + processedLanguages.get(locale) + NL).getBytes(UTF8));
+            file.write((locale + JAVA_LINE_MIDDLE + processedLanguages.get(locale) + NL).getBytes(StringUtils.JAVA_UTF8_CHARSET));
         }
     }
 }

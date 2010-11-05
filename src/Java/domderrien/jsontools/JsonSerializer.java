@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.regex.Pattern;
 
+import domderrien.i18n.StringUtils;
+
 public class JsonSerializer {
 
     private static final String QUOTE_BACKSLASH_PATTERN_LITERAL = "([\\''\\\\])";
@@ -17,26 +19,24 @@ public class JsonSerializer {
         return QUOTE_BACKSLASH_PATTERN.matcher(data).replaceAll(QUOTE_BACKSLASH_REPLACEMENT_LITERAL);
     }
 
-    private final static String UTF8 = "utf-8";
-
     protected static byte[] getBytes(String data) throws IOException {
-        return data.getBytes(UTF8);
+        return data.getBytes(StringUtils.JAVA_UTF8_CHARSET);
     }
 
     protected static void startObject(OutputStream out) throws IOException {
-        out.write(JsonDelimiters.OPENING_BRACE_STR.getBytes(UTF8));
+        out.write(JsonDelimiters.OPENING_BRACE_STR.getBytes(StringUtils.JAVA_UTF8_CHARSET));
     }
 
     protected static void endObject(OutputStream out, boolean isFollowed) throws IOException {
-        out.write((isFollowed ? JsonDelimiters.CLOSING_BRACE_STR + JsonDelimiters.COMMA_STR : JsonDelimiters.CLOSING_BRACE_STR).getBytes(UTF8));
+        out.write((isFollowed ? JsonDelimiters.CLOSING_BRACE_STR + JsonDelimiters.COMMA_STR : JsonDelimiters.CLOSING_BRACE_STR).getBytes(StringUtils.JAVA_UTF8_CHARSET));
     }
 
     public static void startArray(OutputStream out) throws IOException {
-        out.write(JsonDelimiters.OPENING_SQUARE_BRACKET_STR.getBytes(UTF8));
+        out.write(JsonDelimiters.OPENING_SQUARE_BRACKET_STR.getBytes(StringUtils.JAVA_UTF8_CHARSET));
     }
 
     public static void endArray(OutputStream out, boolean isFollowed) throws IOException {
-        out.write((isFollowed ? JsonDelimiters.CLOSING_SQUARE_BRACKET_STR + JsonDelimiters.COMMA_STR : JsonDelimiters.CLOSING_SQUARE_BRACKET_STR).getBytes(UTF8));
+        out.write((isFollowed ? JsonDelimiters.CLOSING_SQUARE_BRACKET_STR + JsonDelimiters.COMMA_STR : JsonDelimiters.CLOSING_SQUARE_BRACKET_STR).getBytes(StringUtils.JAVA_UTF8_CHARSET));
     }
 
     public static void startObject(String key, String value, OutputStream out, boolean isFollowed) throws IOException {

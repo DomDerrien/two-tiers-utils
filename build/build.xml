@@ -16,7 +16,7 @@
         description="Temporary directory location. To reduce effects Eclipse automatic parsing, should be located outside the project structure."
         value="${basedir}${file.separator}bin${file.separator}temp" />
 
-    <property name="dd2tu.release" description="Planned release of this build" value="1.5.0" />
+    <property name="dd2tu.release" description="Planned release of this build" value="1.5.1" />
 
     <property name="dd2tu.languageListFilename" value="domderrien-languages" />
 

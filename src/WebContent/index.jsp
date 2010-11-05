@@ -6,6 +6,7 @@
     import="java.util.Locale"
     import="domderrien.i18n.LabelExtractor"
     import="domderrien.i18n.LocaleController"
+    import="domderrien.i18n.StringUtils"
 %><%
     // Visual theme selection
     String visualTheme = request.getParameter("visualTheme");
@@ -17,7 +18,7 @@
 %><html>
 <head>
     <title><%= LabelExtractor.get("dd2tu_applicationName", LocaleController.DEFAULT_LOCALE) %></title>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF8" />
+    <meta http-equiv="Content-Type" content="text/html;charset=<%= StringUtils.HTML_UTF8_CHARSET %>" />
     <link rel="icon" href="/domderrien/@dd2tu.stageId@/images/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="/domderrien/@dd2tu.stageId@/images/favicon.ico" />
 

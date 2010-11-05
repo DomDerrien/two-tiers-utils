@@ -29,8 +29,6 @@ import org.xml.sax.SAXException;
 
 public abstract class TMXCommandLineToolBase {
 
-    protected final static String UTF8 = "utf-8";
-
     /**
      * Default constructor
      *

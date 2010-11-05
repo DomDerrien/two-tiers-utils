@@ -13,6 +13,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import domderrien.i18n.StringUtils;
+
 public class TMXGenerator extends TMXCommandLineToolBase {
 
     /**
@@ -169,7 +171,7 @@ public class TMXGenerator extends TMXCommandLineToolBase {
         targetBIF.close();
 
         OutputStream targetBOF = getOutputStream(directoryName + File.separator + filename + ".tmx");
-        targetBOF.write(outBuffer.toString().getBytes(UTF8));
+        targetBOF.write(outBuffer.toString().getBytes(StringUtils.JAVA_UTF8_CHARSET));
         targetBOF.close();
     }
 

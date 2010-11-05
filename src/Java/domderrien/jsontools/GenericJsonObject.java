@@ -2,9 +2,12 @@ package domderrien.jsontools;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class GenericJsonObject implements JsonObject {
     protected Map<String, Object> hashMap;
@@ -21,6 +24,25 @@ public class GenericJsonObject implements JsonObject {
      */
     public GenericJsonObject(Map<String, Object> map) {
         hashMap = map;
+    }
+
+    /**
+     * Constructor made of parameters passed to a HTTP request (URL-encoded)
+     */
+    public GenericJsonObject(HttpServletRequest request) {
+        this();
+
+        Enumeration<?> names = request.getParameterNames();
+        while (names.hasMoreElements()) {
+            String name = (String) names.nextElement();
+            String[] values = request.getParameterValues(name);
+            if (1 < values.length) {
+                hashMap.put(name, new GenericJsonArray(values));
+            }
+            else if (values.length == 1) {
+                hashMap.put(name, values[0]);
+            }
+        }
     }
 
     @Override
@@ -207,6 +229,10 @@ public class GenericJsonObject implements JsonObject {
             for (int i=0; i<arrayOfStrings.length; i++) {
                 typedValue.add(arrayOfStrings[i]);
             }
+        }
+        else if (value instanceof String) {
+            typedValue = new GenericJsonArray();
+            typedValue.add((String) value);
         }
         else {
             typedValue = (JsonArray) value;

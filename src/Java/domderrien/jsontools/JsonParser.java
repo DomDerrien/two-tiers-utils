@@ -2,9 +2,10 @@ package domderrien.jsontools;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import domderrien.i18n.StringUtils;
 
 /**
  * Utility class for data extraction from a JSON string.
@@ -40,26 +41,21 @@ public class JsonParser {
     private CharStream stream;
 
     /** Simple stream-like class implementing peek() and get() methods */
-    protected class CharStream {
+    protected static class CharStream {
         public CharStream(String stream) throws JsonException {
-            string = new StringBuilder(stream == null ? "" : stream);
+            string = stream == null ? "" : stream;
             index = 0;
             limit = string.length();
             if (limit == 0) {
                 throw new JsonException("INVALID_JSON_STREAM", "JSON bag cannot be empty");
             }
         }
-        public CharStream(InputStream stream) throws JsonException {
-            string = new StringBuilder();
+        public CharStream(InputStream stream, String charsetName) throws JsonException {
             try {
-                while (true) {
-                    int character = stream.read();
-                    if(character == -1) break;
-                    string.append((char) character);
-                }
+                string = StringUtils.getString(stream, charsetName);
             }
-            catch (IOException e) {
-                throw new JsonException("INVALID_JSON_STREAM", "Context: " + string.toString());
+            catch (IOException ex) {
+                throw new JsonException("INVALID_JSON_STREAM", "Context: none", ex);
             }
             index = 0;
             limit = string.length();
@@ -69,7 +65,7 @@ public class JsonParser {
         }
         private int index;
         private int limit;
-        private StringBuilder string;
+        private String string;
 
         public char get(boolean skipSeparators) {
             char c = peek(skipSeparators);
@@ -85,6 +81,10 @@ public class JsonParser {
             if(index >= limit) return JsonDelimiters.END_OF_STRING;
             return string.charAt(index);
         }
+
+        protected String getStream() {
+            return string;
+        }
     }
 
     /**
@@ -94,7 +94,18 @@ public class JsonParser {
      * @throws JsonException If the stream reading fails or if the buffer is empty
      */
     public JsonParser(InputStream json) throws JsonException {
-        stream = new CharStream(json);
+        this(json, StringUtils.JAVA_UTF8_CHARSET);
+    }
+
+    /**
+     * Load the data from the input stream. Made available to read
+     * the JSON bag from the servlet input stream
+     * @param json InputStream to be provided by a servlet
+     * @param charsetName Identifier of the character set to use for the stream decoding
+     * @throws JsonException If the stream reading fails or if the buffer is empty
+     */
+    public JsonParser(InputStream json, String charsetName) throws JsonException {
+        stream = new CharStream(json, charsetName);
         s_logger = Logger.getLogger(JsonParser.class.getName());
     }
 
@@ -298,10 +309,10 @@ public class JsonParser {
                     case JsonDelimiters.NEW_LINE_ID:        unescaped=JsonDelimiters.NEW_LINE; break;
                     case JsonDelimiters.CARRIAGE_RETURN_ID: unescaped=JsonDelimiters.CARRIAGE_RETURN; break;
                     case JsonDelimiters.TABULATION_ID:      unescaped=JsonDelimiters.TABULATION; break;
-                    case JsonDelimiters.UNICODE_ID:   //TODO
-                        // (for now, fall through to an error)
-                        reportError("Unescaping unicode sequence not yet supported.");
-                        // break; Not needed because reportError() throws an exception
+                    case JsonDelimiters.UNICODE_ID:
+                        char[] chars = new char[] { stream.get(false), stream.get(false), stream.get(false), stream.get(false)};
+                        unescaped = StringUtils.convertUnicodeChar(new String(chars));
+                        break;
                     default:
                         reportError("After " + JsonDelimiters.BACK_SLASH + ", unexpected character " + next + "(" + ((int) next) + ")");
                         // break; Not needed because reportError() throws an exception

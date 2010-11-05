@@ -1,6 +1,9 @@
 package domderrien.jsontools;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -10,6 +13,8 @@ import javamocks.util.logging.MockLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import domderrien.i18n.StringUtils;
 
 
 public class TestJsonParser {
@@ -58,7 +63,7 @@ public class TestJsonParser {
 
     @Test(expected=JsonException.class)
     public void testTokenizeFromAnInputStreamI() throws JsonException {
-        new JsonParser(new MockInputStream());
+        new JsonParser.CharStream(new MockInputStream(), StringUtils.JAVA_UTF8_CHARSET);
     }
 
     @Test
@@ -87,9 +92,9 @@ public class TestJsonParser {
 
     @Test
     public void testTokenizeFromAnInputStreamVI() throws JsonException {
-        JsonParser t4 = new JsonParser(new MockInputStream("{\"key\":\"Hi\"}"));
+        JsonParser t4 = new JsonParser(new MockInputStream("{\"key\":\"Hi new world. How is the weather like?\"}"));
         JsonObject o0 = t4.getJsonObject();
-        assertEquals("Extracted value", "Hi", o0.getString("key"));
+        assertEquals("Extracted value", "Hi new world. How is the weather like?", o0.getString("key"));
     }
 
     @Test
@@ -268,9 +273,9 @@ public class TestJsonParser {
         t1.getString();
     }
 
-    @Test(expected=JsonException.class)
+    @Test
     public void testUnicodeCharactersII() throws JsonException {
-        // Escaped unicode characters are not yet processed
+        // Escaped unicode characters can be in the stream
         JsonParser t1 = new JsonParser("\"key\\u1234\"", mockLogger);
         t1.getString();
     }
@@ -399,7 +404,7 @@ public class TestJsonParser {
         assertEquals("/", t2.getJsonArray().getString(0));
     }
 
-    @Test(expected=JsonException.class)
+    @Test
     public void testParseStringV() throws JsonException {
         JsonParser t1 = new JsonParser("['\\u0020']", mockLogger);
         t1.getJsonArray();
