@@ -226,6 +226,6 @@ public class TMXGenerator extends TMXCommandLineToolBase {
         if (source == null) {
             return null;
         }
-        return source.replaceAll("\\&\\&(\\s|$)", "&amp;&amp;$1").replaceAll("\\&(\\s|$)", "&amp;$1").replaceAll("\\&(\\w{2,}[^;])", "&amp;$1"); // .replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        return source.replaceAll("\\&\\&(\\s|$)", "&amp;&amp;$1").replaceAll("\\&(\\s|$)", "&amp;$1").replaceAll("\\&(\\w+[\\s|=])", "&amp;$1"); // .replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 }

@@ -402,7 +402,7 @@ public class TMXConverter extends TMXCommandLineToolBase {
 
         jsOS.write(JS_FILE_START.getBytes(StringUtils.JAVA_UTF8_CHARSET));
 
-        Pattern bracesPattern = Pattern.compile("(\\{[\\d]+\\})"); //$NON-NLS-1$
+        Pattern bracesPattern = Pattern.compile("(\\{(?:\\d+|[\\w>]+)\\})"); //$NON-NLS-1$
         Pattern doubleQuotesPattern = Pattern.compile("\""); //$NON-NLS-1$
         boolean languageIdSearched = true;
 
