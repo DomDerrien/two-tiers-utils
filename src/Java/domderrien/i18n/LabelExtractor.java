@@ -448,7 +448,10 @@ public class LabelExtractor
      */
     protected static String neutralizeParameter(Object parameter) {
         // Dollar sign ($) neutralized in parameter to avoid issues with Regular Expression engine used by replaceAll();
-        return parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$");
+        // return parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$");
+
+        // No more Regular Expression command escaping needed as the string replacement is done manually
+        return parameter == null ? NULL_INDICATOR : parameter.toString();
     }
 
     /*------------------------------------------------------------------*/
