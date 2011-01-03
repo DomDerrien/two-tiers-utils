@@ -95,20 +95,19 @@ public class StringUtils {
     /**
      * Transform the UTF-8 string in its Unicode counterpart
      *
-     * @param utf8Str Original string
+     * @param utf8Buffer Original string
      * @return Converted string if there's no error, the original value otherwise
      */
-    public static String toUnicode(String utf8Str) {
-        String out = utf8Str;
+    public static String toUnicode(byte[] utf8Buffer) {
         try {
-            out = new String(utf8Str.getBytes(), JAVA_UTF8_CHARSET);
+            return new String(utf8Buffer, JAVA_UTF8_CHARSET);
         }
         catch (UnsupportedEncodingException e) {
             // Note for the testers:
             //   UnsupportedEncodingException can be generated if the character set would be invalid (instead of "UTF8")
-            //   Not a possible use case here...
+            //   Not a possible use case here without injecting it via an accessor like getCharset(), but it won't be a set a compile time
+            return new String(utf8Buffer);
         }
-        return out;
     }
 
     /**
@@ -117,17 +116,16 @@ public class StringUtils {
      * @param unicodeStr Original string
      * @return Converted string if there's no error, the original value otherwise
      */
-    public static String toUTF8(String unicodeStr) {
-        String out = unicodeStr;
+    public static byte[] toUTF8(String unicodeStr) {
         try {
-            out = new String(unicodeStr.getBytes(JAVA_UTF8_CHARSET));
+            return unicodeStr.getBytes(JAVA_UTF8_CHARSET);
         }
         catch (UnsupportedEncodingException e) {
             // Note for the testers:
             //   UnsupportedEncodingException can be generated if the character set would be invalid (instead of "UTF8")
-            //   Not a possible use case here...
+            //   Not a possible use case here without injecting it via an accessor like getCharset(), but it won't be a set a compile time
+            return unicodeStr.getBytes();
         }
-        return out;
     }
 
     /**

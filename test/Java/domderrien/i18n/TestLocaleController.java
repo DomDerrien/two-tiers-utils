@@ -1,6 +1,9 @@
 package domderrien.i18n;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ListResourceBundle;
 import java.util.Locale;
@@ -8,13 +11,17 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.MockHttpServletRequest;
+import javax.servlet.http.MockHttpSession;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.http.MockHttpServletRequest;
-import javax.servlet.http.MockHttpSession;
+import domderrien.jsontools.JsonArray;
+import domderrien.jsontools.JsonException;
+import domderrien.jsontools.JsonObject;
+import domderrien.jsontools.JsonParser;
 
 public class TestLocaleController {
 
@@ -288,5 +295,26 @@ public class TestLocaleController {
             }
         };
         assertEquals(Locale.CANADA_FRENCH, LocaleController.detectLocale(request));
+    }
+
+    @Test
+    public void testGetJsonOfLanguageListI() throws JsonException {
+        LocaleController.setLanguageListRB(mock);
+        String serializedList = LocaleController.getJsonOfLanguageList();
+        JsonArray list = new JsonParser(serializedList).getJsonArray();
+        assertEquals(3, list.size());
+        for (int i = 0; i < list.size(); i++) {
+            JsonObject languageDef = list.getJsonObject(i);
+            if (mock.EN.equals(languageDef.getString("label"))) { assertEquals(mock.ENGLISH, languageDef.getString("value")); }
+            else if (mock.FR.equals(languageDef.getString("label"))) { assertEquals(mock.FRENCH, languageDef.getString("value")); }
+            else if (mock.FR_CA.equals(languageDef.getString("label"))) { assertEquals(mock.FRENCH_CANADIAN, languageDef.getString("value")); }
+        }
+    }
+
+    @Test
+    public void testGetJsonOfLanguageListII() throws JsonException {
+        LocaleController.setLanguageListRB(mock);
+        String serializedList = LocaleController.getJsonOfLanguageList();
+        assertEquals(serializedList, LocaleController.getJsonOfLanguageList());
     }
 }

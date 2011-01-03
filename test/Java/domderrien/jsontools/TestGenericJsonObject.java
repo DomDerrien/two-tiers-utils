@@ -1,13 +1,24 @@
 package domderrien.jsontools;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javamocks.io.MockOutputStream;
 import javamocks.util.logging.MockLogger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.MockHttpServletRequest;
 
 import org.junit.Test;
 
@@ -578,6 +589,49 @@ public class TestGenericJsonObject {
         assertNotSame(-1, stream.getStream().indexOf("'k5':{}"));
         assertNotSame(-1, stream.getStream().indexOf("'k6':[]"));
         assertEquals(-1, stream.getStream().indexOf("'k7'"));
+    }
+
+    @Test
+    public void testFromHttpRequest() {
+        HttpServletRequest request = new MockHttpServletRequest() {
+            @Override
+            public Enumeration<String> getParameterNames() {
+                Vector<String> vector = new Vector<String>();
+                vector.add("a");
+                vector.add("b");
+                vector.add("c");
+                vector.add("d");
+                return vector.elements();
+            }
+            @Override
+            public String[] getParameterValues(String name) {
+                if ("a".equals(name)) {
+                    return new String[] { "aaa" };
+                }
+                if ("b".equals(name)) {
+                    return new String[] { "bb0", "bb1", "bb2" };
+                }
+                if ("c".equals(name)) {
+                    return new String[0];
+                }
+                if ("d".equals(name)) {
+                    return null;
+                }
+                throw new IllegalArgumentException("Unexpected query for the parameter name: " + name);
+            }
+        };
+
+        JsonObject parameters = new GenericJsonObject(request);
+
+        assertEquals(4, parameters.size());
+        assertEquals("aaa", parameters.getString("a"));
+        assertEquals("aaa", parameters.getJsonArray("a").getString(0));
+        assertEquals(3, parameters.getJsonArray("b").size());
+        assertEquals("bb0", parameters.getJsonArray("b").getString(0));
+        assertEquals("bb1", parameters.getJsonArray("b").getString(1));
+        assertEquals("bb2", parameters.getJsonArray("b").getString(2));
+        assertNull(parameters.getString("c"));
+        assertNull(parameters.getString("d"));
     }
 
     // See GenericJsonArrayTest.java for ordered list of values tokenizing

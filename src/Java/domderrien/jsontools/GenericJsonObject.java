@@ -36,11 +36,14 @@ public class GenericJsonObject implements JsonObject {
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
             String[] values = request.getParameterValues(name);
-            if (1 < values.length) {
-                hashMap.put(name, new GenericJsonArray(values));
+            if (values == null || values.length == 0) {
+                hashMap.put(name, null);
             }
             else if (values.length == 1) {
                 hashMap.put(name, values[0]);
+            }
+            else {
+                hashMap.put(name, new GenericJsonArray(values));
             }
         }
     }

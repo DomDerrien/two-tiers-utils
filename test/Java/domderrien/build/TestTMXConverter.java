@@ -2018,4 +2018,108 @@ public class TestTMXConverter {
         assertFalse(converter.isErrorReported());
         assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "complexOne=Avertissement\\u00a0: attention <input type=\"text\" value=\"aux\" /> <b>marches</b>\\u00a0!" + TMXConverter.NL));
     }
+
+    @Test
+    public void testConvertEntryWithManyNodesIII() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='complexOne'>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>Avertissement\\u00a0: attention <hr/> <b>marches</b>\\u00a0!</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "complexOne=Avertissement\\u00a0: attention <hr /> <b>marches</b>\\u00a0!" + TMXConverter.NL));
+    }
+
+    @Test
+    public void testConvertEntryWithManyNodesIV() throws IOException
+    {
+        String locale = null;
+        String BuildStamp = "bs";
+
+        // <tuv/> defines the language
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='" + TMXConverter.LANGUAGE_ID + "'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>" + locale + "</seg>" +
+                "</tuv>" +
+            "</tu>" +
+            "<tu tuid='complexOne'>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>Avertissement\\u00a0: attention <img src=\"uri\" title=\"text\"/> <b>marches</b>\\u00a0!</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        assertEquals(0, converter.getLanguageMap().keySet().size());
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertNotSame(-1, javaOS.getStream().indexOf(TMXConverter.NL + "complexOne=Avertissement\\u00a0: attention <img src=\"uri\" title=\"text\" /> <b>marches</b>\\u00a0!" + TMXConverter.NL));
+    }
+
+    @Test
+    public void testForRandomParameters() throws IOException
+    {
+        String locale = "fr";
+        String BuildStamp = "bs";
+
+        // <tuv/> with text to be escaped
+        final String testStream = "<tmx><body>" +
+            "<tu tuid='1'>" +
+                "<prop type='x-tier'>" + TMXConverter.DOJO_TK + "</prop>" +
+                "<prop type='x-tier'>" + TMXConverter.JAVA_RB + "</prop>" +
+                "<tuv>" +
+                    "<seg>{range>state}{bas>ket>ball}</seg>" +
+                "</tuv>" +
+            "</tu>" +
+        "</body></tmx>";
+        InputStream tmxIS = new MockInputStream(testStream);
+
+        MockOutputStream jsOS = new MockOutputStream();
+        MockOutputStream javaOS = new MockOutputStream();
+
+        TMXConverter converter = new TMXConverter(false);
+        converter.setBuildStamp(BuildStamp);
+        converter.convert(locale, tmxIS, jsOS, javaOS);
+
+        assertFalse(converter.isErrorReported());
+        assertTrue(converter.getMinimumJavaSize() < javaOS.length());
+        assertTrue(converter.getMinimumJSSize() < jsOS.length());
+        assertTrue(jsOS.getStream().indexOf(TMXConverter.JS_LINE_START + "1" + TMXConverter.JS_LINE_MIDDLE + "${range>state}${bas>ket>ball}" + TMXConverter.JS_LINE_END) != -1);
+        assertTrue(javaOS.getStream().indexOf(TMXConverter.JAVA_LINE_START + "1" + TMXConverter.JAVA_LINE_MIDDLE + "{range>state}{bas>ket>ball}" + TMXConverter.JAVA_LINE_END) != -1);
+    }
 }

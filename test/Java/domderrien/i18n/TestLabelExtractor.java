@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.Map;
@@ -336,5 +338,47 @@ public class TestLabelExtractor {
     @Test
     public void testGetExtendedII() {
         assertEquals(mock.LABEL_0, LabelExtractor.get(ResourceFileId.master, mock.LABEL_0, (Map<String, Object>) null, Locale.US));
+    }
+
+    @Test
+    public void testGetMultipleValuesIa() {
+        List<String> fakeList = new ArrayList<String>();
+        fakeList.add("000");
+        fakeList.add("111");
+        fakeList.add("222");
+        assertEquals("000111222", LabelExtractor.insertParameters("{0}", new Object[] { fakeList } ));
+    }
+
+    @Test
+    public void testGetMultipleValuesIb() {
+        List<String> fakeList = new ArrayList<String>();
+        fakeList.add("000");
+        fakeList.add("111");
+        fakeList.add("222");
+        Map<String, Object> fakeMap = new HashMap<String, Object>();
+        fakeMap.put("key", fakeList);
+        assertEquals("000111222", LabelExtractor.insertParameters("{key}", fakeMap ));
+    }
+
+    @Test
+    public void testGetMultipleValuesIIa() {
+        List<String> fakeList = new ArrayList<String>();
+        fakeList.add("000");
+        fakeList.add("111");
+        fakeList.add("222");
+        assertEquals("--000111222--", LabelExtractor.insertParameters("{0}{1}{2}", new Object[] { "--", fakeList, "--" } ));
+    }
+
+    @Test
+    public void testGetMultipleValuesIIb() {
+        List<String> fakeList = new ArrayList<String>();
+        fakeList.add("000");
+        fakeList.add("111");
+        fakeList.add("222");
+        Map<String, Object> fakeMap = new HashMap<String, Object>();
+        fakeMap.put("first", "--");
+        fakeMap.put("key", fakeList);
+        fakeMap.put("last", "--");
+        assertEquals("--000111222--", LabelExtractor.insertParameters("{first}{key}{last}", fakeMap ));
     }
 }

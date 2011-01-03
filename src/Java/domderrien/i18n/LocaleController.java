@@ -1,5 +1,6 @@
 package domderrien.i18n;
 
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -43,7 +44,6 @@ public class LocaleController
      * Specified protected only to ease the unit testing (IOP).
      *
      * @return The already resolved/set resource bundle or the one expected at runtime
-     * @throws MissingResourceException
      */
     public static ResourceBundle getLanguageListRB() {
         if (languageListRB != null) {
@@ -53,6 +53,31 @@ public class LocaleController
         ResourceBundle applicationSettings = ResourceBundle.getBundle(ResourceNameDefinitions.CONFIG_PROPERTIES_FILENAME, DEFAULT_LOCALE);
         return ResourceBundle.getBundle(applicationSettings.getString(ResourceNameDefinitions.LANGUAGE_LIST_FILENAME_KEY), DEFAULT_LOCALE);
 
+    }
+
+    private static String languageJsonBag = null;
+
+    /**
+     * Generate a JSON bag with the pairs of {languageId, languageLabel}, ready to be a data source
+     * for a dijit.form.Select widget.
+     *
+     * @return JSON bag of supported languages
+     */
+    public static String getJsonOfLanguageList() {
+        if (languageJsonBag == null) {
+            ResourceBundle languageList = LocaleController.getLanguageListRB();
+            Enumeration<String> keys = languageList.getKeys();
+            StringBuilder out = new StringBuilder("[");
+            while(keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                out.append("{'value':'").append(key).append("','label':'").append(languageList.getString(key)).append("'}");
+                if (keys.hasMoreElements()) {
+                    out.append(",");
+                }
+            }
+            languageJsonBag = out.append("]").toString();
+        }
+        return languageJsonBag;
     }
 
     /**

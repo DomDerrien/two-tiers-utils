@@ -1,6 +1,7 @@
 package domderrien.i18n;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -360,13 +361,12 @@ public class LabelExtractor
     public static String insertParameters(String label, Object[] parameters) {
         if (label != null && parameters != null) {
             // Note Message.format(label, parameters) does NOT work.
+            StringBuilder temp = new StringBuilder(label);
             int paramNb = parameters.length;
             for (int i=0; i<paramNb; ++i) {
-                String pattern = "\\{" + i + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
-                Object parameter = parameters[i];
-                // Dollar sign ($) neutralised in parameter to avoid issues with Regular Expression engine used by replaceAll();
-                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$"));
+                processParameter(temp, "{" + i + "}", parameters[i]); //$NON-NLS-1$ //$NON-NLS-2$
             }
+            label = temp.toString();
         }
         return label;
     }
@@ -385,14 +385,70 @@ public class LabelExtractor
     public static String insertParameters(String label, Map<String, Object> parameters) {
         if (label != null && parameters != null) {
             // Note Message.format(label, parameters) does NOT work.
+            StringBuilder temp = new StringBuilder(label);
             for (String key: parameters.keySet()) {
-                String pattern = "\\{" + key + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
-                Object parameter = parameters.get(key);
-                // Dollar sign ($) neutralised in parameter to avoid issues with Regular Expression engine used by replaceAll();
-                label = label.replaceAll(pattern, parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$"));
+                processParameter(temp, "{" + key + "}", parameters.get(key)); //$NON-NLS-1$ //$NON-NLS-2$
             }
+            label = temp.toString();
         }
         return label;
+    }
+
+    /**
+     * Helper inserting the parameter in place of the all occurrences of the given pattern in the given sentence
+     *
+     * @param sentence
+     * @param pattern
+     * @param parameter
+     * @return
+     */
+    protected static void processParameter(StringBuilder sentence, String pattern, Object parameter) {
+        if (parameter instanceof List<?>) {
+            for(Object innerObject: (List<?>) parameter) {
+                String innerMessage = neutralizeParameter(innerObject) + pattern;
+                replaceFirst(sentence, pattern, innerMessage);
+            }
+            replaceAll(sentence, pattern, "");
+        }
+        else {
+            replaceAll(sentence, pattern, neutralizeParameter(parameter));
+        }
+    }
+
+    /**
+     * Helper replacing the first occurrence of the pattern in the given sentence by the specified value
+     *
+     * @param sentence Source with the pattern to be replaced
+     * @param pattern String to be replaced
+     * @param value Value to insert in place of the pattern
+     */
+    protected static void replaceFirst(StringBuilder sentence, String pattern, String value) {
+        int patternIdx = sentence.indexOf(pattern);
+        if (patternIdx != -1) {
+            sentence.replace(patternIdx, patternIdx  + pattern.length(), value);
+        }
+    }
+
+    /**
+     * Helper replacing all occurrence of the pattern in the given sentence by the specified value
+     *
+     * @param sentence Source with the pattern to be replaced
+     * @param pattern String to be replaced
+     * @param value Value to insert in place of the pattern
+     */
+    protected static void replaceAll(StringBuilder sentence, String pattern, String value) {
+        int patternIdx = -1;
+        while ((patternIdx = sentence.indexOf(pattern, patternIdx + 1)) != -1) {
+            sentence.replace(patternIdx, patternIdx  + pattern.length(), value);
+        }
+    }
+
+    /**
+     * Helper escaping characters that might be interpreted as regular expressions commands
+     */
+    protected static String neutralizeParameter(Object parameter) {
+        // Dollar sign ($) neutralized in parameter to avoid issues with Regular Expression engine used by replaceAll();
+        return parameter == null ? NULL_INDICATOR : parameter.toString().replace("\\", "\\\\").replace("$", "\\$");
     }
 
     /*------------------------------------------------------------------*/

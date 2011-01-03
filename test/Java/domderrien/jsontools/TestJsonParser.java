@@ -51,8 +51,10 @@ public class TestJsonParser {
 
     @Test
     public void testJsonParserCharStreamIV() throws JsonException {
-        JsonParser t0 = new JsonParser("normal");
+        String input = "normal";
+        JsonParser t0 = new JsonParser(input);
         t0.getStream().peek(true);
+        assertEquals(input, t0.getStream().getStream());
     }
 
     @Test
