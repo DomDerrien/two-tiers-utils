@@ -20,43 +20,49 @@ public class MockUser implements User {
         this.userScreenName = userScreenName;
     }
 
-    public Date getCreatedAt() { return null; }
-    public String getDescription() { return null; }
-    public int getFavouritesCount() { return 0; }
-    public int getFollowersCount() { return 0; }
-    public int getFriendsCount() { return 0; }
-    public int getId() { return userId; }
-    public String getLocation() { return null; }
-    public String getName() { return userName; }
-    public String getProfileBackgroundColor() { return null; }
-    public String getProfileBackgroundImageUrl() { return null; }
-    public URL getProfileImageURL() { return null; }
-    public String getProfileLinkColor() { return null; }
-    public String getProfileSidebarBorderColor() { return null; }
-    public String getProfileSidebarFillColor() { return null; }
-    public String getProfileTextColor() { return null; }
-    public String getScreenName() { return userScreenName; }
-    public Date getStatusCreatedAt() { return null; }
-    public long getStatusId() { return 0; }
-    public String getStatusInReplyToScreenName() { return null; }
-    public long getStatusInReplyToStatusId() { return 0; }
-    public int getStatusInReplyToUserId() { return 0; }
-    public String getStatusSource() { return null; }
-    public String getStatusText() { return null; }
-    public int getStatusesCount() { return 0; }
-    public String getTimeZone() { return null; }
-    public URL getURL() { return null; }
-    public int getUtcOffset() { return 0; }
-    public boolean isGeoEnabled() { return false; }
-    public boolean isProfileBackgroundTiled() { return false; }
-    public boolean isProtected() { return false; }
-    public boolean isStatusFavorited() { return false; }
-    public boolean isStatusTruncated() { return false; }
-    public boolean isVerified() { return false; }
-    public RateLimitStatus getRateLimitStatus() { return null; }
+    @Override public Date getCreatedAt() { return null; }
+    @Override public String getDescription() { return null; }
+    @Override public int getFavouritesCount() { return 0; }
+    @Override public int getFollowersCount() { return 0; }
+    @Override public int getFriendsCount() { return 0; }
+    @Override public int getId() { return userId; }
+    @Override public String getLocation() { return null; }
+    @Override public String getName() { return userName; }
+    @Override public String getProfileBackgroundColor() { return null; }
+    @Override public String getProfileBackgroundImageUrl() { return null; }
+    @Override public URL getProfileImageURL() { return null; }
+    @Override public String getProfileLinkColor() { return null; }
+    @Override public String getProfileSidebarBorderColor() { return null; }
+    @Override public String getProfileSidebarFillColor() { return null; }
+    @Override public String getProfileTextColor() { return null; }
+    @Override public String getScreenName() { return userScreenName; }
+    @Override public Date getStatusCreatedAt() { return null; }
+    @Override public long getStatusId() { return 0; }
+    @Override public String getStatusInReplyToScreenName() { return null; }
+    @Override public long getStatusInReplyToStatusId() { return 0; }
+    @Override public int getStatusInReplyToUserId() { return 0; }
+    @Override public String getStatusSource() { return null; }
+    @Override public String getStatusText() { return null; }
+    @Override public int getStatusesCount() { return 0; }
+    @Override public String getTimeZone() { return null; }
+    @Override public URL getURL() { return null; }
+    @Override public int getUtcOffset() { return 0; }
+    @Override public boolean isGeoEnabled() { return false; }
+    @Override public boolean isProfileBackgroundTiled() { return false; }
+    @Override public boolean isProtected() { return false; }
+    @Override public boolean isStatusFavorited() { return false; }
+    @Override public boolean isStatusTruncated() { return false; }
+    @Override public boolean isVerified() { return false; }
+    @Override public RateLimitStatus getRateLimitStatus() { return null; }
 
-    public String getLang() { return null; }
-    public Status getStatus() { return null; }
-    public boolean isContributorsEnabled() { return false; }
-    public int compareTo(User o) { return 0; }
+    @Override public String getLang() { return null; }
+    @Override public Status getStatus() { return null; }
+    @Override public boolean isContributorsEnabled() { return false; }
+    @Override public int compareTo(User o) { return 0; }
+
+    @Override public int getListedCount() { return 0; }
+    @Override public boolean isFollowRequestSent() { return false; }
+    @Override public boolean isProfileUseBackgroundImage() { return false; }
+    @Override public boolean isShowAllInlineMedia() { return false; }
+    @Override public boolean isTranslator() { return false; }
 }

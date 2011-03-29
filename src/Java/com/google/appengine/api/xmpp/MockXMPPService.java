@@ -19,7 +19,7 @@ public class MockXMPPService implements XMPPService {
     }
 
     public Presence getPresence(JID jabberId) {
-        return new Presence(presences.containsKey(jabberId.getId()) && presences.get(jabberId.getId()));
+        return new Presence(presences.containsKey(jabberId.getId()) && presences.get(jabberId.getId()), jabberId, jabberId);
     }
 
     public Presence getPresence(JID jabberId, JID fromJid) {
@@ -84,6 +84,30 @@ public class MockXMPPService implements XMPPService {
      */
     public Message getSentMessage(int index) {
         return sentMessages.get(index);
+    }
+
+    @Override
+    public Presence parsePresence(HttpServletRequest arg0) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Subscription parseSubscription(HttpServletRequest arg0) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void sendPresence(JID arg0, PresenceType arg1, PresenceShow arg2, String arg3) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void sendPresence(JID arg0, PresenceType arg1, PresenceShow arg2, String arg3, JID arg4) {
+        // TODO Auto-generated method stub
+
     }
 
 }

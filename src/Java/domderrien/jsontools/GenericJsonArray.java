@@ -2,11 +2,15 @@ package domderrien.jsontools;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
-public class GenericJsonArray implements JsonArray {
+public class GenericJsonArray implements JsonArray, Serializable {
+
+    private static final long serialVersionUID = 164580948320986452L;
     protected List<Object> arrayList = null;
 
     /**
@@ -83,6 +87,14 @@ public class GenericJsonArray implements JsonArray {
         return arrayList;
     }
 
+    public boolean isInstance(int index, Class<?> clazz) {
+        Object object = getObject(index);
+        if (object == null) {
+            return false;
+        }
+        return clazz.isInstance(object);
+    }
+
     /** @see java.util.List#get(int)  */
     protected Object getObject(int index) {
         return arrayList.get(index);
@@ -107,6 +119,17 @@ public class GenericJsonArray implements JsonArray {
 
     public String getString(int index) {
         return (String) getObject(index);
+    }
+
+    private static Pattern escapedNewLinePattern = Pattern.compile("\\\\n");
+    private static String newLine = "\n";
+
+    public String getString(int index, boolean multiLine) {
+        String value = getString(index);
+        if (value != null && multiLine) {
+            value = escapedNewLinePattern.matcher(value).replaceAll(newLine);
+        }
+        return value;
     }
 
     public JsonObject getJsonObject(int index) {
@@ -151,6 +174,16 @@ public class GenericJsonArray implements JsonArray {
     }
 
     public void add(String value) {
+        add(value, false);
+    }
+
+    private static Pattern newLinePattern = Pattern.compile("\r\n|\n");
+    private static String escapedNewLine = "\\\\n";
+
+    public void add(String value, boolean multiLine) {
+        if (value != null && multiLine) {
+            value = newLinePattern.matcher(value).replaceAll(escapedNewLine);
+        }
         addObject(value);
     }
 

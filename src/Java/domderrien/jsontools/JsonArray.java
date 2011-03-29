@@ -25,6 +25,14 @@ public interface JsonArray {
     List<Object> getList();
 
     /**
+     * Returns <code>true</code> if this object is not <code>null</code> and if it's an instance of the specified class
+     *
+     * @param index Index should be in the range [0; length() -1]
+     * @return <code>true</code> if the value is an instance of the specified class
+     */
+    boolean isInstance(int index, Class<?> clazz);
+
+    /**
      * Return the identified <code>boolean</code> value
      *
      * @param index Index should be in the range [0; length() -1]
@@ -59,6 +67,16 @@ public interface JsonArray {
      * @see java.util.List#get
      */
     String getString(int index);
+
+    /**
+     * Return the identified <code>String</code> value
+     *
+     * @param index     Index should be in the range [0; length() -1]
+     * @param multiLine If <code>true</code>, '\n' sequences are converted to return-to-line characters
+     * @return <code>String</code> value located at the specified place
+     * @see java.util.List#get
+     */
+    String getString(int index, boolean multiLine);
 
     /**
      * Return the identified <code>JsonObject</code> value
@@ -142,6 +160,15 @@ public interface JsonArray {
      * @see java.util.List#add
      */
     void add(String value);
+
+    /**
+     * Store the identified String instance.
+     *
+     * @param value     String to store
+     * @param multiLine If <code>true</code>, return-to-line characters will converted into '\n' sequences
+     * @see java.util.List#add
+     */
+    void add(String value, boolean multiLine);
 
     /**
      * Store the identified JsonObject instance.

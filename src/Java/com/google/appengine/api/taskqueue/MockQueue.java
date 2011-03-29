@@ -43,4 +43,8 @@ public class MockQueue implements Queue {
     public List<TaskHandle> add(Transaction arg0, Iterable<TaskOptions> arg1) {
         return null;
     }
+
+    @Override
+    public void purge() {
+    }
 }

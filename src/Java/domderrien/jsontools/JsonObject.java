@@ -43,6 +43,14 @@ public interface JsonObject {
     boolean containsKey(String key);
 
     /**
+     * Returns <code>true</code> if this object is not <code>null</code> and if it's an instance of the specified class
+     *
+     * @param key Data identifier
+     * @return <code>true</code> if the value is an instance of the specified class
+     */
+    boolean isInstance(String key, Class<?> clazz);
+
+    /**
      * Return the identified <code>boolean</code> value
      *
      * @param key Data identifier
@@ -77,6 +85,16 @@ public interface JsonObject {
      * @see java.util.Map#get
      */
     String getString(String key) throws ClassCastException;
+
+    /**
+     * Return the identified <code>String</code> value
+     *
+     * @param key       Data identifier
+     * @param multiLine If <code>true</code>, '\n' sequences are converted to return-to-line characters
+     * @return <code>String</code> value located at the specified place
+     * @see java.util.Map#get
+     */
+    String getString(String key, boolean multiLine) throws ClassCastException;
 
     /**
      * Return the identified <code>JsonObject</code> value
@@ -168,6 +186,16 @@ public interface JsonObject {
      * @see java.util.Map#put
      */
     void put(String key, String value);
+
+    /**
+     * Store the String instance
+     *
+     * @param key       Data identifier
+     * @param value     String instance to store
+     * @param multiLine If <code>true</code>, return-to-line characters will converted into '\n' sequences
+     * @see java.util.Map#put
+     */
+    void put(String key, String value, boolean multiLine);
 
     /**
      * Store the JsonObject instance

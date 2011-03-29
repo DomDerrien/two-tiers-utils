@@ -119,6 +119,10 @@ public class JsonException extends Exception implements JsonObject {
         return internalStorage.containsKey(key);
     }
 
+    public boolean isInstance(String key, Class<?> clazz) {
+        return internalStorage.isInstance(key, clazz);
+    }
+
     public boolean getBoolean(String key) throws ClassCastException {
         return internalStorage.getBoolean(key);
     }
@@ -133,6 +137,10 @@ public class JsonException extends Exception implements JsonObject {
 
     public String getString(String key) throws ClassCastException {
         return internalStorage.getString(key);
+    }
+
+    public String getString(String key, boolean multiLine) throws ClassCastException {
+        return internalStorage.getString(key, multiLine);
     }
 
     public JsonObject getJsonObject(String key) throws ClassCastException {
@@ -173,6 +181,10 @@ public class JsonException extends Exception implements JsonObject {
 
     public void put(String key, String value) {
         internalStorage.put(key, value);
+    }
+
+    public void put(String key, String value, boolean multiLine) {
+        internalStorage.put(key, value, multiLine);
     }
 
     public void put(String key, JsonObject value) {

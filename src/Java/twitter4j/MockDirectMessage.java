@@ -5,12 +5,12 @@ import java.util.Date;
 @SuppressWarnings("serial")
 public class MockDirectMessage implements DirectMessage {
 
-    private int id;
+    private long id;
     private User from;
     private User to;
     private String text;
 
-    public MockDirectMessage(int id, User from, User to, String text) {
+    public MockDirectMessage(long id, User from, User to, String text) {
         this(from, to, text);
         this.id = id;
     }
@@ -30,14 +30,14 @@ public class MockDirectMessage implements DirectMessage {
         this.from = new MockUser(2222, from, from);
     }
 
-    public Date getCreatedAt() { return null; }
-    public int getId() { return id; }
-    public User getRecipient() { return to; }
-    public int getRecipientId() { return to.getId(); }
-    public String getRecipientScreenName() { return to.getScreenName(); }
-    public User getSender() { return from; }
-    public int getSenderId() { return from.getId(); }
-    public String getSenderScreenName() { return from.getScreenName(); }
-    public String getText() { return text; }
-    public RateLimitStatus getRateLimitStatus() { return null;}
+    @Override public Date getCreatedAt() { return null; }
+    @Override public long getId() { return id; }
+    @Override public User getRecipient() { return to; }
+    @Override public int getRecipientId() { return to.getId(); }
+    @Override public String getRecipientScreenName() { return to.getScreenName(); }
+    @Override public User getSender() { return from; }
+    @Override public int getSenderId() { return from.getId(); }
+    @Override public String getSenderScreenName() { return from.getScreenName(); }
+    @Override public String getText() { return text; }
+    @Override public RateLimitStatus getRateLimitStatus() { return null;}
 }

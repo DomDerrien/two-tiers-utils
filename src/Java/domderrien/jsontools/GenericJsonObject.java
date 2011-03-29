@@ -2,14 +2,18 @@ package domderrien.jsontools;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class GenericJsonObject implements JsonObject {
+public class GenericJsonObject implements JsonObject, Serializable {
+
+    private static final long serialVersionUID = 438945948320986452L;
     protected Map<String, Object> hashMap;
 
     /**
@@ -75,7 +79,7 @@ public class GenericJsonObject implements JsonObject {
                 firstItem = false;
             }
             output.append("\n").append(offset).append(key).append(": ");
-            Object value = hashMap.get(key);
+            Object value = getObject(key);
             if (value instanceof GenericJsonObject) {
                 output.append(((GenericJsonObject) value).toString(index + 1));
             }
@@ -124,11 +128,19 @@ public class GenericJsonObject implements JsonObject {
     }
 
     public boolean isNonNull(String key) {
-        return hashMap.get(key) != null;
+        return getObject(key) != null;
     }
 
     public boolean containsKey(String key) {
         return hashMap.containsKey(key);
+    }
+
+    public boolean isInstance(String key, Class<?> clazz) {
+        Object object = getObject(key);
+        if (object == null) {
+            return false;
+        }
+        return clazz.isInstance(object);
     }
 
     /** @see java.util.Map#get */
@@ -144,6 +156,9 @@ public class GenericJsonObject implements JsonObject {
             if (0 < arrayOfStrings.length) {
                 typedValue = Boolean.parseBoolean(arrayOfStrings[0]);
             }
+        }
+        else if (value instanceof String) {
+            typedValue = Boolean.valueOf((String) value);
         }
         else {
             typedValue = (Boolean) value;
@@ -215,6 +230,17 @@ public class GenericJsonObject implements JsonObject {
         return typedValue;
     }
 
+    private static Pattern escapedNewLinePattern = Pattern.compile("\\\\n");
+    private static String newLine = "\n";
+
+    public String getString(String key, boolean multiLine) throws ClassCastException {
+        String value = getString(key);
+        if (value != null && multiLine) {
+            value = escapedNewLinePattern.matcher(value).replaceAll(newLine);
+        }
+        return value;
+    }
+
     public JsonObject getJsonObject(String key) throws ClassCastException {
         Object value = getObject(key);
         if (value instanceof String[]) {
@@ -277,6 +303,16 @@ public class GenericJsonObject implements JsonObject {
     }
 
     public void put(String key, String value) {
+        put(key, value, false);
+    }
+
+    private static Pattern newLinePattern = Pattern.compile("\r\n|\n");
+    private static String escapedNewLine = "\\\\n";
+
+    public void put(String key, String value, boolean multiLine) {
+        if (value != null && multiLine) {
+            value = newLinePattern.matcher(value).replaceAll(escapedNewLine);
+        }
         putObject(key, (Object) value);
     }
 
@@ -309,7 +345,7 @@ public class GenericJsonObject implements JsonObject {
         JsonSerializer.startObject(out);
         while (it.hasNext()) {
             String key = it.next();
-            Object value = hashMap.get(key);
+            Object value = getObject(key);
             if (value instanceof Boolean) {
                 JsonSerializer.toStream(key, ((Boolean) value).booleanValue(), out, it.hasNext());
             }
